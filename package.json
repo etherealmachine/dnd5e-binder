@@ -1,6 +1,7 @@
 {
   "name": "dnd5e-character-sheet",
   "version": "0.1.0",
+  "homepage": "https://etherealmachine.github.io/dnd5e-character-sheet",
   "private": true,
   "dependencies": {
     "react": "^16.5.2",
