@@ -16,6 +16,10 @@ div {
   display: flex;
 }
 
-.columns {
+.column {
   flex-direction: column;
+}
+
+.fc-gray-1 {
+  color: #919191;
 }
