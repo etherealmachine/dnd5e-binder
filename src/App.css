@@ -2,17 +2,23 @@
   display: flex;
   width: 100%;
   justify-content: center;
+  align-self: center;
+  max-width: 80%;
+  margin-top: 20px;
 }
 
 input {
   margin: 5px;
-  padding: 2px 4px;
+  padding: 10px;
+  font-size: 1em;
   border: 1px solid ##6B6B6B;
   border-radius: 4px;
+  max-height: 1em;
 }
 
 input[type=number] {
   text-align: center;
+  width: 3em;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -21,14 +27,60 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+textarea {
+  flex: 1;
+  min-height: 100px;
+}
+
 div {
-  box-sizing: border-box;
   display: flex;
-  border: 1px solid black;
+}
+
+h4 {
+  align-self: center;
+  margin-top: 0;
+}
+
+.main-column {
+  margin-top: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .column {
   flex-direction: column;
+}
+
+.align-self-center {
+  align-self: center;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-space-around {
+  justify-content: space-around;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-2 {
+  flex: 2;
+}
+
+.flex-3 {
+  flex: 3;
+}
+
+.flex-4 {
+  flex: 4;
 }
 
 .fc-gray-1 {
@@ -37,4 +89,10 @@ div {
 
 .fs-smaller {
   font-size: 80%;
+}
+
+.bonus {
+  font-size: 1.5em;
+  flex: 1;
+  text-align: right;
 }

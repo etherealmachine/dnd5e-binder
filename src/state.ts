@@ -1,28 +1,28 @@
 import * as React from 'react';
+import Rules from './rules';
 
 export default class State {
-	character_name?: string = '';
-  class?: string = '';
-  level?: number = undefined;
-  race?: string = '';
-  background?: string = '';
-  alignment?: string = '';
-  player_name?: string = '';
-  experience_points?: number = undefined;
-  attributes: { [key: string]: number; } = {};
-  proficiency_bonus?: number = undefined;
+	character_name: string = '';
+  class: string = '';
+  level: number | string = '';
+  race: string = '';
+  background: string = '';
+  alignment: string = '';
+  player_name: string = '';
+  experience_points: number | string = '';
+  proficiency_bonus: number | string = '';
   proficiencies: string[] = [];
-  maximum_hit_points?: number = undefined;
-  current_hit_points?: number = undefined;
-  temporary_hit_points?: number = undefined;
-  special_abilities?: string = '';
-  equipment?: string = '';
-  languages?: string = '';
-  expertise?: string = '';
-  armor_class?: number = undefined;
-  initiative_bonus?: number = undefined;
-  speed?: number = undefined;
-  passive_perception?: number = undefined;
+  maximum_hit_points: number | string = '';
+  current_hit_points: number | string = '';
+  temporary_hit_points: number | string = '';
+  special_abilities: string = '';
+  equipment: string = '';
+  languages: string = '';
+  expertise: string = '';
+  armor_class: number | string = '';
+  initiative_bonus: number | string = '';
+  speed: number | string = '';
+  passive_perception: number | string = '';
   personality_traits: string = '';
   ideals: string = '';
   bonds: string = '';
@@ -33,6 +33,16 @@ export default class State {
 
   public constructor(setState: (newState: any) => void) {
   	this.setState = setState;
+    Rules.attributes.forEach((attr) => {
+      this[attr] = '';
+      this[`${attr}_saving_throw_proficiency`] = false;
+    });
+    Object.keys(Rules.skills).forEach((skill) => {
+      this[`${skill}_proficiency}`] = false;
+    });
+    Rules.coinage.forEach((coin) => {
+      this[coin] = '';
+    });
   	Object.entries(JSON.parse(window.localStorage.getItem('state') || '{}')).forEach(([key, value]) => {
   		this[key] = value;
   	});
