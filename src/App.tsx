@@ -78,19 +78,32 @@ class App extends React.Component<Props, State> {
       </div>
     });
     const attacks = (
-      <div>
-        <div className="column">
-          <span>Name</span>
-        </div>
-        <div className="column">
-          <span>Bonus</span>
-        </div>
-        <div className="column">
-          <span>Damage Type</span>
-        </div>
-        <div className="column">
-          <span>&nbsp;</span>
-          <button onClick={this.state.handleButtonClick}>+</button>
+      <div className="column">
+        {this.state.attacks.map((attack, i) => {
+          return (<div key={`attack-${i}`} className="align-items-center">
+            <input name="attacks" data-index={i} data-key="name" value={this.state.attacks[i].name} onChange={this.state.handleInputChange} />
+            <input name="attacks" type="number" min="0" data-index={i} data-key="bonus" value={this.state.attacks[i].bonus} onChange={this.state.handleInputChange} />
+            <input name="attacks" data-index={i} data-key="damage_type"  value={this.state.attacks[i].damage_type} onChange={this.state.handleInputChange} />
+            <button name="remove_attack" data-index={i} onClick={this.state.handleButtonClick}>-</button>
+          </div>);
+        })}
+        <div className="align-items-center">
+          <div className="column">
+            <input name="new_attack_name" type="text" value={this.state.new_attack_name} onChange={this.state.handleInputChange} />
+            <span className="align-self-center">Name</span>
+          </div>
+          <div className="column">
+            <input name="new_attack_bonus" type="number" min="0" value={this.state.new_attack_bonus} onChange={this.state.handleInputChange} />
+            <span className="align-self-center">Bonus</span>
+          </div>
+          <div className="column">
+            <input name="new_attack_damage_type" type="text" value={this.state.new_attack_damage_type} onChange={this.state.handleInputChange} />
+            <span className="align-self-center">Damage Type</span>
+          </div>
+          <div className="column">
+            <button name="add_attack" onClick={this.state.handleButtonClick}>+</button>
+            <span>&nbsp;</span>
+          </div>
         </div>
       </div>);
     return (
@@ -142,16 +155,16 @@ class App extends React.Component<Props, State> {
                 </div>
               </div>
             </div>
-            <div className="column">
-              <div className="column">
+            <div className="column flex-1">
+              <div className="column flex-1" style={{marginBottom: '20px'}}>
                 <label htmlFor="proficiencies">Proficiencies</label>
                 <textarea name="proficiencies" value={this.state.proficiencies} onChange={this.state.handleTextAreaChange} />
               </div>
-              <div className="column">
+              <div className="column flex-1" style={{marginBottom: '20px'}}>
                 <label htmlFor="languages">Languages</label>
                 <textarea name="languages" value={this.state.languages} onChange={this.state.handleTextAreaChange} />
               </div>
-              <div className="column">
+              <div className="column flex-1">
                 <label htmlFor="expertise">Expertise</label>
                 <textarea name="expertise" value={this.state.expertise} onChange={this.state.handleTextAreaChange} />
               </div>

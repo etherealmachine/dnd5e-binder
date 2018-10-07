@@ -1,6 +1,12 @@
 import * as React from 'react';
 import Rules from './rules';
 
+interface Attack {
+  name: string;
+  bonus: number | string;
+  damage_type: string;
+}
+
 export default class State {
 	character_name: string = '';
   class: string = '';
@@ -11,12 +17,12 @@ export default class State {
   player_name: string = '';
   experience_points: number | string = '';
   proficiency_bonus: number | string = '';
-  proficiencies: string[] = [];
   maximum_hit_points: number | string = '';
   current_hit_points: number | string = '';
   temporary_hit_points: number | string = '';
   special_abilities: string = '';
   equipment: string = '';
+  proficiencies: string = '';
   languages: string = '';
   expertise: string = '';
   armor_class: number | string = '';
@@ -28,6 +34,10 @@ export default class State {
   bonds: string = '';
   flaws: string = '';
   features_and_traits: string = '';
+  new_attack_name: string = '';
+  new_attack_bonus: number | string = '';
+  new_attack_damage_type: string = '';
+  attacks: Attack[] = [];
 
   private setState: (newState: any) => void;
 
@@ -49,11 +59,15 @@ export default class State {
   }
 
   public handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  	const name = event.currentTarget.name;
-    if (event.currentTarget.type === 'checkbox') {
-      this[name] = event.currentTarget.checked;
+    const target = event.currentTarget;
+  	const {name, value} = target;
+    if (this[name] instanceof Array) {
+      const {index, key} = target.dataset;
+      this[name][parseInt(index as string)][key] = value;
+    } else if (target.type === 'checkbox') {
+      this[name] = target.checked;
     } else {
-      this[name] = isNaN(parseInt(event.currentTarget.value)) ? event.currentTarget.value: parseInt(event.currentTarget.value);
+      this[name] = isNaN(parseInt(value)) ? value: parseInt(value);
     }
   	window.localStorage.setItem('state', JSON.stringify(this));
   	this.setState(this);
@@ -69,6 +83,21 @@ export default class State {
 
   public handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
   	const name = event.currentTarget.name;
-  	console.log(name);
+    if (name === 'add_attack') {
+      this.attacks.push({
+        name: this.new_attack_name,
+        bonus: this.new_attack_bonus,
+        damage_type: this.new_attack_damage_type,
+      });
+      this.new_attack_name = '';
+      this.new_attack_bonus = '';
+      this.new_attack_damage_type = '';
+      window.localStorage.setItem('state', JSON.stringify(this));
+      this.setState(this);
+    } else if (name === 'remove_attack') {
+      this.attacks.splice(parseInt(event.currentTarget.dataset.index as string), 1);
+      window.localStorage.setItem('state', JSON.stringify(this));
+      this.setState(this);
+    }
   }
 }
