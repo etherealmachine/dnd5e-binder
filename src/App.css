@@ -3,8 +3,6 @@
   width: 100%;
   justify-content: center;
   align-self: center;
-  max-width: 80%;
-  margin-top: 20px;
 }
 
 input {
@@ -14,11 +12,17 @@ input {
   border: 1px solid ##6B6B6B;
   border-radius: 4px;
   max-height: 1em;
+  max-width: 200px;
+}
+
+input[type=text] {
+  width: 100%;
 }
 
 input[type=number] {
   text-align: center;
-  width: 3em;
+  width: 2em;
+  height: 3em;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -42,6 +46,7 @@ h4 {
 }
 
 .main-column {
+  flex-direction: column;
   margin-top: 30px;
   padding-left: 20px;
   padding-right: 20px;
@@ -49,6 +54,7 @@ h4 {
 
 .column {
   flex-direction: column;
+  flex-shrink: 1;
 }
 
 .align-self-center {
