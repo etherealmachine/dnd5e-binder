@@ -4,7 +4,7 @@ import Rules from './rules';
 interface Attack {
   name: string;
   bonus: number | string;
-  damage_type: string;
+  damage: string;
 }
 
 export default class State {
@@ -36,7 +36,7 @@ export default class State {
   features_and_traits: string = '';
   new_attack_name: string = '';
   new_attack_bonus: number | string = '';
-  new_attack_damage_type: string = '';
+  new_attack_damage: string = '';
   attacks: Attack[] = [];
 
   private setState: (newState: any) => void;
@@ -67,7 +67,7 @@ export default class State {
     } else if (target.type === 'checkbox') {
       this[name] = target.checked;
     } else {
-      this[name] = isNaN(parseInt(value)) ? value: parseInt(value);
+      this[name] = isNaN(Number(value)) ? value: parseInt(value);
     }
   	window.localStorage.setItem('state', JSON.stringify(this));
   	this.setState(this);
@@ -87,11 +87,11 @@ export default class State {
       this.attacks.push({
         name: this.new_attack_name,
         bonus: this.new_attack_bonus,
-        damage_type: this.new_attack_damage_type,
+        damage: this.new_attack_damage,
       });
       this.new_attack_name = '';
       this.new_attack_bonus = '';
-      this.new_attack_damage_type = '';
+      this.new_attack_damage = '';
       window.localStorage.setItem('state', JSON.stringify(this));
       this.setState(this);
     } else if (name === 'remove_attack') {

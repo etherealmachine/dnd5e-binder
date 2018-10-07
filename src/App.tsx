@@ -57,7 +57,7 @@ class App extends React.Component<Props, State> {
         </div>
       );
       savingThrows.push(
-        <div key={`${attr}-saving-throw`} className="align-items-center">
+        <div key={`${attr}-saving-throw`} className="row align-items-center">
           <input name={`${attr}_saving_throw_proficiency`} type="checkbox" checked={this.state[`${attr}_saving_throw_proficiency`]} onChange={this.state.handleInputChange} />
           <span>{attr}</span>
           <span className="bonus">{this.bonusText(this.savingThrowBonus(attr))}</span>
@@ -65,52 +65,40 @@ class App extends React.Component<Props, State> {
       );
     })
     const skills: JSX.Element[] = Object.entries(Rules.skills).map(([skill, attr]) => {
-      return <div key={skill} className="align-items-center">
+      return <div key={skill} className="row align-items-center">
         <input name={`${skill}_proficiency}`} type="checkbox" checked={this.state[`${skill}_proficiency}`]} onChange={this.state.handleInputChange} />
         <span>{skill}&nbsp;<span className="fc-gray-1">({attr})</span></span>
         <span className="bonus">{this.bonusText(this.skillBonus(skill, attr))}</span>
       </div>
     });
     const coins: JSX.Element[] = Rules.coinage.map((coin) => {
-      return <div key={coin} className="align-items-center">
-        <label className="flex-1" htmlFor={coin}>{coin}</label>
+      return <div key={coin} className="column align-items-center">
         <input name={coin} type="number" min="0" value={this.state[coin]} onChange={this.state.handleInputChange} />
+        <label className="flex-1" htmlFor={coin}>{coin}</label>
       </div>
     });
     const attacks = (
       <div className="column">
         {this.state.attacks.map((attack, i) => {
           return (<div key={`attack-${i}`} className="align-items-center">
-            <div>
-              <input name="attacks" data-index={i} data-key="name" value={this.state.attacks[i].name} onChange={this.state.handleInputChange} />
-            </div>
-            <div>
-              <input name="attacks" type="number" min="0" data-index={i} data-key="bonus" value={this.state.attacks[i].bonus} onChange={this.state.handleInputChange} />
-            </div>
-            <div>
-              <input name="attacks" data-index={i} data-key="damage_type"  value={this.state.attacks[i].damage_type} onChange={this.state.handleInputChange} />
-            </div>
+            <input className="flat" name="attacks" data-index={i} data-key="name" value={this.state.attacks[i].name} onChange={this.state.handleInputChange} />
+            <input className="flat" name="attacks" type="number" min="0" data-index={i} data-key="bonus" value={this.state.attacks[i].bonus} onChange={this.state.handleInputChange} />
+            <input className="flat" name="attacks" data-index={i} data-key="damage"  value={this.state.attacks[i].damage} onChange={this.state.handleInputChange} />
             <button name="remove_attack" data-index={i} onClick={this.state.handleButtonClick}>-</button>
           </div>);
         })}
-        <div className="align-items-center">
+        <div className="row align-items-center flex-wrap">
           <div className="column">
-            <div>
-              <input name="new_attack_name" type="text" value={this.state.new_attack_name} onChange={this.state.handleInputChange} />
-            </div>
+            <input className="flat" name="new_attack_name" type="text" value={this.state.new_attack_name} onChange={this.state.handleInputChange} />
             <span className="align-self-center">Name</span>
           </div>
           <div className="column">
-            <div>
-              <input name="new_attack_bonus" type="number" min="0" value={this.state.new_attack_bonus} onChange={this.state.handleInputChange} />
-            </div>
+            <input className="flat" name="new_attack_bonus" type="number" min="0" value={this.state.new_attack_bonus} onChange={this.state.handleInputChange} />
             <span className="align-self-center">Bonus</span>
           </div>
           <div className="column">
-            <div>
-              <input name="new_attack_damage_type" type="text" value={this.state.new_attack_damage_type} onChange={this.state.handleInputChange} />
-            </div>
-            <span className="align-self-center">Damage Type</span>
+            <input className="flat" name="new_attack_damage" type="text" value={this.state.new_attack_damage} onChange={this.state.handleInputChange} />
+            <span className="align-self-center">Damage</span>
           </div>
           <div className="column">
             <button name="add_attack" onClick={this.state.handleButtonClick}>+</button>
@@ -119,46 +107,34 @@ class App extends React.Component<Props, State> {
         </div>
       </div>);
     return (
-      <div className="App column">
-        <div className="flex-1">
-          <input className="flex-1" style={{alignSelf: 'flex-end'}} name="character_name" placeholder="Character Name" type="text" value={this.state.character_name} onChange={this.state.handleInputChange} />
-          <div className="flex-3">
+      <div className="App">
+        <div className="row flex-1 flex-wrap" style={{marginBottom: '30px'}}>
+          <div className="row flex-1 align-self-flex-end">
+            <input className="flex-1" name="character_name" placeholder="Character Name" type="text" value={this.state.character_name} onChange={this.state.handleInputChange} />
+          </div>
+          <div className="row flex-3 flex-wrap">
             <div className="column flex-1">
-              <div>
-                <div>
-                  <input name="class" placeholder="Class" type="text" value={this.state.class} onChange={this.state.handleInputChange} />
-                </div>
-                <div>
-                  <input name="level" placeholder="Level" type="number" min="1" value={this.state.level} onChange={this.state.handleInputChange} />
-                </div>
+              <div className="row">
+                <input className="flex-1" name="class" placeholder="Class" type="text" value={this.state.class} onChange={this.state.handleInputChange} />
+                <input name="level" placeholder="Level" type="number" min="1" value={this.state.level} onChange={this.state.handleInputChange} />
               </div>
-              <div>
-                <input name="race" placeholder="Race" type="text" value={this.state.race} onChange={this.state.handleInputChange} />
-              </div>
+              <input name="race" placeholder="Race" type="text" value={this.state.race} onChange={this.state.handleInputChange} />
             </div>
             <div className="column flex-1">
-              <div>
-                <input name="background" placeholder="Background" type="text" value={this.state.background} onChange={this.state.handleInputChange} />
-              </div>
-              <div>
-                <input name="alignment" placeholder="Alignment" type="text" value={this.state.alignment} onChange={this.state.handleInputChange} />
-              </div>
+              <input name="background" placeholder="Background" type="text" value={this.state.background} onChange={this.state.handleInputChange} />
+              <input name="alignment" placeholder="Alignment" type="text" value={this.state.alignment} onChange={this.state.handleInputChange} />
             </div>
             <div className="column flex-1">
-              <div>
-                <input name="player_name" placeholder="Player Name" type="text" value={this.state.player_name} onChange={this.state.handleInputChange} />
-              </div>
-              <div>
-                <input name="experience_points" placeholder="XP" type="number" min="0" value={this.state.experience_points} onChange={this.state.handleInputChange} />
-              </div>
+              <input name="player_name" placeholder="Player Name" type="text" value={this.state.player_name} onChange={this.state.handleInputChange} />
+              <input name="experience_points" placeholder="XP" type="number" min="0" value={this.state.experience_points} onChange={this.state.handleInputChange} />
             </div>
           </div>
         </div>
-        <div>
-          <div className="main-column">
+        <div className="main-body" style={{margin: '0 -15px'}}>
+          <div className="column flex-1" style={{padding: '0 15px'}}>
             <div className="column">
-              <div className="justify-content-space-around">
-                <div className="column">
+              <div className="row justify-content-space-around">
+                <div className="column justify-content-space-around" style={{backgroundColor: '#E5E5E5'}}>
                   {attributes}
                 </div>
                 <div className="column">
@@ -197,9 +173,9 @@ class App extends React.Component<Props, State> {
               <h4>Other Proficiencies &amp; Languages</h4>
             </div>
           </div>
-          <div className="main-column">
+          <div className="column flex-1" style={{padding: '0 15px'}}>
             <div className="column">
-              <div className="justify-content-space-around">
+              <div className="row justify-content-space-around">
                 <div className="column align-items-center">
                   <input name="armor_class" type="number" min="0" max="25" value={this.state.armor_class} onChange={this.state.handleInputChange} />
                   <label htmlFor="armor_class">Armor Class</label>
@@ -216,7 +192,7 @@ class App extends React.Component<Props, State> {
                   <label htmlFor="speed">Speed</label>
                 </div>
               </div>
-              <div className="justify-content-center justify-content-space-around">
+              <div className="row justify-content-space-around">
                 <div className="column align-items-center">
                   <span>&nbsp;</span>
                   <input name="current_hit_points" type="number" min="0" max={this.state.maximum_hit_points} value={this.state.current_hit_points} onChange={this.state.handleInputChange} />
@@ -245,18 +221,16 @@ class App extends React.Component<Props, State> {
               <h4>Attacks &amp; Spellcasting</h4>
             </div>
             <div className="column flex-1">
-              <div className="flex-1">
-                <div className="column">
-                  {coins}
-                </div>
-                <div className="column flex-1">
-                  <textarea className="flex-1" name="equipment" value={this.state.equipment} onChange={this.state.handleTextAreaChange} />
-                  <h4>Equipment</h4>
-                </div>
+              <div className="row justify-content-space-around">
+                {coins}
+              </div>
+              <div className="column flex-1">
+                <textarea className="flex-1" name="equipment" value={this.state.equipment} onChange={this.state.handleTextAreaChange} />
+                <h4>Equipment</h4>
               </div>
             </div>
           </div>
-          <div className="main-column">
+          <div className="column flex-1" style={{padding: '0 15px'}}>
             <div className="column">
               <div className="column">
                 <textarea name="personality_traits" value={this.state.personality_traits} onChange={this.state.handleTextAreaChange} />
