@@ -1,17 +1,20 @@
 import "core-js/library";
 import * as React from 'react';
 import './CharacterSheet.css';
-import State from './state';
-import Rules from './rules';
+import { Character } from './models';
+import Compendium from './compendium';
 
 export interface Props {
+  id: string,
 }
 
-class CharacterSheet extends React.Component<Props, State> {
+class CharacterSheet extends React.Component<Props, Character> {
+
+  private compendium: Compendium = new Compendium(() => {});
 
   public constructor(props: Props) {
     super(props);
-    this.state = new State(this.setState.bind(this));
+    this.state = new Character(props.id, this.setState.bind(this));
   }
 
   private attributeBonus(attr: string): number {
@@ -39,7 +42,7 @@ class CharacterSheet extends React.Component<Props, State> {
     if (isNaN(bonus)) {
       return <span>&nbsp;&nbsp;</span>;
     }
-    if (bonus < 0) { 
+    if (bonus < 0) {
       return <span>{bonus}</span>;
     }
     return <span>+{bonus}</span>;
@@ -48,7 +51,7 @@ class CharacterSheet extends React.Component<Props, State> {
   public render() {
     const attributes: JSX.Element[] = [];
     const savingThrows: JSX.Element[] = [];
-    Rules.attributes.forEach((attr) => {
+    this.compendium.attributes.forEach((attr) => {
       attributes.push(
         <div key={`${attr}-attr`} className="column align-items-center" style={{padding: '10px 0'}}>
           <span>{this.bonusText(this.attributeBonus(attr))}</span>
@@ -64,14 +67,14 @@ class CharacterSheet extends React.Component<Props, State> {
         </div>
       );
     })
-    const skills: JSX.Element[] = Object.entries(Rules.skills).map(([skill, attr]) => {
+    const skills: JSX.Element[] = Object.entries(this.compendium.skills).map(([skill, attr]) => {
       return <div key={skill} className="row align-items-center">
         <input name={`${skill}_proficiency}`} type="checkbox" checked={this.state[`${skill}_proficiency}`]} onChange={this.state.handleInputChange} />
         <span>{skill}&nbsp;<span className="fc-gray-1">({attr})</span></span>
         <span className="bonus">{this.bonusText(this.skillBonus(skill, attr))}</span>
       </div>
     });
-    const coins: JSX.Element[] = Rules.coinage.map((coin) => {
+    const coins: JSX.Element[] = this.compendium.coinage.map((coin) => {
       return <div key={coin} className="column align-items-center">
         <input name={coin} type="number" min="0" value={this.state[coin]} onChange={this.state.handleInputChange} />
         <label className="flex-1" htmlFor={coin}>{coin}</label>
@@ -204,7 +207,7 @@ class CharacterSheet extends React.Component<Props, State> {
                   <label htmlFor="maximum_hit_points">Max HP</label>
                 </div>
                 <div className="column align-items-center">
-                  <span>Total: {this.state.level}d{Rules.hit_dice_for_class[this.state.class]}</span>
+                  <span>Total: {this.state.level}d{this.compendium.hit_dice_for_class[this.state.class]}</span>
                   <input name="current_hit_dice" type="number" min="0" max={this.state.level} onChange={this.state.handleInputChange} />
                   <label htmlFor="hit_dice">Hit Dice</label>
                 </div>

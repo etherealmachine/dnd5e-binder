@@ -1,5 +1,6 @@
 import * as React from 'react';
-import Rules from './rules';
+import Compendium from './compendium';
+import localForage from 'localforage';
 
 interface Attack {
   name: string;
@@ -7,8 +8,39 @@ interface Attack {
   damage: string;
 }
 
-export default class State {
-	character_name: string = '';
+class Model {
+	public id: string;
+	public namespace: string;
+  public compendium: Compendium = new Compendium(() => {});
+	protected localforage: LocalForage;
+  protected setState: (newState: any) => void;
+
+  public constructor(id: string, namespace: string, setState: (newState: any) => void) {
+  	this.id = id;
+  	this.localforage = localForage.createInstance({name: namespace});
+  	this.setState = setState;
+    this.localforage.getItem(this.id).then((item: { [key: string]: any }) => {
+    	if (item) {
+	    	Object.entries(item).forEach(([key, value]) => {
+	    		this[key] = value;
+	    	});
+	    }
+    });
+  }
+
+  protected handleChange() {
+		const obj = JSON.parse(JSON.stringify(this));
+		delete obj.namespace;
+		delete obj.compendium;
+		delete obj.localforage;
+		delete obj.setState;
+		this.localforage.setItem(this.id, obj);
+  	this.setState(this);
+  }
+}
+
+export class Character extends Model {
+  character_name: string = '';
   class: string = '';
   level: number | string = '';
   race: string = '';
@@ -39,23 +71,18 @@ export default class State {
   new_attack_damage: string = '';
   attacks: Attack[] = [];
 
-  private setState: (newState: any) => void;
-
-  public constructor(setState: (newState: any) => void) {
-  	this.setState = setState;
-    Rules.attributes.forEach((attr) => {
+  public constructor(id: string, setState: (newState: any) => void) {
+  	super(id, 'characters', setState);
+    this.compendium.attributes.forEach((attr) => {
       this[attr] = '';
       this[`${attr}_saving_throw_proficiency`] = false;
     });
-    Object.keys(Rules.skills).forEach((skill) => {
-      this[`${skill}_proficiency}`] = false;
+    Object.keys(this.compendium.skills).forEach((skill) => {
+      this[`${skill}_proficiency`] = false;
     });
-    Rules.coinage.forEach((coin) => {
+    this.compendium.coinage.forEach((coin) => {
       this[coin] = '';
     });
-  	Object.entries(JSON.parse(window.localStorage.getItem('state') || '{}')).forEach(([key, value]) => {
-  		this[key] = value;
-  	});
   }
 
   public handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,16 +96,14 @@ export default class State {
     } else {
       this[name] = isNaN(Number(value)) ? value: parseInt(value);
     }
-  	window.localStorage.setItem('state', JSON.stringify(this));
-  	this.setState(this);
+    this.handleChange();
   }
 
   public handleTextAreaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
   	const name = event.currentTarget.name;
   	const value = event.currentTarget.value;
   	this[name] = value;
-  	window.localStorage.setItem('state', JSON.stringify(this));
-  	this.setState(this);
+    this.handleChange();
   }
 
   public handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -92,12 +117,10 @@ export default class State {
       this.new_attack_name = '';
       this.new_attack_bonus = '';
       this.new_attack_damage = '';
-      window.localStorage.setItem('state', JSON.stringify(this));
-      this.setState(this);
+	    this.handleChange();
     } else if (name === 'remove_attack') {
       this.attacks.splice(parseInt(event.currentTarget.dataset.index as string), 1);
-      window.localStorage.setItem('state', JSON.stringify(this));
-      this.setState(this);
+	    this.handleChange();
     }
   }
 }

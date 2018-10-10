@@ -4,9 +4,14 @@
   "homepage": "https://etherealmachine.github.io/dnd5e-character-sheet",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^3.2.0",
+    "@material-ui/icons": "^3.0.1",
+    "@types/xml2js": "^0.4.3",
+    "localforage": "^1.7.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "react-scripts-ts": "3.1.0"
+    "react-scripts-ts": "3.1.0",
+    "xml2js": "^0.4.19"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -15,6 +20,7 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/gapi.client.drive": "^3.0.1",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.3",
     "@types/react": "^16.4.14",
