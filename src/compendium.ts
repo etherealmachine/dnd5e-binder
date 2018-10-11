@@ -17,7 +17,7 @@ export class Compendium {
   public races: LocalForage = localForage.createInstance({name: 'races'});
   public spells: LocalForage = localForage.createInstance({name: 'spells'});
 
-  public attributes = [
+  public static attributes = [
 	  "Strength",
 	  "Dexterity",
 	  "Constitution",
@@ -26,7 +26,7 @@ export class Compendium {
 	  "Charisma"
 	];
 
-	public skills = {
+	public static skills = {
 	  "Acrobatics": "Dexterity",
 	  "Animal Handling": "Wisdom",
 	  "Arcana": "Intelligence",
@@ -47,7 +47,7 @@ export class Compendium {
 	  "Survival": "Wisdom"
 	};
 
-	public coinage = [
+	public static coinage = [
 	  "Copper",
 	  "Silver",
 	  "Electrum",
@@ -55,7 +55,7 @@ export class Compendium {
 	  "Platinum"
 	];
 
-	public hit_dice_for_class = {
+	public static hit_dice_for_class = {
 		"Barbarian": 12,
 		"Bard": 8,
 		"Cleric": 8,

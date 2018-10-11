@@ -18,16 +18,16 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import './App.css';
-import { State } from './store';
+import { State, CharacterState, CompendiumState } from './store';
 import CharacterSheet from './CharacterSheet';
-import { Compendium } from './compendium';
 
 export interface Props {
-  drawerOpen: boolean,
-  tabSelected: number,
-  signedIn: boolean,
-  compendium: Compendium,
-  dispatch: Dispatch,
+  drawerOpen: boolean
+  tabSelected: number
+  signedIn: boolean
+  compendium: CompendiumState
+  character: CharacterState
+  dispatch: Dispatch
 }
 
 const CLIENT_ID = '196165648382-s1585cq9b97a2tn9ulfg4ffkbvqgmaf9.apps.googleusercontent.com';
@@ -47,7 +47,8 @@ class App extends React.Component<Props> {
       drawerOpen: state.app.drawerOpen,
       tabSelected: state.app.tabSelected,
       signedIn: state.app.signedIn,
-      compendium: state.compendium.compendium,
+      compendium: state.compendium,
+      character: state.character,
     };
   }
 
@@ -132,7 +133,7 @@ class App extends React.Component<Props> {
           <MenuItem value={1}><em>New Character</em></MenuItem>
         </Select>
       </FormControl>
-      <CharacterSheet id="0" />
+      <CharacterSheet {...this.props.character} dispatch={this.props.dispatch} />
     </div>;
     return <div>
 	    <AppBar position="static">
@@ -141,7 +142,7 @@ class App extends React.Component<Props> {
             <MenuIcon />
           </IconButton>
           {!this.props.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
-          {this.props.compendium.loading && <CircularProgress color="secondary" />}
+          {this.props.compendium.compendium.loading && <CircularProgress color="secondary" />}
         </Toolbar>
         <Tabs value={this.props.tabSelected} onChange={this.handleTabChange}>
           <Tab label="Characters" />
@@ -155,7 +156,7 @@ class App extends React.Component<Props> {
         <button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</button>
         <button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</button>
         <button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</button>
-        <Button onClick={this.props.compendium.reloadFiles}>Reload Data Files</Button>
+        <Button onClick={this.props.compendium.compendium.reloadFiles}>Reload Data Files</Button>
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
