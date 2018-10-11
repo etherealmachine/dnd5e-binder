@@ -1,5 +1,7 @@
 import "core-js/library";
 import * as React from 'react';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -16,10 +18,16 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import './App.css';
+import { State } from './store';
 import CharacterSheet from './CharacterSheet';
 import { Compendium } from './compendium';
 
 export interface Props {
+  drawerOpen: boolean,
+  tabSelected: number,
+  signedIn: boolean,
+  compendium: Compendium,
+  dispatch: Dispatch,
 }
 
 const CLIENT_ID = '196165648382-s1585cq9b97a2tn9ulfg4ffkbvqgmaf9.apps.googleusercontent.com';
@@ -28,29 +36,31 @@ const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/r
 const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file';
 let gapi = window['gapi'];
 
-interface State {
-  drawerOpen: boolean,
-  tab: number,
-  signedIn: boolean,
-  compendium: Compendium,
-}
-
-class App extends React.Component<Props, State> {
+class App extends React.Component<Props> {
 
   public constructor(props: Props) {
     super(props);
-    this.state = {
-    	drawerOpen: false,
-    	tab: 0,
-    	signedIn: false,
-      compendium: new Compendium(this.setState.bind(this)),
+  }
+
+  public static mapStateToProps(state: State): Partial<Props> {
+    return {
+      drawerOpen: state.app.drawerOpen,
+      tabSelected: state.app.tabSelected,
+      signedIn: state.app.signedIn,
+      compendium: state.compendium.compendium,
     };
   }
 
+  public static mapDispatchToProps(dispatch: Dispatch): Partial<Props> {
+    return { dispatch };
+  }
+
   private updateSigninStatus = (isSignedIn: boolean) => {
-  	this.setState({
-  		signedIn: isSignedIn,
-  	});
+    if (isSignedIn) {
+      this.props.dispatch({type: 'SIGNED_IN'});
+    } else {
+      this.props.dispatch({type: 'SIGNED_OUT'});
+    }
   }
 
 	private handleAuthClick = (event: any) => {
@@ -91,23 +101,21 @@ class App extends React.Component<Props, State> {
 
   private toggleDrawer = (open: boolean) => {
   	return (event: React.MouseEvent<HTMLButtonElement>) => {
-	  	this.setState({
-	    	drawerOpen: open,
-	  	});
+      if (open) {
+        this.props.dispatch({type: 'OPEN_DRAWER'});
+      } else {
+        this.props.dispatch({type: 'CLOSE_DRAWER'});
+      }
 	  };
   }
 
   private selectTab = (event: React.SyntheticEvent<HTMLButtonElement>) => {
-		this.setState({
-			drawerOpen: false,
-			tab: parseInt(event.currentTarget.dataset.tabindex || '0'),
-		});
+    const selectedTab = parseInt(event.currentTarget.dataset.tabindex || '0');
+    this.props.dispatch({type: 'SELECT_TAB', value: selectedTab});
   }
 
   private handleTabChange = (event: React.ChangeEvent<{}>, value: number) => {
-  	this.setState({
-  		tab: value,
-  	});
+    this.props.dispatch({type: 'SELECT_TAB', value: value});
   }
 
   public render() {
@@ -132,32 +140,32 @@ class App extends React.Component<Props, State> {
           <IconButton color="inherit" aria-label="Menu" onClick={this.toggleDrawer(true)}>
             <MenuIcon />
           </IconButton>
-          {!this.state.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
-          {this.state.compendium.loading && <CircularProgress color="secondary" />}
+          {!this.props.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
+          {this.props.compendium.loading && <CircularProgress color="secondary" />}
         </Toolbar>
-        <Tabs value={this.state.tab} onChange={this.handleTabChange}>
+        <Tabs value={this.props.tabSelected} onChange={this.handleTabChange}>
           <Tab label="Characters" />
           <Tab label="Spells" />
           <Tab label="Items" />
           <Tab label="Monsters" />
         </Tabs>
       </AppBar>
-      <SwipeableDrawer open={this.state.drawerOpen} onClose={this.toggleDrawer(false)} onOpen={this.toggleDrawer(true)}>
+      <SwipeableDrawer open={this.props.drawerOpen} onClose={this.toggleDrawer(false)} onOpen={this.toggleDrawer(true)}>
         <button data-tabindex="0" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Characters</button>
         <button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</button>
         <button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</button>
         <button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</button>
-        <Button onClick={this.state.compendium.reloadFiles}>Reload Data Files</Button>
-        {this.state.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
+        <Button onClick={this.props.compendium.reloadFiles}>Reload Data Files</Button>
+        {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
-	      {this.state.tab === 0 && characters}
-	      {this.state.tab === 1 && <p>Spells</p>}
-	      {this.state.tab === 2 && <p>Items</p>}
-	      {this.state.tab === 3 && <p>Monsters</p>}
+	      {this.props.tabSelected === 0 && characters}
+	      {this.props.tabSelected === 1 && <p>Spells</p>}
+	      {this.props.tabSelected === 2 && <p>Items</p>}
+	      {this.props.tabSelected === 3 && <p>Monsters</p>}
 	    </div>
     </div>;
   }
 }
 
-export default App;
+export default connect(App.mapStateToProps, App.mapDispatchToProps)(App);
