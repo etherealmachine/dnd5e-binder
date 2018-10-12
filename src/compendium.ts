@@ -2,6 +2,42 @@ import localForage from 'localforage';
 import { parseString } from 'xml2js';
 import store from './store';
 
+export interface Action {
+  name: string[]
+  text: string[]
+}
+
+export interface Trait {
+  name: string[]
+  text: string[]
+}
+
+export interface Monster {
+  ac?: string[]
+  action?: Action[]
+  alignment?: string[]
+  cha?: string[]
+  con?: string[]
+  cr?: string[]
+  dex?: string[]
+  hp?: string[]
+  immune?: string[]
+  int?: string[]
+  languages?: string[]
+  name?: string[]
+  passive?: string[]
+  save?: string[]
+  senses?: string[]
+  size?: string[]
+  skill?: string[]
+  speed?: string[]
+  str?: string[]
+  trait?: Trait[]
+  type?: string[]
+  vulnerable?: string[]
+  wis?: string[]
+}
+
 export class Compendium {
 
   private static processedFiles: LocalForage = localForage.createInstance({

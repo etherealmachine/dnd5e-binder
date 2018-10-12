@@ -2,7 +2,6 @@ import "core-js/library";
 import * as React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import Async from 'react-promise';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -20,9 +19,9 @@ import Tab from '@material-ui/core/Tab';
 
 import './App.css';
 import { State, CharacterState } from './store';
-import CharacterSheet from './CharacterSheet';
-import MonsterCard from './MonsterCard';
 import Compendium from './compendium';
+import CharacterSheet from './CharacterSheet';
+import MonstersTab from './MonstersTab';
 
 export interface Props {
   drawerOpen: boolean
@@ -113,7 +112,7 @@ class App extends React.Component<Props> {
 	  };
   }
 
-  private selectTab = (event: React.SyntheticEvent<HTMLButtonElement>) => {
+  private selectTab = (event: React.MouseEvent<HTMLButtonElement>) => {
     const selectedTab = parseInt(event.currentTarget.dataset.tabindex || '0');
     this.props.dispatch({type: 'SELECT_TAB', value: selectedTab});
   }
@@ -155,10 +154,10 @@ class App extends React.Component<Props> {
         </Tabs>
       </AppBar>
       <SwipeableDrawer open={this.props.drawerOpen} onClose={this.toggleDrawer(false)} onOpen={this.toggleDrawer(true)}>
-        <button data-tabindex="0" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Characters</button>
-        <button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</button>
-        <button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</button>
-        <button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</button>
+        <Button data-tabindex="0" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Characters</Button>
+        <Button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</Button>
+        <Button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</Button>
+        <Button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</Button>
         <Button onClick={Compendium.reloadFiles}>Reload Data Files</Button>
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
@@ -166,7 +165,7 @@ class App extends React.Component<Props> {
 	      {this.props.tabSelected === 0 && characters}
 	      {this.props.tabSelected === 1 && <p>Spells</p>}
 	      {this.props.tabSelected === 2 && <p>Items</p>}
-	      {this.props.tabSelected === 3 && <Async promise={Compendium.monsters.getItem('Goblin')} then={val => <MonsterCard {...val} />} />}
+	      {this.props.tabSelected === 3 && <MonstersTab />}
 	    </div>
     </div>;
   }
