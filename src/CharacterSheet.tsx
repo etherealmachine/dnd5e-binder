@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Dispatch } from 'redux';
 
 import './CharacterSheet.css';
-import { Compendium } from './compendium';
+import Compendium from './compendium';
 import { CharacterState } from './store';
 import NumberInput from './NumberInput';
 

@@ -1,21 +1,20 @@
 import localForage from 'localforage';
 import { parseString } from 'xml2js';
+import store from './store';
 
 export class Compendium {
 
-  private processedFiles: LocalForage = localForage.createInstance({
+  private static processedFiles: LocalForage = localForage.createInstance({
     name: 'processedFiles',
   });
-  private setState: (newState: any) => void;
 
-  public loading: boolean = false;
-  public backgrounds: LocalForage = localForage.createInstance({name: 'backgrounds'});
-  public classes: LocalForage = localForage.createInstance({name: 'classes'});
-  public feats: LocalForage = localForage.createInstance({name: 'feats'});
-  public items: LocalForage = localForage.createInstance({name: 'items'});
-  public monsters: LocalForage = localForage.createInstance({name: 'monsters'});
-  public races: LocalForage = localForage.createInstance({name: 'races'});
-  public spells: LocalForage = localForage.createInstance({name: 'spells'});
+  public static backgrounds: LocalForage = localForage.createInstance({name: 'backgrounds'});
+  public static classes: LocalForage = localForage.createInstance({name: 'classes'});
+  public static feats: LocalForage = localForage.createInstance({name: 'feats'});
+  public static items: LocalForage = localForage.createInstance({name: 'items'});
+  public static monsters: LocalForage = localForage.createInstance({name: 'monsters'});
+  public static races: LocalForage = localForage.createInstance({name: 'races'});
+  public static spells: LocalForage = localForage.createInstance({name: 'spells'});
 
   public static attributes = [
 	  "Strength",
@@ -70,14 +69,20 @@ export class Compendium {
 		"Wizard": 6
 	}
 
-  public constructor(setState: (newState: any) => void) {
-  	this.setState = setState;
+  public static types = {
+    'background': 'backgrounds',
+    'class': 'classes',
+    'feat': 'feats',
+    'item': 'items',
+    'monster': 'monsters',
+    'race': 'races',
+    'spell': 'spells',
   }
 
-  public reloadFiles = () => {
-    this.processedFiles.clear();
-    for (let objectType of ['background',  'class', 'feat', 'item', 'monster', 'race', 'spell']) {
-      this[objectType + 's'].clear();
+  public static reloadFiles = () => {
+    Compendium.processedFiles.clear();
+    for (let namespace of Object.values(Compendium.types)) {
+      Compendium[namespace].clear();
     }
     gapi.client.drive.files.list({
     	'q': "name contains '.xml'",
@@ -85,22 +90,19 @@ export class Compendium {
     }).then((response: any) => {
       const files = response.result.files;
       if (files && files.length > 0) {
-      	this.setState({
-      		compendium: this,
-      	});
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          this.processedFiles.setItem(file.name, false);
-          window.setTimeout(() => this.getFile(file, i === files.length-1), i*1000);
+          Compendium.processedFiles.setItem(file.name, false);
+          window.setTimeout(() => Compendium.getFile(file, i === files.length-1), i*1000);
         }
       }
     });
-    this.setState({
-      drawerOpen: false,
+    store.dispatch({
+      type: 'COMPENDIUM_LOADING_STARTED',
     });
   }
 
-  private getFile = (file: any, finished: boolean) => {
+  private static getFile = (file: any, finished: boolean) => {
   	gapi.client.drive.files.get({
   		fileId: file.id,
   		alt: 'media',
@@ -109,12 +111,12 @@ export class Compendium {
   			if (err) {
   				console.error(err);
   			} else {
-  				this.handleXMLFileRead(file.name, result);
+  				Compendium.handleXMLFileRead(file.name, result);
   			}
   			if (finished) {
-  				this.setState({
-	      		compendium: this,
-  				});
+          store.dispatch({
+            type: 'COMPENDIUM_LOADING_FINISHED',
+          });
   			}
   		});
   	}, (error: any) => {
@@ -122,16 +124,16 @@ export class Compendium {
   	});
   }
 
-  private handleXMLFileRead = (fileName: string, result: any) => {
+  private static handleXMLFileRead = (fileName: string, result: any) => {
   	if (result.hasOwnProperty('compendium')) {
-      for (let objectType of ['background',  'class', 'feat', 'item', 'monster', 'race', 'spell']) {
+      for (let [objectType, namespace] of Object.entries(Compendium.types)) {
         if (result.compendium.hasOwnProperty(objectType)) {
           for (let object of result.compendium[objectType]) {
-            this[objectType + 's'].setItem(object.name.toString(), object);
+            Compendium[namespace].setItem(object.name.toString(), object);
           }
         }
       }
-      this.processedFiles.setItem(fileName, true);
+      Compendium.processedFiles.setItem(fileName, true);
 	  }
   }
 }

@@ -18,14 +18,16 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import './App.css';
-import { State, CharacterState, CompendiumState } from './store';
+import { State, CharacterState } from './store';
 import CharacterSheet from './CharacterSheet';
+import MonsterCard from './MonsterCard';
+import Compendium from './compendium';
 
 export interface Props {
   drawerOpen: boolean
   tabSelected: number
   signedIn: boolean
-  compendium: CompendiumState
+  compendiumLoading: boolean
   character: CharacterState
   dispatch: Dispatch
 }
@@ -47,7 +49,7 @@ class App extends React.Component<Props> {
       drawerOpen: state.app.drawerOpen,
       tabSelected: state.app.tabSelected,
       signedIn: state.app.signedIn,
-      compendium: state.compendium,
+      compendiumLoading: state.app.compendiumLoading,
       character: state.character,
     };
   }
@@ -142,7 +144,7 @@ class App extends React.Component<Props> {
             <MenuIcon />
           </IconButton>
           {!this.props.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
-          {this.props.compendium.compendium.loading && <CircularProgress color="secondary" />}
+          {this.props.compendiumLoading && <CircularProgress color="secondary" />}
         </Toolbar>
         <Tabs value={this.props.tabSelected} onChange={this.handleTabChange}>
           <Tab label="Characters" />
@@ -156,14 +158,14 @@ class App extends React.Component<Props> {
         <button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</button>
         <button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</button>
         <button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</button>
-        <Button onClick={this.props.compendium.compendium.reloadFiles}>Reload Data Files</Button>
+        <Button onClick={Compendium.reloadFiles}>Reload Data Files</Button>
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
 	      {this.props.tabSelected === 0 && characters}
 	      {this.props.tabSelected === 1 && <p>Spells</p>}
 	      {this.props.tabSelected === 2 && <p>Items</p>}
-	      {this.props.tabSelected === 3 && <p>Monsters</p>}
+	      {this.props.tabSelected === 3 && <div><MonsterCard /></div>}
 	    </div>
     </div>;
   }

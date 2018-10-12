@@ -4,7 +4,6 @@ import Compendium from './compendium';
 
 export interface State {
   app: AppState
-  compendium: CompendiumState
   character: CharacterState
   characters: CharacterState[]
 }
@@ -13,10 +12,7 @@ export interface AppState {
   drawerOpen: boolean
   tabSelected: number
   signedIn: boolean
-}
-
-export interface CompendiumState {
-  compendium: Compendium
+  compendiumLoading: boolean
 }
 
 export interface Attack {
@@ -64,8 +60,9 @@ function app(state: AppState, action: any): AppState {
   if (state === undefined) {
     return {
       drawerOpen: false,
-      tabSelected: 0,
+      tabSelected: 3,
       signedIn: false,
+      compendiumLoading: false,
     };
   }
   switch (action.type) {
@@ -84,15 +81,10 @@ function app(state: AppState, action: any): AppState {
       return { ...state, signedIn: true };
     case 'SIGNED_OUT':
       return { ...state, signedIn: false };
-  }
-  return state;
-}
-
-function compendium(state: CompendiumState, action: any): CompendiumState {
-  if (state === undefined) {
-    return {
-      compendium: new Compendium(() => {}),
-    }
+    case 'COMPENDIUM_LOADING_STARTED':
+      return { ...state, compendiumLoading: true, drawerOpen: false };
+    case 'COMPENDIUM_LOADING_FINISHED':
+      return { ...state, compendiumLoading: false };
   }
   return state;
 }
@@ -196,7 +188,7 @@ function characters(state: CharacterState[], action: any): CharacterState[] {
   return newState;
 }
 
-export const store = createStore(combineReducers({app, compendium, character, characters}));
+export const store = createStore(combineReducers({app, character, characters}));
 ​
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.
