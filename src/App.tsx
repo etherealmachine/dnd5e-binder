@@ -2,6 +2,7 @@ import "core-js/library";
 import * as React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
+import Async from 'react-promise';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -165,7 +166,7 @@ class App extends React.Component<Props> {
 	      {this.props.tabSelected === 0 && characters}
 	      {this.props.tabSelected === 1 && <p>Spells</p>}
 	      {this.props.tabSelected === 2 && <p>Items</p>}
-	      {this.props.tabSelected === 3 && <div><MonsterCard /></div>}
+	      {this.props.tabSelected === 3 && <Async promise={Compendium.monsters.getItem('Goblin')} then={val => <MonsterCard {...val} />} />}
 	    </div>
     </div>;
   }

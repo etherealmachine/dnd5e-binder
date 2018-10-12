@@ -3,22 +3,17 @@ import * as React from 'react';
 
 import './CharacterSheet.css';
 
-export interface Props {
-}
+class MonsterCard extends React.Component<any> {
 
-interface State {
-}
-
-class MonsterCard extends React.Component<Props, State> {
-
-  public constructor(props: Props) {
+  public constructor(props: any) {
     super(props);
-    this.state = {
-    };
   }
 
   public render() {
-  	return <div>I'm a monster.</div>;
+  	return <div>
+  		<h1>{this.props.name[0]}</h1>
+  		<h1>{this.props.alignment[0]}</h1>
+  	</div>;
   }
 }
 
