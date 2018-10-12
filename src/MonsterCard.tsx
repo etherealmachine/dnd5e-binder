@@ -38,7 +38,7 @@ class MonsterCard extends React.Component<Props> {
   	const { classes } = this.props;
   	const name = this.props.name === undefined? 'Unknown Monster' : this.props.name[0];
   	return <Card className={classes.card}>
-      <CardMedia className={classes.media} image={`/images/${name}.jpg`} title={name} />
+      <CardMedia className={classes.media} image={`images/${name}.jpg`} title={name} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">{name}</Typography>
         {this.props.cr !== undefined && <Typography component="p">CR: {this.props.cr[0]}</Typography>}
