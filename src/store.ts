@@ -1,4 +1,4 @@
-import { combineReducers, createStore } from 'redux'
+import { combineReducers, createStore } from 'redux';
 
 import Compendium from './compendium';
 
@@ -60,7 +60,7 @@ function app(state: AppState, action: any): AppState {
   if (state === undefined) {
     return {
       drawerOpen: false,
-      tabSelected: 3,
+      tabSelected: 0,
       signedIn: false,
       compendiumLoading: false,
     };
@@ -128,13 +128,13 @@ function character(state: CharacterState, action: any): CharacterState {
   }
   switch (action.type) {
     case 'FIELD_CHANGE':
-      return { ...state, [action.key]: isNaN(action.value)? undefined : action.value };
+      return { ...state, [action.key]: action.value };
     case 'ATTRIBUTE_CHANGE':
       return {
         ...state,
         attributes: {
           ...state.attributes,
-          [action.key]: isNaN(action.value)? undefined : action.value,
+          [action.key]: action.value,
         }
       };
     case 'SAVING_THROW_PROFICIENCY_CHANGE':
@@ -158,7 +158,7 @@ function character(state: CharacterState, action: any): CharacterState {
         ...state,
         coinage: {
           ...state.coinage,
-          [action.key]: isNaN(action.value)? undefined : action.value,
+          [action.key]: action.value,
         }
       };
     case 'ADD_ATTACK':
@@ -188,8 +188,10 @@ function characters(state: CharacterState[], action: any): CharacterState[] {
   return newState;
 }
 
-export const store = createStore(combineReducers({app, character, characters}));
-​
+export const store = createStore(combineReducers({app, character, characters}), JSON.parse(window.localStorage.getItem('state') || '{}'));
+
+store.subscribe(() => { window.localStorage.setItem('state', JSON.stringify(store.getState())) });
+
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.
 export default store;

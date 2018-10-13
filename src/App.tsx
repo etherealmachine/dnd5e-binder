@@ -6,29 +6,24 @@ import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuIcon from '@material-ui/icons/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import './App.css';
-import { State, CharacterState } from './store';
+import { State } from './store';
 import Compendium from './compendium';
-import CharacterSheet from './CharacterSheet';
 import MonstersTab from './MonstersTab';
+import CharactersTab from './CharactersTab';
 
 export interface Props {
   drawerOpen: boolean
   tabSelected: number
   signedIn: boolean
   compendiumLoading: boolean
-  character: CharacterState
   dispatch: Dispatch
 }
 
@@ -50,7 +45,6 @@ class App extends React.Component<Props> {
       tabSelected: state.app.tabSelected,
       signedIn: state.app.signedIn,
       compendiumLoading: state.app.compendiumLoading,
-      character: state.character,
     };
   }
 
@@ -122,21 +116,6 @@ class App extends React.Component<Props> {
   }
 
   public render() {
-    const characters = <div>
-      <FormControl>
-        <InputLabel htmlFor="select-character">Character</InputLabel>
-        <Select
-          value={1}
-          inputProps={{
-            name: 'character',
-            id: 'select-character',
-          }}>
-          <MenuItem value={0}>0</MenuItem>
-          <MenuItem value={1}><em>New Character</em></MenuItem>
-        </Select>
-      </FormControl>
-      <CharacterSheet {...this.props.character} dispatch={this.props.dispatch} />
-    </div>;
     return <div>
 	    <AppBar position="static">
         <Toolbar>
@@ -162,7 +141,7 @@ class App extends React.Component<Props> {
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
-	      {this.props.tabSelected === 0 && characters}
+	      {this.props.tabSelected === 0 && <CharactersTab />}
 	      {this.props.tabSelected === 1 && <p>Spells</p>}
 	      {this.props.tabSelected === 2 && <p>Items</p>}
 	      {this.props.tabSelected === 3 && <MonstersTab />}

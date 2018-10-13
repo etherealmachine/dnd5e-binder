@@ -133,11 +133,11 @@ class CharacterSheet extends React.Component<Props, State> {
   public render() {
     const attributes: JSX.Element[] = [];
     const savingThrows: JSX.Element[] = [];
-    Object.entries(this.props.attributes).forEach(([attr, value]) => {
+    Compendium.attributes.forEach((attr) => {
       attributes.push(
         <div key={`${attr}-attr`} className="column align-items-center" style={{padding: '10px 0'}}>
           <span>{this.bonusText(this.attributeBonus(attr))}</span>
-          <NumberInput name={attr} placeholder={attr.slice(0,3)} type="number" min="0" max="20" value={value} onChange={this.handleInputChange('ATTRIBUTE')} />
+          <NumberInput name={attr} placeholder={attr.slice(0,3)} type="number" min="0" max="20" value={this.props.attributes[attr]} onChange={this.handleInputChange('ATTRIBUTE')} />
           <label>{attr}</label>
         </div>
       );

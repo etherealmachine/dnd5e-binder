@@ -9,7 +9,9 @@ class NumberInput extends React.Component<any> {
 
   public render() {
   	const value = this.props.value === undefined || isNaN(this.props.value)? '' : this.props.value;
-  	return <input {...this.props} value={value} />;
+  	const min = this.props.min === undefined || isNaN(this.props.min)? '': this.props.min;
+  	const max = this.props.max === undefined || isNaN(this.props.max)? '': this.props.max;
+  	return <input {...this.props} value={value} min={min} max={max} />;
   }
 
 }
