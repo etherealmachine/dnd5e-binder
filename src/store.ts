@@ -4,8 +4,7 @@ import Compendium from './compendium';
 
 export interface State {
   app: AppState
-  character: CharacterState
-  characters: CharacterState[]
+  characters: CharactersState
 }
 
 export interface AppState {
@@ -13,6 +12,11 @@ export interface AppState {
   tabSelected: number
   signedIn: boolean
   compendiumLoading: boolean
+}
+
+export interface CharactersState {
+  selected: number
+  characters: CharacterState[]
 }
 
 export interface Attack {
@@ -56,7 +60,7 @@ export interface CharacterState {
   attacks: Attack[]
 }
 
-function app(state: AppState, action: any): AppState {
+function app(state: AppState | undefined, action: any): AppState {
   if (state === undefined) {
     return {
       drawerOpen: false,
@@ -89,7 +93,7 @@ function app(state: AppState, action: any): AppState {
   return state;
 }
 
-function character(state: CharacterState, action: any): CharacterState {
+function character(state: CharacterState | undefined, action: any): CharacterState {
   if (state === undefined) {
     return {
       character_name: '',
@@ -183,12 +187,39 @@ function character(state: CharacterState, action: any): CharacterState {
   return state;
 }
 
-function characters(state: CharacterState[], action: any): CharacterState[] {
-  const newState: CharacterState[] = Object.assign({}, state);
-  return newState;
+function characters(state: CharactersState | undefined, action: any): CharactersState {
+  if (state === undefined) {
+    return {
+      selected: 0,
+      characters: [
+        character(undefined, undefined),
+      ],
+    };
+  }
+  if(action.type === 'SELECT_CHARACTER') {
+    if (action.value >= state.characters.length) {
+      const newCharacters = state.characters.slice();
+      newCharacters.push(character(undefined, undefined));
+      return {
+        selected: action.value,
+        characters: newCharacters,
+      };
+    }
+    return {
+      ...state,
+      selected: action.value,
+    };
+  }
+  const selectedCharacter = Object.assign({}, state.characters[state.selected]);
+  const newCharacters = state.characters.slice();
+  newCharacters[state.selected] = character(selectedCharacter, action);
+  return {
+    ...state,
+    characters: newCharacters,
+  }
 }
 
-export const store = createStore(combineReducers({app, character, characters}), JSON.parse(window.localStorage.getItem('state') || '{}'));
+export const store = createStore(combineReducers({app, characters}), JSON.parse(window.localStorage.getItem('state') || '{}'));
 
 store.subscribe(() => { window.localStorage.setItem('state', JSON.stringify(store.getState())) });
 
