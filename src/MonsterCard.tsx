@@ -8,7 +8,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
 import './CharacterSheet.css';
-import { Monster} from './compendium';
+import { Monster } from './compendium';
 
 const styles = {
   card: {
@@ -45,6 +45,7 @@ class MonsterCard extends React.Component<Props> {
         {this.props.ac !== undefined && <Typography component="p">AC: {this.props.ac[0]}</Typography>}
         {this.props.hp !== undefined && <Typography component="p">HP: {this.props.hp[0]}</Typography>}
         {this.props.passive !== undefined && <Typography component="p">Passive Perception: {this.props.passive[0]}</Typography>}
+        {this.props.description !== undefined && <Typography component="p">Description: {this.props.description[0]}</Typography>}
         {this.props.size !== undefined && <Typography component="p">Size: {this.props.size[0]}</Typography>}
         {this.props.speed !== undefined && <Typography component="p">Speed: {this.props.speed[0]}</Typography>}
         {this.props.alignment !== undefined && <Typography component="p">Alignment: {this.props.alignment[0]}</Typography>}
@@ -54,11 +55,22 @@ class MonsterCard extends React.Component<Props> {
         {this.props.int !== undefined && <Typography component="p">Int: {this.props.int[0]}</Typography>}
         {this.props.wis !== undefined && <Typography component="p">Wis: {this.props.wis[0]}</Typography>}
         {this.props.cha !== undefined && <Typography component="p">Cha: {this.props.cha[0]}</Typography>}
-        {this.props.action != undefined && this.props.action.map((action, i) => {
+        {this.props.action !== undefined && <Typography variant="subheading">Actions</Typography>}
+        {this.props.action !== undefined && this.props.action.map((action, i) => {
           return <Typography key={`action-${i}`} component="p">{action.name}: {action.text}</Typography>
         })}
+        {this.props.reaction !== undefined && <Typography variant="subheading">Reactions</Typography>}
+        {this.props.reaction !== undefined && this.props.reaction.map((action, i) => {
+          return <Typography key={`reaction-${i}`} component="p">{action.name}: {action.text}</Typography>
+        })}
+        {this.props.legendary !== undefined && <Typography variant="subheading">Legendary Actions</Typography>}
+        {this.props.legendary !== undefined && this.props.legendary.map((action, i) => {
+          return <Typography key={`legandary-action-${i}`} component="p">{action.name}: {action.text}</Typography>
+        })}
         {this.props.save !== undefined && <Typography component="p">Save: {this.props.save[0]}</Typography>}
+        {this.props.resist !== undefined && <Typography component="p">Resist: {this.props.resist[0]}</Typography>}
         {this.props.immune !== undefined && <Typography component="p">Immunities: {this.props.immune[0]}</Typography>}
+        {this.props.conditionImmune !== undefined && <Typography component="p">Condition Immunities: {this.props.conditionImmune[0]}</Typography>}
         {this.props.vulnerable !== undefined && <Typography component="p">Vulnerabilities: {this.props.vulnerable[0]}</Typography>}
         {this.props.languages !== undefined && <Typography component="p">Languages: {this.props.languages[0]}</Typography>}
         {this.props.senses !== undefined && <Typography component="p">Senses: {this.props.senses[0]}</Typography>}
@@ -67,6 +79,8 @@ class MonsterCard extends React.Component<Props> {
         {this.props.trait != undefined && this.props.trait.map((trait, i) => {
           return <Typography key={`trait-${i}`} component="p">{trait.name}: {trait.text}</Typography>
         })}
+        {this.props.spells !== undefined && <Typography component="p">Spells: {this.props.spells[0]}</Typography>}
+        {this.props.slots !== undefined && <Typography component="p">Slots: {this.props.slots[0]}</Typography>}
       </CardContent>
     </Card>;
   }

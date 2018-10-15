@@ -12,25 +12,56 @@ export interface Trait {
   text: string[]
 }
 
+export interface Spell {
+  name?: string[]
+}
+
+export interface Item {
+  ac?: string[]
+  dmg1?: string[]
+  dmg2?: string[]
+  dmgType?:string[] 
+  magic?: string[]
+  modifier?: string[]
+  name?: string[]
+  property?: string[]
+  range?: string[]
+  rarity?: string[]
+  roll?: string[]
+  stealth?: string[]
+  strength?: string[]
+  text?: string[]
+  type?: string[]
+  value?: string[]
+  weight?: string[]
+}
+
 export interface Monster {
   ac?: string[]
   action?: Action[]
   alignment?: string[]
   cha?: string[]
   con?: string[]
+  conditionImmune?: string[]
   cr?: string[]
+  description?: string[]
   dex?: string[]
   hp?: string[]
   immune?: string[]
   int?: string[]
   languages?: string[]
+  legendary?: Action[]
   name?: string[]
   passive?: string[]
+  reaction?: Action[]
+  resist?: string[]
   save?: string[]
   senses?: string[]
   size?: string[]
   skill?: string[]
+  slots?: string[]
   speed?: string[]
+  spells?: string[]
   str?: string[]
   trait?: Trait[]
   type?: string[]
@@ -173,5 +204,7 @@ export class Compendium {
 	  }
   }
 }
+
+window['Compendium'] = Compendium;
 
 export default Compendium;

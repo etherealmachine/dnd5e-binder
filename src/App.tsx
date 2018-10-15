@@ -16,7 +16,10 @@ import Tab from '@material-ui/core/Tab';
 import './App.css';
 import { State } from './store';
 import Compendium from './compendium';
-import MonstersTab from './MonstersTab';
+import CompendiumTab from './CompendiumTab';
+import SpellCard from './SpellCard';
+import ItemCard from './ItemCard';
+import MonsterCard from './MonsterCard';
 import CharactersTab from './CharactersTab';
 
 export interface Props {
@@ -116,7 +119,7 @@ class App extends React.Component<Props> {
   }
 
   public render() {
-    return <div>
+    return <div className="column">
 	    <AppBar position="static">
         <Toolbar>
           <IconButton color="inherit" aria-label="Menu" onClick={this.toggleDrawer(true)}>
@@ -142,9 +145,9 @@ class App extends React.Component<Props> {
       </SwipeableDrawer>
     	<div className="container">
 	      {this.props.tabSelected === 0 && <CharactersTab />}
-	      {this.props.tabSelected === 1 && <p>Spells</p>}
-	      {this.props.tabSelected === 2 && <p>Items</p>}
-	      {this.props.tabSelected === 3 && <MonstersTab />}
+        {this.props.tabSelected === 1 && <CompendiumTab name="Spell" compendium={Compendium.spells} renderCard={(props: any) => <SpellCard {...props} />} />}
+	      {this.props.tabSelected === 2 && <CompendiumTab name="Item" compendium={Compendium.items} renderCard={(props: any) => <ItemCard {...props} />} />}
+        {this.props.tabSelected === 3 && <CompendiumTab name="Monster" compendium={Compendium.monsters} renderCard={(props: any) => <MonsterCard {...props} />} />}
 	    </div>
     </div>;
   }

@@ -4,19 +4,22 @@ import Async from 'react-promise';
 
 import TextField from '@material-ui/core/TextField';
 
-import Compendium from './compendium';
-import MonsterCard, { Props as MonsterCardProps } from './MonsterCard';
+export interface Props {
+  name: string
+  compendium: LocalForage
+  renderCard: (props: any) => JSX.Element
+}
 
 interface State {
   query: string
 }
 
-class MonstersTab extends React.Component<any, State> {
+class CompendiumTab extends React.Component<Props, State> {
 
-  public constructor(props: any) {
+  public constructor(props: Props) {
     super(props);
     this.state = {
-      query: 'Goblin',
+      query: '',
     };
   }
 
@@ -29,22 +32,22 @@ class MonstersTab extends React.Component<any, State> {
   public render() {
     return <div>
       <TextField
-          label="Monster Search"
+          label={`Search ${this.props.name}s`}
           type="search"
           margin="normal"
           value={this.state.query}
           onChange={this.handleSearchChanged} />
       <div className="row flex-wrap">
         <Async
-            promise={Compendium.monsters.keys()}
+            promise={this.props.compendium.keys()}
             then={keys => keys.filter((key) => key.toLowerCase().includes(this.state.query.toLowerCase())).map((key) => {
               return <Async key={key}
-                promise={Compendium.monsters.getItem(key)}
-                then={val => <MonsterCard {...((val as unknown) as MonsterCardProps)} />} />})}
+                promise={this.props.compendium.getItem(key)}
+                then={val => this.props.renderCard(val)} />})}
         />
       </div>
     </div>;
   }
 }
 
-export default MonstersTab;
+export default CompendiumTab;

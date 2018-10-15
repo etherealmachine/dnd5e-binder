@@ -196,19 +196,35 @@ function characters(state: CharactersState | undefined, action: any): Characters
       ],
     };
   }
-  if(action.type === 'SELECT_CHARACTER') {
-    if (action.value >= state.characters.length) {
-      const newCharacters = state.characters.slice();
-      newCharacters.push(character(undefined, undefined));
+  switch (action.type) {
+    case 'SELECT_CHARACTER':
+      if (action.value >= state.characters.length) {
+        const newCharacters = state.characters.slice();
+        newCharacters.push(character(undefined, undefined));
+        return {
+          selected: action.value,
+          characters: newCharacters,
+        };
+      }
       return {
+        ...state,
         selected: action.value,
+      };
+    case 'DELETE_CHARACTER':
+      const newCharacters = state.characters.slice();
+      newCharacters.splice(state.selected, 1);
+      if (newCharacters.length === 0) {
+        newCharacters.push(character(undefined, undefined));
+      }
+      let newSelection = state.selected;
+      if (newSelection >= newCharacters.length) {
+        newSelection = newCharacters.length-1;
+      }
+      return {
+        ...state,
+        selected: newSelection,
         characters: newCharacters,
       };
-    }
-    return {
-      ...state,
-      selected: action.value,
-    };
   }
   const selectedCharacter = Object.assign({}, state.characters[state.selected]);
   const newCharacters = state.characters.slice();
