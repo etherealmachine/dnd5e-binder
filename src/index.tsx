@@ -4,6 +4,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blue';
+import 'typeface-roboto';
 
 import store from "./store";
 import App from './App';

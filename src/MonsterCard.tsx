@@ -4,11 +4,10 @@ import { withStyles } from '@material-ui/core/styles';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
 import './CharacterSheet.css';
-import { Monster } from './compendium';
+import { Monster, MapPairs, KeyValuePair, KeyValuePairList } from './compendium';
 
 const styles = {
   card: {
@@ -30,57 +29,53 @@ export interface Props extends Monster {
 
 class MonsterCard extends React.Component<Props> {
 
-  public constructor(props: Props) {
-    super(props);
+  private renderList(name: string, pairs: KeyValuePairList): JSX.Element | undefined {
+    if (pairs === undefined) {
+      return undefined;
+    }
+    return <div>
+      <Typography variant="subtitle1">{name}</Typography>
+      {MapPairs(pairs, (pair: KeyValuePair, i: number) => {
+        return <Typography key={`${name}-${i}`} component="p">{pair.name}: {pair.text}</Typography>;
+      })}
+    </div>;
   }
 
   public render() {
   	const { classes } = this.props;
-  	const name = this.props.name === undefined? 'Unknown Monster' : this.props.name[0];
+  	const name = this.props.name? this.props.name : 'Unknown Monster';
   	return <Card className={classes.card}>
-      <CardMedia className={classes.media} image={`images/${name}.jpg`} title={name} />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="h2">{name}</Typography>
-        {this.props.cr !== undefined && <Typography component="p">CR: {this.props.cr[0]}</Typography>}
-        {this.props.ac !== undefined && <Typography component="p">AC: {this.props.ac[0]}</Typography>}
-        {this.props.hp !== undefined && <Typography component="p">HP: {this.props.hp[0]}</Typography>}
-        {this.props.passive !== undefined && <Typography component="p">Passive Perception: {this.props.passive[0]}</Typography>}
-        {this.props.description !== undefined && <Typography component="p">Description: {this.props.description[0]}</Typography>}
-        {this.props.size !== undefined && <Typography component="p">Size: {this.props.size[0]}</Typography>}
-        {this.props.speed !== undefined && <Typography component="p">Speed: {this.props.speed[0]}</Typography>}
-        {this.props.alignment !== undefined && <Typography component="p">Alignment: {this.props.alignment[0]}</Typography>}
-        {this.props.str !== undefined && <Typography component="p">Str: {this.props.str[0]}</Typography>}
-        {this.props.con !== undefined && <Typography component="p">Con: {this.props.con[0]}</Typography>}
-        {this.props.dex !== undefined && <Typography component="p">Dex: {this.props.dex[0]}</Typography>}
-        {this.props.int !== undefined && <Typography component="p">Int: {this.props.int[0]}</Typography>}
-        {this.props.wis !== undefined && <Typography component="p">Wis: {this.props.wis[0]}</Typography>}
-        {this.props.cha !== undefined && <Typography component="p">Cha: {this.props.cha[0]}</Typography>}
-        {this.props.action !== undefined && <Typography variant="subheading">Actions</Typography>}
-        {this.props.action !== undefined && this.props.action.map((action, i) => {
-          return <Typography key={`action-${i}`} component="p">{action.name}: {action.text}</Typography>
-        })}
-        {this.props.reaction !== undefined && <Typography variant="subheading">Reactions</Typography>}
-        {this.props.reaction !== undefined && this.props.reaction.map((action, i) => {
-          return <Typography key={`reaction-${i}`} component="p">{action.name}: {action.text}</Typography>
-        })}
-        {this.props.legendary !== undefined && <Typography variant="subheading">Legendary Actions</Typography>}
-        {this.props.legendary !== undefined && this.props.legendary.map((action, i) => {
-          return <Typography key={`legandary-action-${i}`} component="p">{action.name}: {action.text}</Typography>
-        })}
-        {this.props.save !== undefined && <Typography component="p">Save: {this.props.save[0]}</Typography>}
-        {this.props.resist !== undefined && <Typography component="p">Resist: {this.props.resist[0]}</Typography>}
-        {this.props.immune !== undefined && <Typography component="p">Immunities: {this.props.immune[0]}</Typography>}
-        {this.props.conditionImmune !== undefined && <Typography component="p">Condition Immunities: {this.props.conditionImmune[0]}</Typography>}
-        {this.props.vulnerable !== undefined && <Typography component="p">Vulnerabilities: {this.props.vulnerable[0]}</Typography>}
-        {this.props.languages !== undefined && <Typography component="p">Languages: {this.props.languages[0]}</Typography>}
-        {this.props.senses !== undefined && <Typography component="p">Senses: {this.props.senses[0]}</Typography>}
-        {this.props.skill !== undefined && <Typography component="p">Skills: {this.props.skill[0]}</Typography>}
-        {this.props.type !== undefined && <Typography component="p">Type: {this.props.type[0]}</Typography>}
-        {this.props.trait != undefined && this.props.trait.map((trait, i) => {
-          return <Typography key={`trait-${i}`} component="p">{trait.name}: {trait.text}</Typography>
-        })}
-        {this.props.spells !== undefined && <Typography component="p">Spells: {this.props.spells[0]}</Typography>}
-        {this.props.slots !== undefined && <Typography component="p">Slots: {this.props.slots[0]}</Typography>}
+        <Typography gutterBottom variant="h4">{name}</Typography>
+        {this.props.cr && <Typography component="p">CR: {this.props.cr}</Typography>}
+        {this.props.ac && <Typography component="p">AC: {this.props.ac}</Typography>}
+        {this.props.hp && <Typography component="p">HP: {this.props.hp}</Typography>}
+        {this.props.passive && <Typography component="p">Passive Perception: {this.props.passive}</Typography>}
+        {this.props.description && <Typography component="p">Description: {this.props.description}</Typography>}
+        {this.props.size && <Typography component="p">Size: {this.props.size}</Typography>}
+        {this.props.speed && <Typography component="p">Speed: {this.props.speed}</Typography>}
+        {this.props.alignment && <Typography component="p">Alignment: {this.props.alignment}</Typography>}
+        {this.props.str && <Typography component="p">Str: {this.props.str}</Typography>}
+        {this.props.con && <Typography component="p">Con: {this.props.con}</Typography>}
+        {this.props.dex && <Typography component="p">Dex: {this.props.dex}</Typography>}
+        {this.props.int && <Typography component="p">Int: {this.props.int}</Typography>}
+        {this.props.wis && <Typography component="p">Wis: {this.props.wis}</Typography>}
+        {this.props.cha && <Typography component="p">Cha: {this.props.cha}</Typography>}
+        {this.renderList('Actions', this.props.action)}
+        {this.renderList('Reactions', this.props.reaction)}
+        {this.renderList('Legendary Actions', this.props.legendary)}
+        {this.props.save && <Typography component="p">Save: {this.props.save}</Typography>}
+        {this.props.resist && <Typography component="p">Resist: {this.props.resist}</Typography>}
+        {this.props.immune && <Typography component="p">Immunities: {this.props.immune}</Typography>}
+        {this.props.conditionImmune && <Typography component="p">Condition Immunities: {this.props.conditionImmune}</Typography>}
+        {this.props.vulnerable && <Typography component="p">Vulnerabilities: {this.props.vulnerable}</Typography>}
+        {this.props.languages && <Typography component="p">Languages: {this.props.languages}</Typography>}
+        {this.props.senses && <Typography component="p">Senses: {this.props.senses}</Typography>}
+        {this.props.skill && <Typography component="p">Skills: {this.props.skill}</Typography>}
+        {this.props.type && <Typography component="p">Type: {this.props.type}</Typography>}
+        {this.renderList('Traits', this.props.trait)}
+        {this.props.spells && <Typography component="p">Spells: {this.props.spells}</Typography>}
+        {this.props.slots && <Typography component="p">Slots: {this.props.slots}</Typography>}
       </CardContent>
     </Card>;
   }

@@ -35,7 +35,7 @@ class ItemCard extends React.Component<Props> {
 
   public render() {
   	const { classes } = this.props;
-  	const name = this.props.name === undefined? 'Unknown Item ' : this.props.name[0];
+  	const name = this.props.name? this.props.name : 'Unknown Item';
   	return <Card className={classes.card}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">{name}</Typography>

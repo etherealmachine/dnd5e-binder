@@ -66,7 +66,7 @@ function app(state: AppState | undefined, action: any): AppState {
       drawerOpen: false,
       tabSelected: 0,
       signedIn: false,
-      compendiumLoading: false,
+      compendiumLoading: true,
     };
   }
   switch (action.type) {
@@ -85,8 +85,6 @@ function app(state: AppState | undefined, action: any): AppState {
       return { ...state, signedIn: true };
     case 'SIGNED_OUT':
       return { ...state, signedIn: false };
-    case 'COMPENDIUM_LOADING_STARTED':
-      return { ...state, compendiumLoading: true, drawerOpen: false };
     case 'COMPENDIUM_LOADING_FINISHED':
       return { ...state, compendiumLoading: false };
   }
@@ -235,9 +233,11 @@ function characters(state: CharactersState | undefined, action: any): Characters
   }
 }
 
-export const store = createStore(combineReducers({app, characters}), JSON.parse(window.localStorage.getItem('state') || '{}'));
+export const store = createStore(combineReducers({app, characters}), JSON.parse(window.localStorage.getItem('state') || '{}'), window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']());
 
 store.subscribe(() => { window.localStorage.setItem('state', JSON.stringify(store.getState())) });
+
+Compendium.loadFiles();
 
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.

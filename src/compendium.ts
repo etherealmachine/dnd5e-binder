@@ -1,87 +1,105 @@
-import localForage from 'localforage';
-import { parseString } from 'xml2js';
 import store from './store';
 
-export interface Action {
-  name: string[]
-  text: string[]
+export interface KeyValuePair {
+  name: string
+  text: string
 }
 
-export interface Trait {
-  name: string[]
-  text: string[]
+export type KeyValuePairList = KeyValuePair | KeyValuePair[] | undefined;
+
+export function MapPairs(pairs: KeyValuePairList, callback: (pair: KeyValuePair, index: number) => any): any[] | undefined{
+  if (pairs === undefined) {
+    return undefined;
+  } else if ((<KeyValuePair>pairs).hasOwnProperty('name')) {
+    return [callback(<KeyValuePair>pairs, 0)];
+  } else {
+    return Object.values(<KeyValuePair[]>pairs).map(callback);
+  }
+}
+
+export interface Background {
+
+}
+
+export interface Class {
+
+}
+
+export interface Feat {
+
+}
+
+export interface Item {
+  ac?: string
+  dmg1?: string
+  dmg2?: string
+  dmgType?:string
+  magic?: string
+  modifier?: string[]
+  name?: string
+  property?: string
+  range?: string
+  rarity?: string
+  roll?: string
+  stealth?: string
+  strength?: string
+  text?: string[]
+  type?: string
+  value?: string
+  weight?: number
+}
+
+export interface Monster {
+  ac?: string
+  action?: KeyValuePairList
+  alignment?: string
+  cha?: number
+  con?: number
+  conditionImmune?: string
+  cr?: number
+  description?: string
+  dex?: number
+  hp?: string
+  immune?: string
+  int?: number
+  languages?: string
+  legendary?: KeyValuePairList
+  name?: string
+  passive?: number
+  reaction?: KeyValuePairList
+  resist?: string
+  save?: string
+  senses?: string
+  size?: string
+  skill?: string
+  slots?: string
+  speed?: string
+  spells?: string
+  str?: number
+  text?: string[]
+  trait?: KeyValuePairList
+  type?: string
+  vulnerable?: string
+  wis?: number
+}
+
+export interface Race {
+
 }
 
 export interface Spell {
   name?: string[]
 }
 
-export interface Item {
-  ac?: string[]
-  dmg1?: string[]
-  dmg2?: string[]
-  dmgType?:string[] 
-  magic?: string[]
-  modifier?: string[]
-  name?: string[]
-  property?: string[]
-  range?: string[]
-  rarity?: string[]
-  roll?: string[]
-  stealth?: string[]
-  strength?: string[]
-  text?: string[]
-  type?: string[]
-  value?: string[]
-  weight?: string[]
-}
-
-export interface Monster {
-  ac?: string[]
-  action?: Action[]
-  alignment?: string[]
-  cha?: string[]
-  con?: string[]
-  conditionImmune?: string[]
-  cr?: string[]
-  description?: string[]
-  dex?: string[]
-  hp?: string[]
-  immune?: string[]
-  int?: string[]
-  languages?: string[]
-  legendary?: Action[]
-  name?: string[]
-  passive?: string[]
-  reaction?: Action[]
-  resist?: string[]
-  save?: string[]
-  senses?: string[]
-  size?: string[]
-  skill?: string[]
-  slots?: string[]
-  speed?: string[]
-  spells?: string[]
-  str?: string[]
-  trait?: Trait[]
-  type?: string[]
-  vulnerable?: string[]
-  wis?: string[]
-}
-
 export class Compendium {
 
-  private static processedFiles: LocalForage = localForage.createInstance({
-    name: 'processedFiles',
-  });
-
-  public static backgrounds: LocalForage = localForage.createInstance({name: 'backgrounds'});
-  public static classes: LocalForage = localForage.createInstance({name: 'classes'});
-  public static feats: LocalForage = localForage.createInstance({name: 'feats'});
-  public static items: LocalForage = localForage.createInstance({name: 'items'});
-  public static monsters: LocalForage = localForage.createInstance({name: 'monsters'});
-  public static races: LocalForage = localForage.createInstance({name: 'races'});
-  public static spells: LocalForage = localForage.createInstance({name: 'spells'});
+  public static backgrounds: { [key: string]: Background } = {}
+  public static classes: { [key: string]: Class } = {}
+  public static feats: { [key: string]: Feat } = {}
+  public static items: { [key: string]: Item } = {}
+  public static monsters: { [key: string]: Monster } = {}
+  public static races: { [key: string]: Race } = {}
+  public static spells: { [key: string]: Spell } = {}
 
   public static attributes = [
 	  "Strength",
@@ -146,65 +164,77 @@ export class Compendium {
     'spell': 'spells',
   }
 
-  public static reloadFiles = () => {
-    Compendium.processedFiles.clear();
-    for (let namespace of Object.values(Compendium.types)) {
-      Compendium[namespace].clear();
+  public static sources = [
+    'Artificer UA.json',
+    'Backgrounds 1.6.0.json',
+    'Bestiary Compendium 2.1.0.json',
+    'Character Compendium 3.1.0.json',
+    'Classes 3.1.1.json',
+    'Curse of Strahd Bestiary 1.2.0.json',
+    'EE Spells 2.6.json',
+    'Feats 1.4.1.json',
+    'Futuristic Items 1.2.json',
+    'Hoard of the Dragon Queen Bestiary 1.3.0.json',
+    'Items Compendium 1.7.0.json',
+    'Magic Items 5.3.json',
+    'Modern Items 1.2.json',
+    'Modern Spells 1.1.json',
+    'Monster Manual Bestiary 2.6.0.json',
+    'Mundane Items 2.8.0.json',
+    'Out of the Abyss 1.4.0.json',
+    'PHB Spells 3.9.0.json',
+    'Phandelver Bestiary 1.3.0.json',
+    'Princes of the Apocalypse Bestiary 1.3.0.json',
+    'Races 2.0.json',
+    'Renaissance Items 1.3.json',
+    'SCAG Spells 1.2.json',
+    'Spells Compendium 1.3.0.json',
+    'Storm King_s Thunder Bestiary 1.1.0.json',
+    'The Rise of Tiamat Bestiary 1.3.0.json',
+    'UA_Demon Summoning 1.0.json',
+    'UA_Races 1.0.1.json',
+    'Valuable Items 1.3.json',
+    'Volo_s Bestiary 1.1.0.json',
+  ]
+
+  private static fileCount: number = 0;
+
+  private static loadFile(filename: string, resp: any): void {
+    Object.entries(Compendium.types).forEach(([objType, attrName]) => {
+      if (resp.hasOwnProperty(objType)) {
+        Object.values(resp[objType]).forEach((obj: any) => {
+          Compendium[attrName][obj.name] = obj;
+        });
+      }
+    });
+    Compendium.fileCount--;
+    if (Compendium.fileCount === 0) {
+      store.dispatch({
+        type: 'COMPENDIUM_LOADING_FINISHED',
+      });
+      window['compendium'] = this;
     }
-    gapi.client.drive.files.list({
-    	'q': "name contains '.xml'",
-      'fields': "files(id, name)"
-    }).then((response: any) => {
-      const files = response.result.files;
-      if (files && files.length > 0) {
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          Compendium.processedFiles.setItem(file.name, false);
-          window.setTimeout(() => Compendium.getFile(file, i === files.length-1), i*1000);
+  }
+
+
+  public static loadFiles(): void {
+    Compendium.sources.forEach((filename) => {
+      Compendium.fileCount++;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `data/${filename}`, true);
+      xhr.responseType = 'json';
+      xhr.onload = () => {
+        var status = xhr.status;
+        if (status === 200) {
+          this.loadFile(filename, xhr.response);
+        } else {
+          console.error(status, xhr.response);
         }
-      }
-    });
-    store.dispatch({
-      type: 'COMPENDIUM_LOADING_STARTED',
+      };
+      xhr.send();
     });
   }
 
-  private static getFile = (file: any, finished: boolean) => {
-  	gapi.client.drive.files.get({
-  		fileId: file.id,
-  		alt: 'media',
-  	}).then((response: any) => {
-  		parseString(response.body, (err: any, result: any) => {
-  			if (err) {
-  				console.error(err);
-  			} else {
-  				Compendium.handleXMLFileRead(file.name, result);
-  			}
-  			if (finished) {
-          store.dispatch({
-            type: 'COMPENDIUM_LOADING_FINISHED',
-          });
-  			}
-  		});
-  	}, (error: any) => {
-  		console.error(error)
-  	});
-  }
-
-  private static handleXMLFileRead = (fileName: string, result: any) => {
-  	if (result.hasOwnProperty('compendium')) {
-      for (let [objectType, namespace] of Object.entries(Compendium.types)) {
-        if (result.compendium.hasOwnProperty(objectType)) {
-          for (let object of result.compendium[objectType]) {
-            Compendium[namespace].setItem(object.name.toString(), object);
-          }
-        }
-      }
-      Compendium.processedFiles.setItem(fileName, true);
-	  }
-  }
 }
-
-window['Compendium'] = Compendium;
 
 export default Compendium;

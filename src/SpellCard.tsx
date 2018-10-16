@@ -35,7 +35,7 @@ class SpellCard extends React.Component<Props> {
 
   public render() {
   	const { classes } = this.props;
-  	const name = this.props.name === undefined? 'Unknown Spell' : this.props.name[0];
+  	const name = this.props.name? this.props.name : 'Unknown Spell';
   	return <Card className={classes.card}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">{name}</Typography>

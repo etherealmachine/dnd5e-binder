@@ -26,6 +26,7 @@ export interface Props {
   drawerOpen: boolean
   tabSelected: number
   signedIn: boolean
+  compendium: Compendium
   compendiumLoading: boolean
   dispatch: Dispatch
 }
@@ -140,7 +141,6 @@ class App extends React.Component<Props> {
         <Button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</Button>
         <Button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</Button>
         <Button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</Button>
-        <Button onClick={Compendium.reloadFiles}>Reload Data Files</Button>
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">

@@ -1,12 +1,11 @@
 import "core-js/library";
 import * as React from 'react';
-import Async from 'react-promise';
 
 import TextField from '@material-ui/core/TextField';
 
 export interface Props {
   name: string
-  compendium: LocalForage
+  compendium: { [key: string]: any }
   renderCard: (props: any) => JSX.Element
 }
 
@@ -19,14 +18,21 @@ class CompendiumTab extends React.Component<Props, State> {
   public constructor(props: Props) {
     super(props);
     this.state = {
-      query: '',
+      query: ''
     };
   }
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      query: event.currentTarget.value,
+      query: event.currentTarget.value || '',
     });
+  }
+
+  private filterKeys = () => {
+    if (this.state.query === '') {
+      return [];
+    }
+    return Object.keys(this.props.compendium).filter((key) => key.toLowerCase().includes(this.state.query.toLowerCase()));
   }
 
   public render() {
@@ -38,13 +44,9 @@ class CompendiumTab extends React.Component<Props, State> {
           value={this.state.query}
           onChange={this.handleSearchChanged} />
       <div className="row flex-wrap">
-        <Async
-            promise={this.props.compendium.keys()}
-            then={keys => keys.filter((key) => key.toLowerCase().includes(this.state.query.toLowerCase())).map((key) => {
-              return <Async key={key}
-                promise={this.props.compendium.getItem(key)}
-                then={val => this.props.renderCard(val)} />})}
-        />
+        {this.filterKeys().map((key) => {
+          return <div key={key}>{this.props.renderCard(this.props.compendium[key])}</div>;
+        })}
       </div>
     </div>;
   }
