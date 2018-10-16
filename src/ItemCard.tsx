@@ -38,7 +38,7 @@ class ItemCard extends React.Component<Props> {
   	const { classes, obj } = this.props;
   	return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom component="h2">{obj.name}</Typography>
+        <Typography gutterBottom variant="h6">{obj.name}</Typography>
       </CardContent>
     </Card>;
   }
