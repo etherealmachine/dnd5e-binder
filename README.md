@@ -1,6 +1,27 @@
-# D&D 5E Character Sheet
-This is a character sheet app for D&D 5E. It can run online or offline and saves characters to local
-storage, no server required.
+# D&D 5E Binder
+This is a binder app for D&D 5E. It can run online or offline. Data is saved to local storage and can be exported as files or to Google Drive for long-term storage.
+
+## TODO
+
+### Character Sheet
+- [ ] Beautifully styled character sheet
+- [ ] Add/delete characters
+- [ ] Edit character sheet
+- [ ] Add character sheet content from Compendium
+
+### Compendium
+- [ ] Beautifully styled object cards
+- [ ] Search Compendium objects
+- [ ] Filter Compendium objects
+- [ ] Tag spells, items, and monsters
+- [ ] Show tagged objects on dashboard
+
+### Export/Import
+- [ ] Print character sheet with beautiful print stylesheet
+- [ ] Export/import characters and taggings to/from JSON
+- [ ] Save to disk or Google Drive
+
+# Development
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app)
 and [TypesSript-React-Starter](https://github.com/Microsoft/TypeScript-React-Starter)
