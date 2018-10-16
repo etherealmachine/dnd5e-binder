@@ -23,8 +23,9 @@ const styles = {
   },
 };
 
-export interface Props extends Spell {
+export interface Props {
   classes: { [key: string]: string }
+  obj: Spell
 }
 
 class SpellCard extends React.Component<Props> {
@@ -34,11 +35,11 @@ class SpellCard extends React.Component<Props> {
   }
 
   public render() {
-  	const { classes } = this.props;
-  	const name = this.props.name? this.props.name : 'Unknown Spell';
+  	const { classes, obj } = this.props;
   	return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom variant="h5" component="h2">{name}</Typography>
+        <Typography gutterBottom component="h2">{obj.name}</Typography>
+        <Typography gutterBottom component="p">Classes: {obj.classes}</Typography>
       </CardContent>
     </Card>;
   }

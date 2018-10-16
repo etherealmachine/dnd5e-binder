@@ -23,8 +23,9 @@ const styles = {
   },
 };
 
-export interface Props extends Monster {
+export interface Props {
   classes: { [key: string]: string }
+  obj: Monster
 }
 
 class MonsterCard extends React.Component<Props> {
@@ -42,40 +43,39 @@ class MonsterCard extends React.Component<Props> {
   }
 
   public render() {
-  	const { classes } = this.props;
-  	const name = this.props.name? this.props.name : 'Unknown Monster';
+  	const { classes, obj } = this.props;
   	return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom variant="h4">{name}</Typography>
-        {this.props.cr && <Typography component="p">CR: {this.props.cr}</Typography>}
-        {this.props.ac && <Typography component="p">AC: {this.props.ac}</Typography>}
-        {this.props.hp && <Typography component="p">HP: {this.props.hp}</Typography>}
-        {this.props.passive && <Typography component="p">Passive Perception: {this.props.passive}</Typography>}
-        {this.props.description && <Typography component="p">Description: {this.props.description}</Typography>}
-        {this.props.size && <Typography component="p">Size: {this.props.size}</Typography>}
-        {this.props.speed && <Typography component="p">Speed: {this.props.speed}</Typography>}
-        {this.props.alignment && <Typography component="p">Alignment: {this.props.alignment}</Typography>}
-        {this.props.str && <Typography component="p">Str: {this.props.str}</Typography>}
-        {this.props.con && <Typography component="p">Con: {this.props.con}</Typography>}
-        {this.props.dex && <Typography component="p">Dex: {this.props.dex}</Typography>}
-        {this.props.int && <Typography component="p">Int: {this.props.int}</Typography>}
-        {this.props.wis && <Typography component="p">Wis: {this.props.wis}</Typography>}
-        {this.props.cha && <Typography component="p">Cha: {this.props.cha}</Typography>}
-        {this.renderList('Actions', this.props.action)}
-        {this.renderList('Reactions', this.props.reaction)}
-        {this.renderList('Legendary Actions', this.props.legendary)}
-        {this.props.save && <Typography component="p">Save: {this.props.save}</Typography>}
-        {this.props.resist && <Typography component="p">Resist: {this.props.resist}</Typography>}
-        {this.props.immune && <Typography component="p">Immunities: {this.props.immune}</Typography>}
-        {this.props.conditionImmune && <Typography component="p">Condition Immunities: {this.props.conditionImmune}</Typography>}
-        {this.props.vulnerable && <Typography component="p">Vulnerabilities: {this.props.vulnerable}</Typography>}
-        {this.props.languages && <Typography component="p">Languages: {this.props.languages}</Typography>}
-        {this.props.senses && <Typography component="p">Senses: {this.props.senses}</Typography>}
-        {this.props.skill && <Typography component="p">Skills: {this.props.skill}</Typography>}
-        {this.props.type && <Typography component="p">Type: {this.props.type}</Typography>}
-        {this.renderList('Traits', this.props.trait)}
-        {this.props.spells && <Typography component="p">Spells: {this.props.spells}</Typography>}
-        {this.props.slots && <Typography component="p">Slots: {this.props.slots}</Typography>}
+        <Typography gutterBottom variant="h4">{obj.name}</Typography>
+        {obj.cr && <Typography component="p">CR: {obj.cr}</Typography>}
+        {obj.ac && <Typography component="p">AC: {obj.ac}</Typography>}
+        {obj.hp && <Typography component="p">HP: {obj.hp}</Typography>}
+        {obj.passive && <Typography component="p">Passive Perception: {obj.passive}</Typography>}
+        {obj.description && <Typography component="p">Description: {obj.description}</Typography>}
+        {obj.size && <Typography component="p">Size: {obj.size}</Typography>}
+        {obj.speed && <Typography component="p">Speed: {obj.speed}</Typography>}
+        {obj.alignment && <Typography component="p">Alignment: {obj.alignment}</Typography>}
+        {obj.str && <Typography component="p">Str: {obj.str}</Typography>}
+        {obj.con && <Typography component="p">Con: {obj.con}</Typography>}
+        {obj.dex && <Typography component="p">Dex: {obj.dex}</Typography>}
+        {obj.int && <Typography component="p">Int: {obj.int}</Typography>}
+        {obj.wis && <Typography component="p">Wis: {obj.wis}</Typography>}
+        {obj.cha && <Typography component="p">Cha: {obj.cha}</Typography>}
+        {this.renderList('Actions', obj.action)}
+        {this.renderList('Reactions', obj.reaction)}
+        {this.renderList('Legendary Actions', obj.legendary)}
+        {obj.save && <Typography component="p">Save: {obj.save}</Typography>}
+        {obj.resist && <Typography component="p">Resist: {obj.resist}</Typography>}
+        {obj.immune && <Typography component="p">Immunities: {obj.immune}</Typography>}
+        {obj.conditionImmune && <Typography component="p">Condition Immunities: {obj.conditionImmune}</Typography>}
+        {obj.vulnerable && <Typography component="p">Vulnerabilities: {obj.vulnerable}</Typography>}
+        {obj.languages && <Typography component="p">Languages: {obj.languages}</Typography>}
+        {obj.senses && <Typography component="p">Senses: {obj.senses}</Typography>}
+        {obj.skill && <Typography component="p">Skills: {obj.skill}</Typography>}
+        {obj.type && <Typography component="p">Type: {obj.type}</Typography>}
+        {this.renderList('Traits', obj.trait)}
+        {obj.spells && <Typography component="p">Spells: {obj.spells}</Typography>}
+        {obj.slots && <Typography component="p">Slots: {obj.slots}</Typography>}
       </CardContent>
     </Card>;
   }

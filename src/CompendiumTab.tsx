@@ -45,7 +45,7 @@ class CompendiumTab extends React.Component<Props, State> {
           onChange={this.handleSearchChanged} />
       <div className="row flex-wrap">
         {this.filterKeys().map((key) => {
-          return <div key={key}>{this.props.renderCard(this.props.compendium[key])}</div>;
+          return <div key={key}>{this.props.renderCard({obj: this.props.compendium[key]})}</div>;
         })}
       </div>
     </div>;

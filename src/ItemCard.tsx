@@ -23,8 +23,9 @@ const styles = {
   },
 };
 
-export interface Props extends Item {
+export interface Props {
   classes: { [key: string]: string }
+  obj: Item
 }
 
 class ItemCard extends React.Component<Props> {
@@ -34,11 +35,10 @@ class ItemCard extends React.Component<Props> {
   }
 
   public render() {
-  	const { classes } = this.props;
-  	const name = this.props.name? this.props.name : 'Unknown Item';
+  	const { classes, obj } = this.props;
   	return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom variant="h5" component="h2">{name}</Typography>
+        <Typography gutterBottom component="h2">{obj.name}</Typography>
       </CardContent>
     </Card>;
   }

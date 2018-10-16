@@ -18,77 +18,100 @@ export function MapPairs(pairs: KeyValuePairList, callback: (pair: KeyValuePair,
 }
 
 export interface Background {
-
+  name: string
+  proficiency?: string
+  trait?: KeyValuePairList
 }
 
 export interface Class {
-
+  name: string
+  hd?: number
+  proficiency?: string
+  spellAbility?: string
+  autolevel?: KeyValuePairList
 }
 
 export interface Feat {
-
+  name: string
+  text?: KeyValuePairList
+  modifier?: string
+  prerequisite?: string
 }
 
 export interface Item {
-  ac?: string
-  dmg1?: string
-  dmg2?: string
-  dmgType?:string
-  magic?: string
-  modifier?: string[]
-  name?: string
+  name: string
+  type?: string
+  weight?: number
+  text?: KeyValuePairList
+  modifier?: KeyValuePairList
+  roll?: KeyValuePairList
+  dmg1?: number | string
   property?: string
   range?: string
+  dmgType?: string
+  magic?: number
   rarity?: string
-  roll?: string
-  stealth?: string
+  ac?: number
   strength?: string
-  text?: string[]
-  type?: string
+  stealth?: string
   value?: string
-  weight?: number
+  dmg2?: string
 }
 
 export interface Monster {
-  ac?: string
-  action?: KeyValuePairList
-  alignment?: string
-  cha?: number
-  con?: number
-  conditionImmune?: string
-  cr?: number
-  description?: string
-  dex?: number
-  hp?: string
-  immune?: string
-  int?: number
-  languages?: string
-  legendary?: KeyValuePairList
-  name?: string
-  passive?: number
-  reaction?: KeyValuePairList
-  resist?: string
-  save?: string
-  senses?: string
+  name: string
   size?: string
-  skill?: string
-  slots?: string
-  speed?: string
-  spells?: string
-  str?: number
-  text?: string[]
-  trait?: KeyValuePairList
   type?: string
-  vulnerable?: string
+  alignment?: string
+  ac?: number | string
+  hp?: number | string
+  speed?: string
+  str?: number
+  dex?: number
+  con?: number
+  int?: number
   wis?: number
+  cha?: number
+  save?: string
+  skill?: KeyValuePairList
+  resist?: string
+  vulnerable?: string
+  immune?: string
+  conditionImmune?: string
+  senses?: string
+  passive?: number
+  languages?: string
+  cr?: number | string
+  trait?: KeyValuePairList
+  action?: KeyValuePairList
+  spells?: string
+  slots?: string
+  reaction?: KeyValuePairList
+  legendary?: KeyValuePairList
+  description?: string
 }
 
 export interface Race {
-
+  name: string
+  size?: string
+  speed?: number
+  ability?: string
+  trait?: KeyValuePairList
+  proficiency?: string
 }
 
 export interface Spell {
-  name?: string[]
+  name: string
+  level?: number
+  school?: string
+  time?: string
+  range?: string
+  components?: string
+  duration?: string
+  classes?: string
+  text?: KeyValuePairList
+  roll?: KeyValuePairList
+  ritual?: string
 }
 
 export class Compendium {
@@ -203,7 +226,9 @@ export class Compendium {
     Object.entries(Compendium.types).forEach(([objType, attrName]) => {
       if (resp.hasOwnProperty(objType)) {
         Object.values(resp[objType]).forEach((obj: any) => {
-          Compendium[attrName][obj.name] = obj;
+          if (obj.name) {
+            Compendium[attrName][obj.name] = obj;
+          }
         });
       }
     });
@@ -212,7 +237,6 @@ export class Compendium {
       store.dispatch({
         type: 'COMPENDIUM_LOADING_FINISHED',
       });
-      window['compendium'] = this;
     }
   }
 
@@ -235,6 +259,43 @@ export class Compendium {
     });
   }
 
+  public static generateTypes(): void {
+    Object.values(Compendium.types).forEach(attrName => {
+      console.log(attrName);
+      const types = Object.values(Compendium[attrName]).reduce((acc, value) => {
+        Object.entries(value).forEach(([key, value]) => {
+          if (!acc[key]) {
+            acc[key] = {};
+          }
+          acc[key][typeof(value)] = true;
+          if (value instanceof Array) {
+            acc[key]['array'] = true;
+          }
+        });
+        return acc;
+      }, {});
+      Object.entries(types).forEach(([field, types]) => {
+        if (types.hasOwnProperty('object') && types.hasOwnProperty('array')) {
+          console.log(`${field}?: KeyValuePairList`);
+        } else if (types.hasOwnProperty('string') && types.hasOwnProperty('object')) {
+          console.log(`${field}?: string`);
+        } else if (types.hasOwnProperty('string') && types.hasOwnProperty('number')) {
+          console.log(`${field}?: number | string`);
+        } else if (types.hasOwnProperty('number')) {
+          console.log(`${field}?: number`);
+        } else if (types.hasOwnProperty('string')) {
+          console.log(`${field}?: string`);
+        } else if (types.hasOwnProperty('object')) {
+          console.log(`${field}?: KeyValuePairList`);
+        } else {
+          console.log('cannot type', field, types);
+        }
+      });
+    });
+  }
+
 }
+
+window['Compendium'] = Compendium;
 
 export default Compendium;
