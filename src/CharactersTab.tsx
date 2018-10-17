@@ -40,6 +40,21 @@ class CharactersTab extends React.Component<Props> {
     return { dispatch };
   }
 
+  public componentDidMount() {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (let i = 0; i < vars.length; i++) {
+      const pair = vars[i].split('=');
+      if (decodeURIComponent(pair[0]) === 'import_character') {
+        this.props.dispatch({
+          type: 'IMPORT_CHARACTER',
+          value: JSON.parse(decodeURIComponent(pair[1])),
+        });
+        history.pushState(null, "", location.href.split("?")[0]);
+      }
+    }
+  }
+
   private handleSelectionChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
     this.props.dispatch({
       type: 'SELECT_CHARACTER',
@@ -55,6 +70,15 @@ class CharactersTab extends React.Component<Props> {
 
   private handlePrint = (event: React.MouseEvent<HTMLButtonElement>) => {
     window.print();
+  }
+
+  private handleShare = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const el = document.createElement('textarea');
+    el.value = window.location.href + '?import_character=' + encodeURIComponent(JSON.stringify(this.props.characters[this.props.selected]));
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
   }
 
   public render() {
@@ -76,6 +100,7 @@ class CharactersTab extends React.Component<Props> {
           </Select>
         </div>
         <Button color="primary" onClick={this.handlePrint}>Print</Button>
+        <Button onClick={this.handleShare}>Share</Button>
         <Button color="secondary" onClick={this.handleDelete}>Delete</Button>
       </div>
       <CharacterSheet {...this.props.characters[this.props.selected]} dispatch={this.props.dispatch} />

@@ -209,7 +209,7 @@ function characters(state: CharactersState | undefined, action: any): Characters
         selected: action.value,
       };
     case 'DELETE_CHARACTER':
-      const newCharacters = state.characters.slice();
+      let newCharacters = state.characters.slice();
       newCharacters.splice(state.selected, 1);
       if (newCharacters.length === 0) {
         newCharacters.push(character(undefined, undefined));
@@ -221,6 +221,14 @@ function characters(state: CharactersState | undefined, action: any): Characters
       return {
         ...state,
         selected: newSelection,
+        characters: newCharacters,
+      };
+    case 'IMPORT_CHARACTER':
+      newCharacters = state.characters.slice();
+      newCharacters.push(action.value);
+      return {
+        ...state,
+        selected: newCharacters.length-1,
         characters: newCharacters,
       };
   }
