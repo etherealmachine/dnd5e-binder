@@ -60,3 +60,7 @@ body {
 .fs-smaller {
   font-size: 80%;
 }
+
+.term {
+  font-weight: 500;
+}

@@ -17,9 +17,6 @@ import './App.css';
 import { State } from './store';
 import Compendium from './compendium';
 import CompendiumTab from './CompendiumTab';
-import SpellCard from './SpellCard';
-import ItemCard from './ItemCard';
-import MonsterCard from './MonsterCard';
 import CharactersTab from './CharactersTab';
 
 export interface Props {
@@ -134,6 +131,10 @@ class App extends React.Component<Props> {
           <Tab label="Spells" />
           <Tab label="Items" />
           <Tab label="Monsters" />
+          <Tab label="Backgrounds" />
+          <Tab label="Feats" />
+          <Tab label="Classes" />
+          <Tab label="Races" />
         </Tabs>
       </AppBar>
       <SwipeableDrawer open={this.props.drawerOpen} onClose={this.toggleDrawer(false)} onOpen={this.toggleDrawer(true)}>
@@ -141,13 +142,21 @@ class App extends React.Component<Props> {
         <Button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</Button>
         <Button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</Button>
         <Button data-tabindex="3" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Monsters</Button>
+        <Button data-tabindex="4" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Backgrounds</Button>
+        <Button data-tabindex="5" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Feats</Button>
+        <Button data-tabindex="6" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Classes</Button>
+        <Button data-tabindex="7" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Races</Button>
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
 	      {this.props.tabSelected === 0 && <CharactersTab />}
-        {this.props.tabSelected === 1 && <CompendiumTab name="Spell" compendium={Compendium.spells} renderCard={(props: any) => <SpellCard {...props} />} />}
-	      {this.props.tabSelected === 2 && <CompendiumTab name="Item" compendium={Compendium.items} renderCard={(props: any) => <ItemCard {...props} />} />}
-        {this.props.tabSelected === 3 && <CompendiumTab name="Monster" compendium={Compendium.monsters} renderCard={(props: any) => <MonsterCard {...props} />} />}
+        {this.props.tabSelected === 1 && <CompendiumTab name="Spells" compendium={Compendium.spells} />}
+	      {this.props.tabSelected === 2 && <CompendiumTab name="Items" compendium={Compendium.items} />}
+        {this.props.tabSelected === 3 && <CompendiumTab name="Monsters" compendium={Compendium.monsters} />}
+        {this.props.tabSelected === 4 && <CompendiumTab name="Backgrounds" compendium={Compendium.backgrounds} />}
+        {this.props.tabSelected === 5 && <CompendiumTab name="Feats" compendium={Compendium.feats} />}
+        {this.props.tabSelected === 6 && <CompendiumTab name="Classes" compendium={Compendium.classes} />}
+        {this.props.tabSelected === 7 && <CompendiumTab name="Races" compendium={Compendium.races} />}
 	    </div>
     </div>;
   }

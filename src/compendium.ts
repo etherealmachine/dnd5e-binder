@@ -17,112 +17,15 @@ export function MapPairs(pairs: KeyValuePairList, callback: (pair: KeyValuePair,
   }
 }
 
-export interface Background {
-  name: string
-  proficiency?: string
-  trait?: KeyValuePairList
-}
-
-export interface Class {
-  name: string
-  hd?: number
-  proficiency?: string
-  spellAbility?: string
-  autolevel?: KeyValuePairList
-}
-
-export interface Feat {
-  name: string
-  text?: KeyValuePairList
-  modifier?: string
-  prerequisite?: string
-}
-
-export interface Item {
-  name: string
-  type?: string
-  weight?: number
-  text?: KeyValuePairList
-  modifier?: KeyValuePairList
-  roll?: KeyValuePairList
-  dmg1?: number | string
-  property?: string
-  range?: string
-  dmgType?: string
-  magic?: number
-  rarity?: string
-  ac?: number
-  strength?: string
-  stealth?: string
-  value?: string
-  dmg2?: string
-}
-
-export interface Monster {
-  name: string
-  size?: string
-  type?: string
-  alignment?: string
-  ac?: number | string
-  hp?: number | string
-  speed?: string
-  str?: number
-  dex?: number
-  con?: number
-  int?: number
-  wis?: number
-  cha?: number
-  save?: string
-  skill?: KeyValuePairList
-  resist?: string
-  vulnerable?: string
-  immune?: string
-  conditionImmune?: string
-  senses?: string
-  passive?: number
-  languages?: string
-  cr?: number | string
-  trait?: KeyValuePairList
-  action?: KeyValuePairList
-  spells?: string
-  slots?: string
-  reaction?: KeyValuePairList
-  legendary?: KeyValuePairList
-  description?: string
-}
-
-export interface Race {
-  name: string
-  size?: string
-  speed?: number
-  ability?: string
-  trait?: KeyValuePairList
-  proficiency?: string
-}
-
-export interface Spell {
-  name: string
-  level?: number
-  school?: string
-  time?: string
-  range?: string
-  components?: string
-  duration?: string
-  classes?: string
-  text?: KeyValuePairList
-  roll?: KeyValuePairList
-  ritual?: string
-}
-
 export class Compendium {
 
-  public static backgrounds: { [key: string]: Background } = {}
-  public static classes: { [key: string]: Class } = {}
-  public static feats: { [key: string]: Feat } = {}
-  public static items: { [key: string]: Item } = {}
-  public static monsters: { [key: string]: Monster } = {}
-  public static races: { [key: string]: Race } = {}
-  public static spells: { [key: string]: Spell } = {}
+  public static backgrounds: { [key: string]: any } = {}
+  public static classes: { [key: string]: any } = {}
+  public static feats: { [key: string]: any } = {}
+  public static items: { [key: string]: any } = {}
+  public static monsters: { [key: string]: any } = {}
+  public static races: { [key: string]: any } = {}
+  public static spells: { [key: string]: any } = {}
 
   public static attributes = [
 	  "Strength",
@@ -227,6 +130,7 @@ export class Compendium {
       if (resp.hasOwnProperty(objType)) {
         Object.values(resp[objType]).forEach((obj: any) => {
           if (obj.name) {
+            obj['source'] = filename;
             Compendium[attrName][obj.name] = obj;
           }
         });
@@ -256,41 +160,6 @@ export class Compendium {
         }
       };
       xhr.send();
-    });
-  }
-
-  public static generateTypes(): void {
-    Object.values(Compendium.types).forEach(attrName => {
-      console.log(attrName);
-      const types = Object.values(Compendium[attrName]).reduce((acc, value) => {
-        Object.entries(value).forEach(([key, value]) => {
-          if (!acc[key]) {
-            acc[key] = {};
-          }
-          acc[key][typeof(value)] = true;
-          if (value instanceof Array) {
-            acc[key]['array'] = true;
-          }
-        });
-        return acc;
-      }, {});
-      Object.entries(types).forEach(([field, types]) => {
-        if (types.hasOwnProperty('object') && types.hasOwnProperty('array')) {
-          console.log(`${field}?: KeyValuePairList`);
-        } else if (types.hasOwnProperty('string') && types.hasOwnProperty('object')) {
-          console.log(`${field}?: string`);
-        } else if (types.hasOwnProperty('string') && types.hasOwnProperty('number')) {
-          console.log(`${field}?: number | string`);
-        } else if (types.hasOwnProperty('number')) {
-          console.log(`${field}?: number`);
-        } else if (types.hasOwnProperty('string')) {
-          console.log(`${field}?: string`);
-        } else if (types.hasOwnProperty('object')) {
-          console.log(`${field}?: KeyValuePairList`);
-        } else {
-          console.log('cannot type', field, types);
-        }
-      });
     });
   }
 
