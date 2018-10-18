@@ -16,7 +16,13 @@ import Tab from '@material-ui/core/Tab';
 import './App.css';
 import { State } from './store';
 import Compendium from './compendium';
-import CompendiumTab from './CompendiumTab';
+import SpellsTab from './SpellsTab';
+import ItemsTab from './ItemsTab';
+import MonstersTab from './MonstersTab';
+import BackgroundsTab from './BackgroundsTab';
+import FeatsTab from './FeatsTab';
+import ClassesTab from './ClassesTab';
+import RacesTab from './RacesTab';
 import CharactersTab from './CharactersTab';
 
 export interface Props {
@@ -45,6 +51,7 @@ class App extends React.Component<Props> {
       drawerOpen: state.app.drawerOpen,
       tabSelected: state.app.tabSelected,
       signedIn: state.app.signedIn,
+      compendium: state.app.compendium,
       compendiumLoading: state.app.compendiumLoading,
     };
   }
@@ -117,7 +124,7 @@ class App extends React.Component<Props> {
   }
 
   public render() {
-    return <div className="column">
+    return <div style={{height: '100%'}} className="column">
 	    <AppBar position="static">
         <Toolbar>
           <IconButton color="inherit" aria-label="Menu" onClick={this.toggleDrawer(true)}>
@@ -150,13 +157,13 @@ class App extends React.Component<Props> {
       </SwipeableDrawer>
     	<div className="container">
 	      {this.props.tabSelected === 0 && <CharactersTab />}
-        {this.props.tabSelected === 1 && <CompendiumTab name="Spells" compendium={Compendium.spells} />}
-	      {this.props.tabSelected === 2 && <CompendiumTab name="Items" compendium={Compendium.items} />}
-        {this.props.tabSelected === 3 && <CompendiumTab name="Monsters" compendium={Compendium.monsters} />}
-        {this.props.tabSelected === 4 && <CompendiumTab name="Backgrounds" compendium={Compendium.backgrounds} />}
-        {this.props.tabSelected === 5 && <CompendiumTab name="Feats" compendium={Compendium.feats} />}
-        {this.props.tabSelected === 6 && <CompendiumTab name="Classes" compendium={Compendium.classes} />}
-        {this.props.tabSelected === 7 && <CompendiumTab name="Races" compendium={Compendium.races} />}
+        {this.props.tabSelected === 1 && <SpellsTab />}
+	      {this.props.tabSelected === 2 && <ItemsTab />}
+        {this.props.tabSelected === 3 && <MonstersTab />}
+        {this.props.tabSelected === 4 && <BackgroundsTab />}
+        {this.props.tabSelected === 5 && <FeatsTab />}
+        {this.props.tabSelected === 6 && <ClassesTab />}
+        {this.props.tabSelected === 7 && <RacesTab />}
 	    </div>
     </div>;
   }

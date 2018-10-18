@@ -19,13 +19,13 @@ export function MapPairs(pairs: KeyValuePairList, callback: (pair: KeyValuePair,
 
 export class Compendium {
 
-  public static backgrounds: { [key: string]: any } = {}
-  public static classes: { [key: string]: any } = {}
-  public static feats: { [key: string]: any } = {}
-  public static items: { [key: string]: any } = {}
-  public static monsters: { [key: string]: any } = {}
-  public static races: { [key: string]: any } = {}
-  public static spells: { [key: string]: any } = {}
+  public backgrounds: { [key: string]: any } = {}
+  public classes: { [key: string]: any } = {}
+  public feats: { [key: string]: any } = {}
+  public items: { [key: string]: any } = {}
+  public monsters: { [key: string]: any } = {}
+  public races: { [key: string]: any } = {}
+  public spells: { [key: string]: any } = {}
 
   public static attributes = [
 	  "Strength",
@@ -123,31 +123,34 @@ export class Compendium {
     'Volo_s Bestiary 1.1.0.json',
   ]
 
-  private static fileCount: number = 0;
+  public constructor() {
+    this.loadFiles();
+  }
 
-  private static loadFile(filename: string, resp: any): void {
+  private fileCount: number = 0;
+
+  private loadFile(filename: string, resp: any): void {
     Object.entries(Compendium.types).forEach(([objType, attrName]) => {
       if (resp.hasOwnProperty(objType)) {
         Object.values(resp[objType]).forEach((obj: any) => {
           if (obj.name) {
             obj['source'] = filename;
-            Compendium[attrName][obj.name] = obj;
+            this[attrName][obj.name] = obj;
           }
         });
       }
     });
-    Compendium.fileCount--;
-    if (Compendium.fileCount === 0) {
+    this.fileCount--;
+    if (this.fileCount === 0) {
       store.dispatch({
         type: 'COMPENDIUM_LOADING_FINISHED',
       });
     }
   }
 
-
-  public static loadFiles(): void {
+  private loadFiles(): void {
     Compendium.sources.forEach((filename) => {
-      Compendium.fileCount++;
+      this.fileCount++;
       const xhr = new XMLHttpRequest();
       xhr.open('GET', `data/${filename}`, true);
       xhr.responseType = 'json';
@@ -164,7 +167,5 @@ export class Compendium {
   }
 
 }
-
-window['Compendium'] = Compendium;
 
 export default Compendium;
