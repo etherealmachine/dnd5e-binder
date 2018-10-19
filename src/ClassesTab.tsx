@@ -1,24 +1,50 @@
 import "core-js/library";
 import * as React from 'react';
 import {AutoSizer, Column, Table} from 'react-virtualized';
-import { withStyles } from '@material-ui/core/styles';
+import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
 import TextField from '@material-ui/core/TextField';
 
-export interface Props {
-  name: string
+export interface Props extends WithStyles<typeof styles> {
   compendium: { [key: string]: any }
 }
 
 interface State {
   query: string,
-  list: any[],
 }
 
-const styles = {
-}
+const styles = createStyles({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1',
+  },
+  table: {
+    flex: '1',
+    marginBottom: '20px',
+    overflow: 'hidden',
+  },
+  wrap: {
+    whiteSpace: 'normal',
+  },
+  row: {
+    boxSizing: 'border-box',
+    borderBottom: '1px solid #e0e0e0',
+  },
+  odd: {
+    boxSizing: 'border-box',
+    borderBottom: '1px solid #e0e0e0',
+    backgroundColor: '#fafafa',
+  },
+  text: {
+    padding: '10px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'scroll',
+  }
+});
 
 class ClassesTab extends React.Component<Props, State> {
 
@@ -26,7 +52,6 @@ class ClassesTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
-      list: [],
     };
   }
 
@@ -43,25 +68,25 @@ class ClassesTab extends React.Component<Props, State> {
   }
 
   public render() {
-    const list = Object.values(this.props.compendium).filter((obj) => this.state.query === '' || obj.name.toLowerCase().includes(this.state.query.toLowerCase()));
+    const { classes, compendium } = this.props;
+    const { query } = this.state;
+    const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
     list.sort((a, b) => a.name.toLowerCase() <= b.name.toLowerCase() ? -1 : 1);
-    return <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
+    return <div className={classes.container}>
       <TextField
-          label={`Search ${this.props.name}`}
+          label="Search Classes"
           type="search"
           margin="normal"
           value={this.state.query}
           onChange={this.handleSearchChanged} />
-      <div style={{flex: '1', marginBottom: '20px', overflow: 'hidden'}}>
+      <div className={classes.table}>
         <AutoSizer>
           {({height, width}) => (
             <Table
-                ref="Table"
-                className="Table"
                 headerHeight={30}
                 height={height}
                 noRowsRenderer={() => <div>No rows</div>}
-                overscanRowCount={10}
+                rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
                 rowHeight={40}
                 rowGetter={({index}: {index: number}) => list[index]}
                 rowCount={list.length}
@@ -70,7 +95,26 @@ class ClassesTab extends React.Component<Props, State> {
                 label="name"
                 cellDataGetter={({rowData}) => rowData.name}
                 dataKey="name"
-                width={250} />
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="hd"
+                dataKey="hd"
+                className={classes.wrap}
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="proficiency"
+                dataKey="proficiency"
+                className={classes.wrap}
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="spell ability"
+                dataKey="spellAbility"
+                className={classes.wrap}
+                flexGrow={1}
+                width={0} />
             </Table>
           )}
         </AutoSizer>

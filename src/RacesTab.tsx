@@ -1,6 +1,6 @@
 import "core-js/library";
 import * as React from 'react';
-import {AutoSizer, Column, Table} from 'react-virtualized';
+import {AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
@@ -13,10 +13,19 @@ export interface Props extends WithStyles<typeof styles> {
 
 interface State {
   query: string,
-  list: any[],
 }
 
 const styles = createStyles({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1',
+  },
+  table: {
+    flex: '1',
+    marginBottom: '20px',
+    overflow: 'hidden',
+  },
   wrap: {
     whiteSpace: 'normal',
   },
@@ -29,6 +38,15 @@ const styles = createStyles({
     borderBottom: '1px solid #e0e0e0',
     backgroundColor: '#fafafa',
   },
+  trait: {
+    padding: '10px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'scroll',
+  },
+  traitName: {
+    fontWeight: 600,
+  },
 });
 
 class RacesTab extends React.Component<Props, State> {
@@ -37,7 +55,6 @@ class RacesTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
-      list: [],
     };
   }
 
@@ -48,20 +65,39 @@ class RacesTab extends React.Component<Props, State> {
   }
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // TODO: keep cache but use remapped index when filtering list.
+    this.cache.clearAll();
     this.setState({
       query: event.currentTarget.value,
     });
   }
 
-  private getTraits = ({rowData, dataKey}: {rowData?: any, dataKey: string}): string => {
-    const traits = rowData[dataKey];
-    if (!traits) {
-      return ''
+  private cache = new CellMeasurerCache({
+    fixedWidth: true,
+    minHeight: 25,
+  });
+
+  private renderTraits = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
+    let content = <span></span>;
+    if (cellData) {
+      const { classes } = this.props;
+      const traits = cellData;
+      if (traits instanceof Array) {
+        content = <div className={classes.trait}>
+          {traits.map((trait, i) => <div key={i}><span className={classes.traitName}>{trait.name}:</span> {trait.text}</div>)}
+        </div>;
+      } else {
+        content = <span className={classes.trait}><span className={classes.traitName}>{traits.name}:</span> {traits.text}</span>;
+      }
     }
-    if (traits.hasOwnProperty('name')) {
-      return traits.name;
-    }
-    return traits.map((trait: any) => trait.name).join(', ');
+    return <CellMeasurer
+        cache={this.cache}
+        columnIndex={0}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+      {content}
+    </CellMeasurer>;
   }
 
   public render() {
@@ -71,7 +107,7 @@ class RacesTab extends React.Component<Props, State> {
     list.sort((a, b) => a.name.toLowerCase() <= b.name.toLowerCase() ? -1 : 1);
     return <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
       <TextField
-          label={`Search Races`}
+          label="Search Races"
           type="search"
           margin="normal"
           value={this.state.query}
@@ -84,8 +120,7 @@ class RacesTab extends React.Component<Props, State> {
                 height={height}
                 rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
                 noRowsRenderer={() => <div>No rows</div>}
-                overscanRowCount={0}
-                rowHeight={80}
+                rowHeight={this.cache.rowHeight}
                 rowGetter={({index}: {index: number}) => list[index]}
                 rowCount={list.length}
                 width={width}>
@@ -122,7 +157,7 @@ class RacesTab extends React.Component<Props, State> {
                 disableSort
                 label="traits"
                 dataKey="trait"
-                cellDataGetter={this.getTraits}
+                cellRenderer={this.renderTraits}
                 className={classes.wrap}
                 flexGrow={4}
                 width={0} />
