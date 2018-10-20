@@ -101,10 +101,19 @@ class MonstersTab extends React.Component<Props, State> {
     this.setState({ sortBy, sortDirection });
   }
 
+  private parseHP = (value: string): number => {
+    return parseInt(value.split(' ')[0]);
+  }
+
   private compare = (sortBy: string, sortDirection: SortDirectionType) => {
     return (a: any, b: any) => {
       const direction = sortDirection === SortDirection.ASC ? 1 : -1;
-      return a[sortBy].toString().toLowerCase() <= b[sortBy].toString().toLowerCase() ? -direction : direction;
+      if (sortBy === 'hp') {
+        const aValue = this.parseHP(a.hp || '0');
+        const bValue = this.parseHP(b.hp || '0');
+        return aValue <= bValue ? -direction : direction;
+      }
+      return (a[sortBy] || '').toString().toLowerCase() <= (b[sortBy] || '').toString().toLowerCase() ? -direction : direction;
     };
   }
 
@@ -151,6 +160,11 @@ class MonstersTab extends React.Component<Props, State> {
                         label="name"
                         dataKey="name"
                         width={250} />
+                      <Column
+                        label="cr"
+                        dataKey="cr"
+                        flexGrow={1}
+                        width={0} />
                       <Column
                         label="hp"
                         dataKey="hp"

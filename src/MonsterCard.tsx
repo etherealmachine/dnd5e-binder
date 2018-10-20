@@ -22,8 +22,8 @@ export interface Props extends WithStyles<typeof styles> {
   dex: number
   con: number 
   int: string
-  cha: number 
   wis: number
+  cha: number 
   alignment:string 
   type: string
   description?: string
@@ -60,6 +60,11 @@ class MonsterCard extends React.Component<Props> {
     const {
       name,
       imageURL,
+      cr, ac, hp, passive,
+      size, speed,
+      str, dex, con, int, wis, cha,
+      alignment,
+      type,
       description,
       classes
     } = this.props;
@@ -71,6 +76,34 @@ class MonsterCard extends React.Component<Props> {
       />}
       <CardContent>
         <Typography gutterBottom variant="h5">{name}</Typography>
+        <Typography>CR: {cr}</Typography>
+        <Typography>AC: {ac}</Typography>
+        <Typography>HP: {hp}</Typography>
+        <Typography>Passive: {passive}</Typography>
+        <Typography>Size: {size}</Typography>
+        <Typography>Speed: {speed}</Typography>
+        <Typography>
+          <table>
+            <tr>
+              <th>Str</th>
+              <th>Dex</th>
+              <th>Con</th>
+              <th>Int</th>
+              <th>Wis</th>
+              <th>Cha</th>
+            </tr>
+            <tr>
+              <td>{str}</td>
+              <td>{dex}</td>
+              <td>{con}</td>
+              <td>{int}</td>
+              <td>{wis}</td>
+              <td>{cha}</td>
+            </tr>
+          </table>
+        </Typography>
+        <Typography>Alignment: {alignment}</Typography>
+        <Typography>Type: {type}</Typography>
         {description && <Typography>{description}</Typography>}
       </CardContent>
       <CardActions>
