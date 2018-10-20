@@ -1,10 +1,11 @@
 import "core-js/library";
 import * as React from 'react';
-import {AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
+import { AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 export interface Props extends WithStyles<typeof styles> {
@@ -13,6 +14,8 @@ export interface Props extends WithStyles<typeof styles> {
 
 interface State {
   query: string,
+  sortBy?: string,
+  sortDirection?: SortDirectionType,
 }
 
 const styles = createStyles({
@@ -42,7 +45,6 @@ const styles = createStyles({
     padding: '10px 0',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'scroll',
   }
 });
 
@@ -52,6 +54,8 @@ class SpellsTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
+      sortBy: undefined,
+      sortDirection: undefined,
     };
   }
 
@@ -97,11 +101,42 @@ class SpellsTab extends React.Component<Props, State> {
     </CellMeasurer>;
   }
 
+  private handleAddClick = (spellName: string) => (event: React.MouseEvent<HTMLElement>) => {
+    console.log(spellName);
+  }
+
+  private renderAddButton = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
+    return <Button onClick={this.handleAddClick(cellData)}>+</Button>;
+  }
+
+  private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
+    const {
+      sortDirection: prevSortDirection
+    } = this.state;
+    this.cache.clearAll();
+
+    // If list was sorted DESC by this column.
+    // Rather than switch to ASC, return to "natural" order.
+    if (prevSortDirection === SortDirection.DESC) {
+      sortBy = undefined;
+      sortDirection = undefined;
+    }
+
+    this.setState({ sortBy, sortDirection });
+  }
+
+  private compare = (sortBy: string, sortDirection: SortDirectionType) => {
+    return (a: any, b: any) => {
+      const direction = sortDirection === SortDirection.ASC ? 1 : -1;
+      return a[sortBy].toString().toLowerCase() <= b[sortBy].toString().toLowerCase() ? -direction : direction;
+    };
+  }
+
   public render() {
     const { classes, compendium } = this.props;
-    const { query } = this.state;
+    const { query, sortBy, sortDirection } = this.state;
     const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
-    list.sort((a, b) => a.name.toLowerCase() <= b.name.toLowerCase() ? -1 : 1);
+    list.sort(this.compare(sortBy || 'name', sortDirection || SortDirection.ASC));
     return <div className={classes.container}>
       <TextField
           label="Search Spells"
@@ -120,7 +155,10 @@ class SpellsTab extends React.Component<Props, State> {
                 rowHeight={this.cache.rowHeight}
                 rowGetter={({index}: {index: number}) => list[index]}
                 rowCount={list.length}
-                width={width}>
+                width={width}
+                sort={this.sort}
+                sortBy={sortBy}
+                sortDirection={sortDirection}>
               <Column
                 label="name"
                 dataKey="name"
@@ -128,7 +166,7 @@ class SpellsTab extends React.Component<Props, State> {
               <Column
                 label="level"
                 dataKey="level"
-                width={60} />
+                width={70} />
               <Column
                 label="classes"
                 dataKey="classes"
@@ -161,6 +199,12 @@ class SpellsTab extends React.Component<Props, State> {
                 className={classes.wrap}
                 flexGrow={4}
                 width={0} />
+              <Column
+                disableSort
+                label=""
+                dataKey="name"
+                cellRenderer={this.renderAddButton}
+                width={50} />
             </Table>
           )}
         </AutoSizer>

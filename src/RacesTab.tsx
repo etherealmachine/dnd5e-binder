@@ -1,6 +1,6 @@
 import "core-js/library";
 import * as React from 'react';
-import {AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
+import { AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
@@ -13,6 +13,8 @@ export interface Props extends WithStyles<typeof styles> {
 
 interface State {
   query: string,
+  sortBy?: string,
+  sortDirection?: SortDirectionType,
 }
 
 const styles = createStyles({
@@ -42,7 +44,6 @@ const styles = createStyles({
     padding: '10px 0',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'scroll',
   },
   traitName: {
     fontWeight: 600,
@@ -55,6 +56,8 @@ class RacesTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
+      sortBy: undefined,
+      sortDirection: undefined,
     };
   }
 
@@ -100,11 +103,34 @@ class RacesTab extends React.Component<Props, State> {
     </CellMeasurer>;
   }
 
+  private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
+    const {
+      sortDirection: prevSortDirection
+    } = this.state;
+    this.cache.clearAll();
+
+    // If list was sorted DESC by this column.
+    // Rather than switch to ASC, return to "natural" order.
+    if (prevSortDirection === SortDirection.DESC) {
+      sortBy = undefined;
+      sortDirection = undefined;
+    }
+
+    this.setState({ sortBy, sortDirection });
+  }
+
+  private compare = (sortBy: string, sortDirection: SortDirectionType) => {
+    return (a: any, b: any) => {
+      const direction = sortDirection === SortDirection.ASC ? 1 : -1;
+      return a[sortBy].toString().toLowerCase() <= b[sortBy].toString().toLowerCase() ? -direction : direction;
+    };
+  }
+
   public render() {
     const { classes, compendium } = this.props;
-    const { query } = this.state;
+    const { query, sortBy, sortDirection } = this.state;
     const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
-    list.sort((a, b) => a.name.toLowerCase() <= b.name.toLowerCase() ? -1 : 1);
+    list.sort(this.compare(sortBy || 'name', sortDirection || SortDirection.ASC));
     return <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
       <TextField
           label="Search Races"
@@ -123,31 +149,30 @@ class RacesTab extends React.Component<Props, State> {
                 rowHeight={this.cache.rowHeight}
                 rowGetter={({index}: {index: number}) => list[index]}
                 rowCount={list.length}
-                width={width}>
+                width={width}
+                sort={this.sort}
+                sortBy={sortBy}
+                sortDirection={sortDirection}>
               <Column
                 label="name"
                 cellDataGetter={({rowData}) => rowData.name}
                 dataKey="name"
                 width={250} />
               <Column
-                disableSort
                 label="size"
                 dataKey="size"
-                width={50} />
+                width={60} />
               <Column
-                disableSort
                 label="speed"
                 dataKey="speed"
-                width={70} />
+                width={80} />
               <Column
-                disableSort
                 label="ability"
                 dataKey="ability"
                 className={classes.wrap}
                 flexGrow={1}
                 width={0} />
               <Column
-                disableSort
                 label="proficiency"
                 dataKey="proficiency"
                 className={classes.wrap}
