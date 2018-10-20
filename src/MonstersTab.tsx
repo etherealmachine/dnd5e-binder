@@ -15,6 +15,7 @@ interface State {
   query: string,
   sortBy?: string,
   sortDirection?: SortDirectionType,
+  displayedIndex?: number,
 }
 
 const styles = createStyles({
@@ -25,7 +26,6 @@ const styles = createStyles({
   },
   table: {
     flex: '1',
-    marginBottom: '20px',
     overflow: 'hidden',
   },
   wrap: {
@@ -34,17 +34,23 @@ const styles = createStyles({
   row: {
     boxSizing: 'border-box',
     borderBottom: '1px solid #e0e0e0',
+    cursor: 'pointer',
   },
   odd: {
     boxSizing: 'border-box',
     borderBottom: '1px solid #e0e0e0',
     backgroundColor: '#fafafa',
+    cursor: 'pointer',
   },
-  text: {
-    padding: '10px 0',
+  tableWithCard: {
     display: 'flex',
-    flexDirection: 'column',
-  }
+    flex: '1',
+    marginBottom: '20px',
+  },
+  monsterCard: {
+    width: '400px',
+    overflow: 'hidden',
+  },
 });
 
 class MonstersTab extends React.Component<Props, State> {
@@ -71,6 +77,10 @@ class MonstersTab extends React.Component<Props, State> {
     });
   }
 
+  private handleRowClick = ({event, index, rowData}: { event: React.MouseEvent<any>, index: number, rowData: any }) => {
+    this.setState({ displayedIndex: index });
+  }
+
   private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
     const {
       sortDirection: prevSortDirection
@@ -93,9 +103,14 @@ class MonstersTab extends React.Component<Props, State> {
     };
   }
 
+  private renderMonsterCard = (monster: any) => {
+    const { classes } = this.props;
+    return <div className={classes.monsterCard}>{JSON.stringify(monster)}</div>;
+  }
+
   public render() {
     const { classes, compendium } = this.props;
-    const { query, sortBy, sortDirection } = this.state;
+    const { query, sortBy, sortDirection, displayedIndex } = this.state;
     const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
     list.sort(this.compare(sortBy || 'name', sortDirection || SortDirection.ASC));
     return <div className={classes.container}>
@@ -105,61 +120,65 @@ class MonstersTab extends React.Component<Props, State> {
           margin="normal"
           value={this.state.query}
           onChange={this.handleSearchChanged} />
-      <div className={classes.table}>
-        <AutoSizer>
-          {({height, width}) => (
-            <Table
-                headerHeight={30}
-                height={height}
-                rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
-                noRowsRenderer={() => <div>No rows</div>}
-                rowHeight={80}
-                rowGetter={({index}: {index: number}) => list[index]}
-                rowCount={list.length}
-                width={width}
-                sort={this.sort}
-                sortBy={sortBy}
-                sortDirection={sortDirection}>
-              <Column
-                label="name"
-                dataKey="name"
-                width={250} />
-              <Column
-                label="hp"
-                dataKey="hp"
-                flexGrow={1}
-                width={0} />
-              <Column
-                label="ac"
-                dataKey="ac"
-                className={classes.wrap}
-                flexGrow={1}
-                width={0} />
-              <Column
-                label="size"
-                dataKey="size"
-                flexGrow={1}
-                width={0} />
-              <Column
-                label="passive"
-                dataKey="passive"
-                flexGrow={1}
-                width={0} />
-              <Column
-                label="skill"
-                dataKey="skill"
-                className={classes.wrap}
-                flexGrow={1}
-                width={0} />
-              <Column
-                label="save"
-                dataKey="save"
-                className={classes.wrap}
-                flexGrow={1}
-                width={0} />
-            </Table>
-          )}
-        </AutoSizer>
+      <div className={classes.tableWithCard}>
+        <div className={classes.table}>
+          <AutoSizer>
+            {({height, width}) => (
+              <Table
+                  headerHeight={30}
+                  height={height}
+                  rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
+                  noRowsRenderer={() => <div>No rows</div>}
+                  rowHeight={80}
+                  rowGetter={({index}: {index: number}) => list[index]}
+                  rowCount={list.length}
+                  onRowClick={this.handleRowClick}
+                  width={width}
+                  sort={this.sort}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}>
+                <Column
+                  label="name"
+                  dataKey="name"
+                  width={250} />
+                <Column
+                  label="hp"
+                  dataKey="hp"
+                  flexGrow={1}
+                  width={0} />
+                <Column
+                  label="ac"
+                  dataKey="ac"
+                  className={classes.wrap}
+                  flexGrow={1}
+                  width={0} />
+                <Column
+                  label="size"
+                  dataKey="size"
+                  flexGrow={1}
+                  width={0} />
+                <Column
+                  label="passive"
+                  dataKey="passive"
+                  flexGrow={1}
+                  width={0} />
+                <Column
+                  label="skill"
+                  dataKey="skill"
+                  className={classes.wrap}
+                  flexGrow={1}
+                  width={0} />
+                <Column
+                  label="save"
+                  dataKey="save"
+                  className={classes.wrap}
+                  flexGrow={1}
+                  width={0} />
+              </Table>
+            )}
+          </AutoSizer>
+        </div>
+        {displayedIndex !== undefined && this.renderMonsterCard(list[displayedIndex])}
       </div>
     </div>;
   }
