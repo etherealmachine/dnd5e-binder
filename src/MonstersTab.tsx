@@ -1,24 +1,51 @@
 import "core-js/library";
 import * as React from 'react';
-import {AutoSizer, Column, Table} from 'react-virtualized';
-import { withStyles } from '@material-ui/core/styles';
+import { AutoSizer, Column, Table, SortDirection, SortDirectionType } from 'react-virtualized';
+import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
 import TextField from '@material-ui/core/TextField';
 
-export interface Props {
-  name: string
+export interface Props extends WithStyles<typeof styles> {
   compendium: { [key: string]: any }
 }
 
 interface State {
   query: string,
-  list: any[],
+  sortBy?: string,
+  sortDirection?: SortDirectionType,
 }
 
-const styles = {
-}
+const styles = createStyles({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1',
+  },
+  table: {
+    flex: '1',
+    marginBottom: '20px',
+    overflow: 'hidden',
+  },
+  wrap: {
+    whiteSpace: 'normal',
+  },
+  row: {
+    boxSizing: 'border-box',
+    borderBottom: '1px solid #e0e0e0',
+  },
+  odd: {
+    boxSizing: 'border-box',
+    borderBottom: '1px solid #e0e0e0',
+    backgroundColor: '#fafafa',
+  },
+  text: {
+    padding: '10px 0',
+    display: 'flex',
+    flexDirection: 'column',
+  }
+});
 
 class MonstersTab extends React.Component<Props, State> {
 
@@ -26,7 +53,8 @@ class MonstersTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
-      list: [],
+      sortBy: undefined,
+      sortDirection: undefined,
     };
   }
 
@@ -37,47 +65,98 @@ class MonstersTab extends React.Component<Props, State> {
   }
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // TODO: keep cache but use remapped index when filtering list.
     this.setState({
       query: event.currentTarget.value,
     });
   }
 
+  private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
+    const {
+      sortDirection: prevSortDirection
+    } = this.state;
+
+    // If list was sorted DESC by this column.
+    // Rather than switch to ASC, return to "natural" order.
+    if (prevSortDirection === SortDirection.DESC) {
+      sortBy = undefined;
+      sortDirection = undefined;
+    }
+
+    this.setState({ sortBy, sortDirection });
+  }
+
+  private compare = (sortBy: string, sortDirection: SortDirectionType) => {
+    return (a: any, b: any) => {
+      const direction = sortDirection === SortDirection.ASC ? 1 : -1;
+      return a[sortBy].toString().toLowerCase() <= b[sortBy].toString().toLowerCase() ? -direction : direction;
+    };
+  }
+
   public render() {
-    const list = Object.values(this.props.compendium).filter((obj) => this.state.query === '' || obj.name.toLowerCase().includes(this.state.query.toLowerCase()));
-    list.sort((a, b) => a.name.toLowerCase() <= b.name.toLowerCase() ? -1 : 1);
-    return <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
+    const { classes, compendium } = this.props;
+    const { query, sortBy, sortDirection } = this.state;
+    const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
+    list.sort(this.compare(sortBy || 'name', sortDirection || SortDirection.ASC));
+    return <div className={classes.container}>
       <TextField
-          label={`Search ${this.props.name}`}
+          label="Search Monsters"
           type="search"
           margin="normal"
           value={this.state.query}
           onChange={this.handleSearchChanged} />
-      <div style={{flex: '1', marginBottom: '20px', overflow: 'hidden'}}>
+      <div className={classes.table}>
         <AutoSizer>
           {({height, width}) => (
             <Table
-                ref="Table"
-                className="Table"
                 headerHeight={30}
                 height={height}
+                rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
                 noRowsRenderer={() => <div>No rows</div>}
-                overscanRowCount={10}
-                rowHeight={40}
+                rowHeight={80}
                 rowGetter={({index}: {index: number}) => list[index]}
                 rowCount={list.length}
-                width={width}>
+                width={width}
+                sort={this.sort}
+                sortBy={sortBy}
+                sortDirection={sortDirection}>
               <Column
                 label="name"
-                cellDataGetter={({rowData}) => rowData.name}
                 dataKey="name"
                 width={250} />
               <Column
-                width={210}
-                disableSort
-                label="languages"
-                dataKey="languages"
-                cellRenderer={({cellData}) => cellData}
-                flexGrow={1} />
+                label="hp"
+                dataKey="hp"
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="ac"
+                dataKey="ac"
+                className={classes.wrap}
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="size"
+                dataKey="size"
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="passive"
+                dataKey="passive"
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="skill"
+                dataKey="skill"
+                className={classes.wrap}
+                flexGrow={1}
+                width={0} />
+              <Column
+                label="save"
+                dataKey="save"
+                className={classes.wrap}
+                flexGrow={1}
+                width={0} />
             </Table>
           )}
         </AutoSizer>
