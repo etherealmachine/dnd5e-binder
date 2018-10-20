@@ -1,11 +1,12 @@
 import "core-js/library";
 import * as React from 'react';
-import { AutoSizer, Column, Table, SortDirection, SortDirectionType } from 'react-virtualized';
+import { ArrowKeyStepper, AutoSizer, Column, Table, ScrollIndices, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
 import TextField from '@material-ui/core/TextField';
+import MonsterCard from './MonsterCard';
 
 export interface Props extends WithStyles<typeof styles> {
   compendium: { [key: string]: any }
@@ -15,7 +16,7 @@ interface State {
   query: string,
   sortBy?: string,
   sortDirection?: SortDirectionType,
-  displayedIndex?: number,
+  scrollToRow?: number,
 }
 
 const styles = createStyles({
@@ -30,6 +31,12 @@ const styles = createStyles({
   },
   wrap: {
     whiteSpace: 'normal',
+  },
+  highlight: {
+    boxSizing: 'border-box',
+    borderBottom: '1px solid #e0e0e0',
+    cursor: 'pointer',
+    backgroundColor: '#a9e7ff'
   },
   row: {
     boxSizing: 'border-box',
@@ -47,10 +54,6 @@ const styles = createStyles({
     flex: '1',
     marginBottom: '20px',
   },
-  monsterCard: {
-    width: '400px',
-    overflow: 'hidden',
-  },
 });
 
 class MonstersTab extends React.Component<Props, State> {
@@ -59,8 +62,6 @@ class MonstersTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
-      sortBy: undefined,
-      sortDirection: undefined,
     };
   }
 
@@ -78,7 +79,11 @@ class MonstersTab extends React.Component<Props, State> {
   }
 
   private handleRowClick = ({event, index, rowData}: { event: React.MouseEvent<any>, index: number, rowData: any }) => {
-    this.setState({ displayedIndex: index });
+    this.setState({ scrollToRow: index });
+  }
+
+  private onScrollToChange = (params: ScrollIndices) => {
+    this.setState({ scrollToRow: params.scrollToRow });
   }
 
   private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
@@ -103,14 +108,9 @@ class MonstersTab extends React.Component<Props, State> {
     };
   }
 
-  private renderMonsterCard = (monster: any) => {
-    const { classes } = this.props;
-    return <div className={classes.monsterCard}>{JSON.stringify(monster)}</div>;
-  }
-
   public render() {
     const { classes, compendium } = this.props;
-    const { query, sortBy, sortDirection, displayedIndex } = this.state;
+    const { query, sortBy, sortDirection, scrollToRow } = this.state;
     const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
     list.sort(this.compare(sortBy || 'name', sortDirection || SortDirection.ASC));
     return <div className={classes.container}>
@@ -124,61 +124,73 @@ class MonstersTab extends React.Component<Props, State> {
         <div className={classes.table}>
           <AutoSizer>
             {({height, width}) => (
-              <Table
-                  headerHeight={30}
-                  height={height}
-                  rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
-                  noRowsRenderer={() => <div>No rows</div>}
-                  rowHeight={80}
-                  rowGetter={({index}: {index: number}) => list[index]}
+              <ArrowKeyStepper
+                  isControlled={true}
+                  onScrollToChange={this.onScrollToChange}
+                  columnCount={1}
+                  mode="cells"
                   rowCount={list.length}
-                  onRowClick={this.handleRowClick}
-                  width={width}
-                  sort={this.sort}
-                  sortBy={sortBy}
-                  sortDirection={sortDirection}>
-                <Column
-                  label="name"
-                  dataKey="name"
-                  width={250} />
-                <Column
-                  label="hp"
-                  dataKey="hp"
-                  flexGrow={1}
-                  width={0} />
-                <Column
-                  label="ac"
-                  dataKey="ac"
-                  className={classes.wrap}
-                  flexGrow={1}
-                  width={0} />
-                <Column
-                  label="size"
-                  dataKey="size"
-                  flexGrow={1}
-                  width={0} />
-                <Column
-                  label="passive"
-                  dataKey="passive"
-                  flexGrow={1}
-                  width={0} />
-                <Column
-                  label="skill"
-                  dataKey="skill"
-                  className={classes.wrap}
-                  flexGrow={1}
-                  width={0} />
-                <Column
-                  label="save"
-                  dataKey="save"
-                  className={classes.wrap}
-                  flexGrow={1}
-                  width={0} />
-              </Table>
+                  scrollToRow={scrollToRow}>
+                  {({ onSectionRendered, scrollToColumn, scrollToRow }: { onSectionRendered: any, scrollToColumn: number, scrollToRow: number }) => (
+                    <Table
+                        headerHeight={30}
+                        height={height}
+                        rowClassName={({index}: {index: number}) => (scrollToRow === index ? classes.highlight : index % 2 == 0 ? classes.row : classes.odd)}
+                        noRowsRenderer={() => <div>No rows</div>}
+                        rowHeight={80}
+                        rowGetter={({index}: {index: number}) => list[index]}
+                        rowCount={list.length}
+                        onSectionRendered={onSectionRendered}
+                        scrollToIndex={scrollToRow}
+                        onRowClick={this.handleRowClick}
+                        width={width}
+                        sort={this.sort}
+                        sortBy={sortBy}
+                        sortDirection={sortDirection}>
+                      <Column
+                        label="name"
+                        dataKey="name"
+                        width={250} />
+                      <Column
+                        label="hp"
+                        dataKey="hp"
+                        flexGrow={1}
+                        width={0} />
+                      <Column
+                        label="ac"
+                        dataKey="ac"
+                        className={classes.wrap}
+                        flexGrow={1}
+                        width={0} />
+                      <Column
+                        label="size"
+                        dataKey="size"
+                        flexGrow={1}
+                        width={0} />
+                      <Column
+                        label="passive"
+                        dataKey="passive"
+                        flexGrow={1}
+                        width={0} />
+                      <Column
+                        label="skill"
+                        dataKey="skill"
+                        className={classes.wrap}
+                        flexGrow={1}
+                        width={0} />
+                      <Column
+                        label="save"
+                        dataKey="save"
+                        className={classes.wrap}
+                        flexGrow={1}
+                        width={0} />
+                    </Table>
+                  )}
+              </ArrowKeyStepper>
             )}
           </AutoSizer>
         </div>
-        {displayedIndex !== undefined && this.renderMonsterCard(list[displayedIndex])}
+        {scrollToRow !== undefined && scrollToRow < list.length && <MonsterCard {...list[scrollToRow]} />}
       </div>
     </div>;
   }
