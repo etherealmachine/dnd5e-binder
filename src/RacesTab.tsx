@@ -5,6 +5,7 @@ import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 export interface Props extends WithStyles<typeof styles> {
@@ -103,6 +104,14 @@ class RacesTab extends React.Component<Props, State> {
     </CellMeasurer>;
   }
 
+  private handleAddClick = (spellName: string) => (event: React.MouseEvent<HTMLElement>) => {
+    console.log(spellName);
+  }
+
+  private renderAddButton = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
+    return <Button onClick={this.handleAddClick(cellData)}>+</Button>;
+  }
+
   private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
     const {
       sortDirection: prevSortDirection
@@ -186,6 +195,12 @@ class RacesTab extends React.Component<Props, State> {
                 className={classes.wrap}
                 flexGrow={4}
                 width={0} />
+              <Column
+                disableSort
+                label=""
+                dataKey="name"
+                cellRenderer={this.renderAddButton}
+                width={50} />
             </Table>
           )}
         </AutoSizer>

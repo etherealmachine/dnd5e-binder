@@ -1,10 +1,11 @@
 import "core-js/library";
 import * as React from 'react';
-import {AutoSizer, Column, Table} from 'react-virtualized';
+import { AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 export interface Props extends WithStyles<typeof styles> {
@@ -13,6 +14,8 @@ export interface Props extends WithStyles<typeof styles> {
 
 interface State {
   query: string,
+  sortBy?: string,
+  sortDirection?: SortDirectionType,
 }
 
 const styles = createStyles({
@@ -38,13 +41,25 @@ const styles = createStyles({
     borderBottom: '1px solid #e0e0e0',
     backgroundColor: '#fafafa',
   },
-  text: {
+  features: {
     padding: '10px 0',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'scroll',
-  }
+  },
+  featureName: {
+    fontWeight: 600,
+  },
 });
+
+interface Autolevel {
+  slots?: string
+  feature?: Feature | Feature[]
+}
+
+interface Feature {
+  name: string
+  text: string
+}
 
 class ClassesTab extends React.Component<Props, State> {
 
@@ -52,6 +67,8 @@ class ClassesTab extends React.Component<Props, State> {
     super(props);
     this.state = {
       query: '',
+      sortBy: undefined,
+      sortDirection: undefined,
     };
   }
 
@@ -62,16 +79,78 @@ class ClassesTab extends React.Component<Props, State> {
   }
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.cache.clearAll();
     this.setState({
       query: event.currentTarget.value,
     });
   }
 
+  private cache = new CellMeasurerCache({
+    fixedWidth: true,
+    minHeight: 25,
+  });
+
+  private renderFeatures = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
+    const { classes } = this.props;
+    const content: JSX.Element[] = [];
+    if (cellData) {
+      const autolevel = cellData;
+      autolevel.filter((level: Autolevel) => level.feature).forEach((level: Autolevel) => {
+        let features = level.feature || [];
+        if (!(features instanceof Array)) {
+          features = [features];
+        }
+        features.forEach(feature => {
+          content.push(<span key={content.length}><span className={classes.featureName}>{feature.name}:</span> {feature.text}</span>)
+        });
+      });
+    }
+    return <CellMeasurer
+        cache={this.cache}
+        columnIndex={0}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+      <div className={classes.features}>{content}</div>
+    </CellMeasurer>;
+  }
+
+  private handleAddClick = (spellName: string) => (event: React.MouseEvent<HTMLElement>) => {
+    console.log(spellName);
+  }
+
+  private renderAddButton = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
+    return <Button onClick={this.handleAddClick(cellData)}>+</Button>;
+  }
+
+  private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
+    const {
+      sortDirection: prevSortDirection
+    } = this.state;
+    this.cache.clearAll();
+
+    // If list was sorted DESC by this column.
+    // Rather than switch to ASC, return to "natural" order.
+    if (prevSortDirection === SortDirection.DESC) {
+      sortBy = undefined;
+      sortDirection = undefined;
+    }
+
+    this.setState({ sortBy, sortDirection });
+  }
+
+  private compare = (sortBy: string, sortDirection: SortDirectionType) => {
+    return (a: any, b: any) => {
+      const direction = sortDirection === SortDirection.ASC ? 1 : -1;
+      return a[sortBy].toString().toLowerCase() <= b[sortBy].toString().toLowerCase() ? -direction : direction;
+    };
+  }
+
   public render() {
     const { classes, compendium } = this.props;
-    const { query } = this.state;
+    const { query, sortBy, sortDirection } = this.state;
     const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
-    list.sort((a, b) => a.name.toLowerCase() <= b.name.toLowerCase() ? -1 : 1);
+    list.sort(this.compare(sortBy || 'name', sortDirection || SortDirection.ASC));
     return <div className={classes.container}>
       <TextField
           label="Search Classes"
@@ -87,10 +166,13 @@ class ClassesTab extends React.Component<Props, State> {
                 height={height}
                 noRowsRenderer={() => <div>No rows</div>}
                 rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
-                rowHeight={40}
+                rowHeight={this.cache.rowHeight}
                 rowGetter={({index}: {index: number}) => list[index]}
                 rowCount={list.length}
-                width={width}>
+                width={width}
+                sort={this.sort}
+                sortBy={sortBy}
+                sortDirection={sortDirection}>
               <Column
                 label="name"
                 cellDataGetter={({rowData}) => rowData.name}
@@ -98,7 +180,7 @@ class ClassesTab extends React.Component<Props, State> {
                 flexGrow={1}
                 width={0} />
               <Column
-                label="hd"
+                label="hit dice"
                 dataKey="hd"
                 className={classes.wrap}
                 flexGrow={1}
@@ -115,6 +197,19 @@ class ClassesTab extends React.Component<Props, State> {
                 className={classes.wrap}
                 flexGrow={1}
                 width={0} />
+              <Column
+                label="features"
+                dataKey="autolevel"
+                className={classes.wrap}
+                cellRenderer={this.renderFeatures}
+                flexGrow={4}
+                width={0} />
+              <Column
+                disableSort
+                label=""
+                dataKey="name"
+                cellRenderer={this.renderAddButton}
+                width={50} />
             </Table>
           )}
         </AutoSizer>
