@@ -5,6 +5,7 @@ import Compendium from './compendium';
 export interface State {
   app: AppState
   characters: CharactersState
+  encounter: EncounterState
 }
 
 export interface AppState {
@@ -59,6 +60,10 @@ export interface CharacterState {
   flaws: string
   features_and_traits: string
   attacks: Attack[]
+}
+
+export interface EncounterState {
+  monsters: any[]
 }
 
 function app(state: AppState | undefined, action: any): AppState {
@@ -241,10 +246,16 @@ function characters(state: CharactersState | undefined, action: any): Characters
   return {
     ...state,
     characters: newCharacters,
-  }
+  };
 }
 
-export const store = createStore(combineReducers({app, characters}), JSON.parse(window.localStorage.getItem('state') || '{}'), window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']());
+function encounter(state: EncounterState | undefined, action: any): EncounterState {
+  return {
+    monsters: [],
+  };
+}
+
+export const store = createStore(combineReducers({app, characters, encounter}), JSON.parse(window.localStorage.getItem('state') || '{}'), window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']());
 
 store.subscribe(() => { window.localStorage.setItem('state', JSON.stringify(store.getState())) });
 

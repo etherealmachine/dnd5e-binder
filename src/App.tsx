@@ -16,6 +16,7 @@ import Tab from '@material-ui/core/Tab';
 import './App.css';
 import { State } from './store';
 import Compendium from './compendium';
+import CharactersTab from './CharactersTab';
 import SpellsTab from './SpellsTab';
 import ItemsTab from './ItemsTab';
 import MonstersTab from './MonstersTab';
@@ -23,7 +24,7 @@ import BackgroundsTab from './BackgroundsTab';
 import FeatsTab from './FeatsTab';
 import ClassesTab from './ClassesTab';
 import RacesTab from './RacesTab';
-import CharactersTab from './CharactersTab';
+import EncounterTab from './EncounterTab';
 
 export interface Props {
   drawerOpen: boolean
@@ -41,10 +42,6 @@ const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://
 let gapi = window['gapi'];
 
 class App extends React.Component<Props> {
-
-  public constructor(props: Props) {
-    super(props);
-  }
 
   public static mapStateToProps(state: State): Partial<Props> {
     return {
@@ -142,6 +139,7 @@ class App extends React.Component<Props> {
           <Tab label="Feats" />
           <Tab label="Classes" />
           <Tab label="Races" />
+          <Tab label="Encounter" />
         </Tabs>
       </AppBar>
       <SwipeableDrawer open={this.props.drawerOpen} onClose={this.toggleDrawer(false)} onOpen={this.toggleDrawer(true)}>
@@ -153,6 +151,7 @@ class App extends React.Component<Props> {
         <Button data-tabindex="5" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Feats</Button>
         <Button data-tabindex="6" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Classes</Button>
         <Button data-tabindex="7" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Races</Button>
+        <Button data-tabindex="8" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Encounter</Button>
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
@@ -164,6 +163,7 @@ class App extends React.Component<Props> {
         {this.props.tabSelected === 5 && <FeatsTab />}
         {this.props.tabSelected === 6 && <ClassesTab />}
         {this.props.tabSelected === 7 && <RacesTab />}
+        {this.props.tabSelected === 8 && <EncounterTab />}
 	    </div>
     </div>;
   }
