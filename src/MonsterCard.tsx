@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import Compendium from './compendium';
+import store from './store';
 
 export interface Props extends WithStyles<typeof styles> {
   name: string
@@ -195,8 +196,8 @@ class MonsterCard extends React.Component<Props> {
         {slots && <Typography>Slots: {slots}</Typography>}
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary">
-          Tag
+        <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: name})}>
+          Add to Encounter
         </Button>
       </CardActions>
     </Card>

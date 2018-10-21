@@ -1,10 +1,10 @@
 import "core-js/library";
 import * as React from 'react';
-import { AutoSizer, Column, Table, CellMeasurer, CellMeasurerCache, SortDirection, SortDirectionType } from 'react-virtualized';
+import { AutoSizer, Column, Table, TableCellProps, CellMeasurer, CellMeasurerCache, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
-import { State as AppState } from './store';
+import { State as AppState, store } from './store';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
@@ -104,14 +104,6 @@ class BackgroundsTab extends React.Component<Props, State> {
     </CellMeasurer>;
   }
 
-  private handleAddClick = (spellName: string) => (event: React.MouseEvent<HTMLElement>) => {
-    console.log(spellName);
-  }
-
-  private renderAddButton = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
-    return <Button onClick={this.handleAddClick(cellData)}>+</Button>;
-  }
-
   private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
     const {
       sortDirection: prevSortDirection
@@ -185,7 +177,7 @@ class BackgroundsTab extends React.Component<Props, State> {
                 disableSort
                 label=""
                 dataKey="name"
-                cellRenderer={this.renderAddButton}
+                cellRenderer={(col: TableCellProps) => <Button onClick={() => store.dispatch({type: 'ADD_TO_CHARACTER', background: col.cellData})}>+</Button>}
                 width={50} />
             </Table>
           )}

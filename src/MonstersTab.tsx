@@ -1,13 +1,14 @@
 import "core-js/library";
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { ArrowKeyStepper, AutoSizer, Column, TableCellDataGetterParams, Table, ScrollIndices, SortDirection, SortDirectionType } from 'react-virtualized';
+import { ArrowKeyStepper, AutoSizer, Column, Table, TableCellProps, TableCellDataGetterParams, ScrollIndices, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import Compendium from './compendium';
-import { State as AppState } from './store';
+import { State as AppState, store } from './store';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import MonsterCard from './MonsterCard';
 
 export interface Props extends WithStyles<typeof styles> {
@@ -220,7 +221,13 @@ class MonstersTab extends React.Component<Props, State> {
                         className={classes.wrap}
                         flexGrow={1}
                         width={0} />
-                    </Table>
+                      <Column
+                        disableSort
+                        label=""
+                        dataKey="name"
+                        cellRenderer={(col: TableCellProps) => <Button onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: col.cellData})}>+</Button>}
+                        width={50} />
+                      </Table>
                   )}
               </ArrowKeyStepper>
             )}
