@@ -82,8 +82,8 @@ class MonsterCard extends React.Component<Props> {
         <Typography>Passive: {passive}</Typography>
         <Typography>Size: {size}</Typography>
         <Typography>Speed: {speed}</Typography>
-        <Typography>
-          <table>
+        <table>
+          <thead>
             <tr>
               <th>Str</th>
               <th>Dex</th>
@@ -92,6 +92,8 @@ class MonsterCard extends React.Component<Props> {
               <th>Wis</th>
               <th>Cha</th>
             </tr>
+          </thead>
+          <tbody>
             <tr>
               <td>{str}</td>
               <td>{dex}</td>
@@ -100,8 +102,8 @@ class MonsterCard extends React.Component<Props> {
               <td>{wis}</td>
               <td>{cha}</td>
             </tr>
-          </table>
-        </Typography>
+          </tbody>
+        </table>
         <Typography>Alignment: {alignment}</Typography>
         <Typography>Type: {type}</Typography>
         {description && <Typography>{description}</Typography>}

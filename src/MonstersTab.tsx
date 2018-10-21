@@ -1,5 +1,6 @@
 import "core-js/library";
 import * as React from 'react';
+import ReactDOM from 'react-dom';
 import { ArrowKeyStepper, AutoSizer, Column, Table, ScrollIndices, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -83,6 +84,10 @@ class MonstersTab extends React.Component<Props, State> {
   }
 
   private onScrollToChange = (params: ScrollIndices) => {
+    if (this.tableRef.current !== null) {
+      const node = ReactDOM.findDOMNode(this.tableRef.current.Grid)
+      if (node instanceof HTMLElement) node.focus();
+    }
     this.setState({ scrollToRow: params.scrollToRow });
   }
 
@@ -117,6 +122,8 @@ class MonstersTab extends React.Component<Props, State> {
     };
   }
 
+  private tableRef = React.createRef<Table>();
+
   public render() {
     const { classes, compendium } = this.props;
     const { query, sortBy, sortDirection, scrollToRow } = this.state;
@@ -142,6 +149,7 @@ class MonstersTab extends React.Component<Props, State> {
                   scrollToRow={scrollToRow}>
                   {({ onSectionRendered, scrollToColumn, scrollToRow }: { onSectionRendered: any, scrollToColumn: number, scrollToRow: number }) => (
                     <Table
+                        ref={this.tableRef}
                         headerHeight={30}
                         height={height}
                         rowClassName={({index}: {index: number}) => (scrollToRow === index ? classes.highlight : index % 2 == 0 ? classes.row : classes.odd)}
