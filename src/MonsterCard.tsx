@@ -9,12 +9,14 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
+import Compendium from './compendium';
+
 export interface Props extends WithStyles<typeof styles> {
   name: string
   imageURL?: string
-  cr: string
-  ac: string
-  hp: string
+  cr: string | number
+  ac: string | number
+  hp: string | number
   passive: number
   size: string
   speed: string
@@ -27,11 +29,11 @@ export interface Props extends WithStyles<typeof styles> {
   alignment:string 
   type: string
   description?: string
-  action?: {name: string, text: string}[]
-  reaction?: {name: string, text: string}[]
-  legendary?: {name: string, text: string}[]
+  action?: NameTextPair[] | NameTextPair
+  reaction?: NameTextPair[] | NameTextPair
+  legendary?: NameTextPair[] | NameTextPair
   save?: string
-  trait?: string
+  trait?: NameTextPair[] | NameTextPair
   languages?: string
   skill?: string
   resist?: string
@@ -39,22 +41,51 @@ export interface Props extends WithStyles<typeof styles> {
   immune?: string
   conditionImmune?: string
   senses?: string
-  spells?: true
+  spells?: string
   slots?: string
+}
+
+interface NameTextPair {
+  name: string
+  text: string
 }
 
 const styles = createStyles({
   card: {
     width: 400,
     margin: '0 20px',
+    overflow: 'scroll',
   },
   media: {
     height: 140,
     backgroundPosition: 'center',
   },
+  action: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  actionName: {
+    fontWeight: 600,
+  },
 });
 
 class MonsterCard extends React.Component<Props> {
+
+  private renderActions = (actions: NameTextPair[] | NameTextPair | undefined) => {
+    if (!actions) {
+      return null;
+    }
+    if (!(actions instanceof Array)) {
+      actions = [actions];
+    }
+    const { classes } = this.props;
+    const content = actions.map((action, i) => {
+      return <span key={`action-${i}`}><span className={classes.actionName}>{action.name}</span>: {action.text}</span>
+    });
+    return <div className={classes.action}>
+      {content}
+    </div>
+  }
 
   public render() {
     const {
@@ -63,11 +94,23 @@ class MonsterCard extends React.Component<Props> {
       cr, ac, hp, passive,
       size, speed,
       str, dex, con, int, wis, cha,
+      skill,
+      senses,
       alignment,
+      languages,
       type,
       description,
+      action, reaction, legendary,
+      trait,
+      save,
+      resist, vulnerable, immune, conditionImmune,
+      spells, slots,
       classes
     } = this.props;
+    const actions = this.renderActions(action);
+    const reactions = this.renderActions(reaction);
+    const legendaryActions = this.renderActions(legendary);
+    const traits = this.renderActions(trait);
     return <Card className={classes.card}>
       {imageURL && <CardMedia
         className={classes.media}
@@ -76,12 +119,28 @@ class MonsterCard extends React.Component<Props> {
       />}
       <CardContent>
         <Typography gutterBottom variant="h5">{name}</Typography>
-        <Typography>CR: {cr}</Typography>
-        <Typography>AC: {ac}</Typography>
-        <Typography>HP: {hp}</Typography>
-        <Typography>Passive: {passive}</Typography>
-        <Typography>Size: {size}</Typography>
-        <Typography>Speed: {speed}</Typography>
+        <table>
+          <thead>
+            <tr>
+              <th>CR</th>
+              <th>XP</th>
+              <th>AC</th>
+              <th>HP</th>
+              <th>Passive</th>
+              <th>Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{cr}</td>
+              <td>{Compendium.cr_to_xp[cr]}</td>
+              <td>{(typeof(ac) === 'string')? ac.split(' ')[0] : ac}</td>
+              <td>{(typeof(hp) === 'string')? hp.split(' ' )[0] : hp}</td>
+              <td>{passive}</td>
+              <td>{size}</td>
+            </tr>
+          </tbody>
+        </table>
         <table>
           <thead>
             <tr>
@@ -104,9 +163,36 @@ class MonsterCard extends React.Component<Props> {
             </tr>
           </tbody>
         </table>
+        <Typography>Speed: {speed}</Typography>
+        <Typography>Skills: {skill}</Typography>
+        <Typography>Senses: {senses}</Typography>
+        <Typography>Languages: {languages}</Typography>
         <Typography>Alignment: {alignment}</Typography>
         <Typography>Type: {type}</Typography>
         {description && <Typography>{description}</Typography>}
+        {actions && <div>
+          <Typography gutterBottom variant="h6">Actions</Typography>
+          {actions}
+        </div>}
+        {reactions && <div>
+          <Typography gutterBottom variant="h6">Reactions</Typography>
+          {reactions}
+        </div>}
+        {legendaryActions && <div>
+          <Typography gutterBottom variant="h6">Legendary Actions</Typography>
+          {legendaryActions}
+        </div>}
+        {traits && <div>
+          <Typography gutterBottom variant="h6">Traits</Typography>
+          {traits}
+        </div>}
+        {save && <Typography>Save: {save}</Typography>}
+        {resist && <Typography>Resist: {resist}</Typography>}
+        {vulnerable && <Typography>Vulnerable: {vulnerable}</Typography>}
+        {immune && <Typography>Immune: {immune}</Typography>}
+        {conditionImmune && <Typography>Condition Immunities: {conditionImmune}</Typography>}
+        {spells && <Typography>Spells: {spells}</Typography>}
+        {slots && <Typography>Slots: {slots}</Typography>}
       </CardContent>
       <CardActions>
         <Button size="small" color="primary">

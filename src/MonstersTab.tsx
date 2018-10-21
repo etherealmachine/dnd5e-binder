@@ -1,10 +1,11 @@
 import "core-js/library";
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { ArrowKeyStepper, AutoSizer, Column, Table, ScrollIndices, SortDirection, SortDirectionType } from 'react-virtualized';
+import { ArrowKeyStepper, AutoSizer, Column, TableCellDataGetterParams, Table, ScrollIndices, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
+import Compendium from './compendium';
 import { State as AppState } from './store';
 import TextField from '@material-ui/core/TextField';
 import MonsterCard from './MonsterCard';
@@ -106,20 +107,25 @@ class MonstersTab extends React.Component<Props, State> {
     this.setState({ sortBy, sortDirection });
   }
 
-  private parseHP = (value: string): number => {
-    return parseInt(value.split(' ')[0]);
+  private parseFirst = (value: string): number => {
+    return (typeof(value) === 'string')? parseInt(value.split(' ')[0]) : value;
   }
 
   private compare = (sortBy: string, sortDirection: SortDirectionType) => {
     return (a: any, b: any) => {
       const direction = sortDirection === SortDirection.ASC ? 1 : -1;
-      if (sortBy === 'hp') {
-        const aValue = this.parseHP(a.hp || '0');
-        const bValue = this.parseHP(b.hp || '0');
+      if (sortBy === 'hp' || sortBy === 'ac' || sortBy === 'cr' || sortBy === 'passive') {
+        const aValue = this.parseFirst(a[sortBy] || '0');
+        const bValue = this.parseFirst(b[sortBy] || '0');
         return aValue <= bValue ? -direction : direction;
       }
       return (a[sortBy] || '').toString().toLowerCase() <= (b[sortBy] || '').toString().toLowerCase() ? -direction : direction;
     };
+  }
+
+  private firstNumber = (p: TableCellDataGetterParams) => {
+    const v = p.rowData[p.dataKey];
+    return (typeof(v) === 'string')? v.split(' ')[0] : v;
   }
 
   private tableRef = React.createRef<Table>();
@@ -174,14 +180,22 @@ class MonstersTab extends React.Component<Props, State> {
                         flexGrow={1}
                         width={0} />
                       <Column
+                        label="xp"
+                        dataKey="cr"
+                        cellDataGetter={(p: TableCellDataGetterParams) => Compendium.cr_to_xp[p.rowData[p.dataKey]]}
+                        flexGrow={1}
+                        width={0} />
+                      <Column
                         label="hp"
                         dataKey="hp"
+                        cellDataGetter={this.firstNumber}
                         flexGrow={1}
                         width={0} />
                       <Column
                         label="ac"
                         dataKey="ac"
                         className={classes.wrap}
+                        cellDataGetter={this.firstNumber}
                         flexGrow={1}
                         width={0} />
                       <Column
