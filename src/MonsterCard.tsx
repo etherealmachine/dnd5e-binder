@@ -57,7 +57,7 @@ const styles = createStyles({
   card: {
     width: 400,
     margin: '0 20px',
-    overflow: 'scroll',
+    overflowY: 'auto',
   },
   media: {
     height: 140,
@@ -207,6 +207,9 @@ class MonsterCard extends React.Component<Props> {
       <CardActions>
         <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: compendium[name]})}>
           Add to Encounter
+        </Button>
+        <Button size="small" color="secondary" onClick={() => store.dispatch({type: 'REMOVE_FROM_ENCOUNTER', monster: compendium[name]})}>
+          Remove from Encounter
         </Button>
       </CardActions>
     </Card>

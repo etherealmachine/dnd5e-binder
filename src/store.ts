@@ -262,6 +262,8 @@ function encounter(state: EncounterState | undefined, action: any): EncounterSta
       return {
         monsters: newMonsters,
       };
+    case 'REMOVE_FROM_ENCOUNTER':
+      break;
   }
   return state;
 }
