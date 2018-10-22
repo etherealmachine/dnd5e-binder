@@ -250,9 +250,20 @@ function characters(state: CharactersState | undefined, action: any): Characters
 }
 
 function encounter(state: EncounterState | undefined, action: any): EncounterState {
-  return {
-    monsters: [],
-  };
+  if (state === undefined) {
+    return {
+      monsters: [],
+    };
+  }
+  switch (action.type) {
+    case 'ADD_TO_ENCOUNTER':
+      const newMonsters = state.monsters.slice();
+      newMonsters.push(action.monster);
+      return {
+        monsters: newMonsters,
+      };
+  }
+  return state;
 }
 
 export const store = createStore(combineReducers({app, characters, encounter}), JSON.parse(window.localStorage.getItem('state') || '{}'), window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']());

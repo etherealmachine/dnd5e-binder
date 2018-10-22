@@ -28,7 +28,7 @@ class EncounterTab extends React.Component<Props> {
   public render() {
     const { monsters, classes } = this.props;
     return <div className={classes.container}>
-      {monsters.map(monster => <MonsterCard {...monster} />)}
+      {monsters.map((monster, i) => <MonsterCard key={i} {...monster} />)}
     </div>;
   }
 }

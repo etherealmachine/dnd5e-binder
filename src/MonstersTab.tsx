@@ -225,7 +225,7 @@ class MonstersTab extends React.Component<Props, State> {
                         disableSort
                         label=""
                         dataKey="name"
-                        cellRenderer={(col: TableCellProps) => <Button onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: col.cellData})}>+</Button>}
+                        cellRenderer={(col: TableCellProps) => <Button onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: compendium[col.cellData]})}>+</Button>}
                         width={50} />
                       </Table>
                   )}

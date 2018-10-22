@@ -1,6 +1,7 @@
 import "core-js/library";
 import * as React from 'react';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -10,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import Compendium from './compendium';
-import store from './store';
+import { State, store } from './store';
 
 export interface Props extends WithStyles<typeof styles> {
   name: string
@@ -44,6 +45,7 @@ export interface Props extends WithStyles<typeof styles> {
   senses?: string
   spells?: string
   slots?: string
+  compendium: { [key: string]: any }
 }
 
 interface NameTextPair {
@@ -71,6 +73,12 @@ const styles = createStyles({
 });
 
 class MonsterCard extends React.Component<Props> {
+
+  public static mapStateToProps(state: State): Partial<Props> {
+    return {
+      compendium: state.app.compendium.monsters,
+    };
+  }
 
   private renderActions = (actions: NameTextPair[] | NameTextPair | undefined) => {
     if (!actions) {
@@ -106,7 +114,8 @@ class MonsterCard extends React.Component<Props> {
       save,
       resist, vulnerable, immune, conditionImmune,
       spells, slots,
-      classes
+      classes,
+      compendium,
     } = this.props;
     const actions = this.renderActions(action);
     const reactions = this.renderActions(reaction);
@@ -196,7 +205,7 @@ class MonsterCard extends React.Component<Props> {
         {slots && <Typography>Slots: {slots}</Typography>}
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: name})}>
+        <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: compendium[name]})}>
           Add to Encounter
         </Button>
       </CardActions>
@@ -204,4 +213,4 @@ class MonsterCard extends React.Component<Props> {
   }
 }
 
-export default (withStyles(styles)(MonsterCard));
+export default connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard));
