@@ -14,6 +14,8 @@ export interface AppState {
   signedIn: boolean
   compendium: Compendium
   compendiumLoading: boolean
+  snackbarOpen: boolean
+  snackbarQueue: string[]
 }
 
 export interface CharactersState {
@@ -74,6 +76,8 @@ function app(state: AppState | undefined, action: any): AppState {
       signedIn: false,
       compendium: new Compendium(),
       compendiumLoading: true,
+      snackbarOpen: false,
+      snackbarQueue: [],
     };
   }
   switch (action.type) {
@@ -95,6 +99,14 @@ function app(state: AppState | undefined, action: any): AppState {
     case 'COMPENDIUM_LOADING_FINISHED':
       window['Compendium'] = state.compendium;
       return { ...state, compendiumLoading: false };
+    case 'ADD_TO_ENCOUNTER':
+      let newQueue = state.snackbarQueue.slice();
+      newQueue.push(`Added ${action.monster.name}`);
+      return { ...state, snackbarOpen: true, snackbarQueue: newQueue };
+    case 'SNACKBAR_CLOSED':
+      newQueue = state.snackbarQueue.slice();
+      newQueue.shift();
+      return { ...state, snackbarOpen: newQueue.length > 0, snackbarQueue: newQueue };
   }
   return state;
 }

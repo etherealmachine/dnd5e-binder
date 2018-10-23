@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Snackbar from '@material-ui/core/Snackbar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tabs from '@material-ui/core/Tabs';
@@ -32,6 +33,7 @@ export interface Props {
   signedIn: boolean
   compendium: Compendium
   compendiumLoading: boolean
+  snackbarMessage: string
   dispatch: Dispatch
 }
 
@@ -50,6 +52,7 @@ class App extends React.Component<Props> {
       signedIn: state.app.signedIn,
       compendium: state.app.compendium,
       compendiumLoading: state.app.compendiumLoading,
+      snackbarMessage: state.app.snackbarQueue.length > 1 ? state.app.snackbarQueue[1] : state.app.snackbarOpen ? state.app.snackbarQueue[0] : '',
     };
   }
 
@@ -165,6 +168,18 @@ class App extends React.Component<Props> {
         {this.props.tabSelected === 7 && <RacesTab />}
         {this.props.tabSelected === 8 && <EncounterTab />}
 	    </div>
+      <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={this.props.snackbarMessage !== ''}
+          onClose={() => this.props.dispatch({type: 'SNACKBAR_CLOSED'})}
+          autoHideDuration={3000}
+          ContentProps={{
+            'aria-describedby': 'snackbar-message',
+          }}
+          message={<span id="snackbar-message">{this.props.snackbarMessage}</span>} />
     </div>;
   }
 }
