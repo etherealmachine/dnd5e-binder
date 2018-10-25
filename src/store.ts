@@ -30,7 +30,7 @@ export interface Attack {
 
 export interface CharacterState {
   character_name: string
-  attributes: { [key: string]: number | undefined }
+  abilities: { [key: string]: number | undefined }
   saving_throw_proficiency: { [key: string]: boolean }
   skill_proficiency: { [key: string]: boolean }
   class: string
@@ -104,9 +104,9 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
   if (state === undefined) {
     return {
       character_name: '',
-      attributes: Compendium.attributes.reduce((obj, attr) => { obj[attr] = undefined; return obj }, {}),
-      saving_throw_proficiency: Compendium.attributes.reduce((obj, attr) => { obj[attr] = false; return obj }, {}),
-      skill_proficiency: Object.entries(Compendium.skills).reduce((obj, [skill, attr]) => { obj[skill] = false; return obj }, {}),
+      abilities: Compendium.abilities.reduce((obj, ability) => { obj[ability] = undefined; return obj }, {}),
+      saving_throw_proficiency: Compendium.abilities.reduce((obj, ability) => { obj[ability] = false; return obj }, {}),
+      skill_proficiency: Object.entries(Compendium.skills).reduce((obj, [skill, ability]) => { obj[skill] = false; return obj }, {}),
       class: '',
       level: undefined,
       race: '',
@@ -140,11 +140,11 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
   switch (action.type) {
     case 'FIELD_CHANGE':
       return { ...state, [action.key]: action.value };
-    case 'ATTRIBUTE_CHANGE':
+    case 'ABILITIES_CHANGE':
       return {
         ...state,
-        attributes: {
-          ...state.attributes,
+        abilities: {
+          ...state.abilities,
           [action.key]: action.value,
         }
       };

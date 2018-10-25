@@ -213,6 +213,14 @@ class MonsterCard extends React.Component<Props, LocalState> {
           </thead>
           <tbody>
             <tr>
+              <td>{Compendium.modifierText(Compendium.modifier(str))}</td>
+              <td>{Compendium.modifierText(Compendium.modifier(dex))}</td>
+              <td>{Compendium.modifierText(Compendium.modifier(con))}</td>
+              <td>{Compendium.modifierText(Compendium.modifier(int))}</td>
+              <td>{Compendium.modifierText(Compendium.modifier(wis))}</td>
+              <td>{Compendium.modifierText(Compendium.modifier(cha))}</td>
+            </tr>
+            <tr>
               <td>{str}</td>
               <td>{dex}</td>
               <td>{con}</td>

@@ -29,35 +29,18 @@ class CharacterSheet extends React.Component<Props, State> {
     this.handleFieldChange = this.handleInputChange('FIELD');
   }
 
-  private attributeBonus(attr: string): number {
-    if (this.props.attributes[attr] === undefined) {
-      return NaN;
-    }
-    return Math.floor(((this.props.attributes[attr] as number)-10)/2);
-  }
-
-  private skillBonus(skill: string, attr: string): number {
+  private skillModifier(skill: string, ability: string): number {
     if (this.props.skill_proficiency[skill] && this.props.proficiency_bonus !== undefined) {
-      return this.props.proficiency_bonus + this.attributeBonus(attr);
+      return this.props.proficiency_bonus + Compendium.modifier(ability);
     }
-    return this.attributeBonus(attr);
+    return Compendium.modifier(ability);
   }
 
-  private savingThrowBonus(attr: string): number {
-    if (this.props.saving_throw_proficiency[attr] && this.props.proficiency_bonus !== undefined) {
-      return this.attributeBonus(attr) + this.props.proficiency_bonus;
+  private savingThrowModifier(ability: string): number {
+    if (this.props.saving_throw_proficiency[ability] && this.props.proficiency_bonus !== undefined) {
+      return Compendium.modifier(ability) + this.props.proficiency_bonus;
     }
-    return this.attributeBonus(attr);
-  }
-
-  private bonusText(bonus: number) {
-    if (isNaN(bonus)) {
-      return <span>&nbsp;&nbsp;</span>;
-    }
-    if (bonus < 0) {
-      return <span>{bonus}</span>;
-    }
-    return <span>+{bonus}</span>;
+    return Compendium.modifier(ability);
   }
 
   private handleFieldChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -131,29 +114,29 @@ class CharacterSheet extends React.Component<Props, State> {
   }
 
   public render() {
-    const attributes: JSX.Element[] = [];
+    const abilities: JSX.Element[] = [];
     const savingThrows: JSX.Element[] = [];
-    Compendium.attributes.forEach((attr) => {
-      attributes.push(
-        <div key={`${attr}-attr`} className="column align-items-center" style={{padding: '10px 0'}}>
-          <span>{this.bonusText(this.attributeBonus(attr))}</span>
-          <NumberInput name={attr} placeholder={attr.slice(0,3)} type="number" min="0" max="20" value={this.props.attributes[attr]} onChange={this.handleInputChange('ATTRIBUTE')} />
-          <label>{attr}</label>
+    Compendium.abilities.forEach((ability) => {
+      abilities.push(
+        <div key={`${ability}-score`} className="column align-items-center" style={{padding: '10px 0'}}>
+          <span>{Compendium.modifierText(Compendium.modifier(ability))}</span>
+          <NumberInput name={ability} placeholder={ability.slice(0,3)} type="number" min="0" max="20" value={this.props.abilities[ability]} onChange={this.handleInputChange('ABILITIES')} />
+          <label>{ability}</label>
         </div>
       );
       savingThrows.push(
-        <div key={`${attr}-saving-throw`} className="row align-items-center">
-          <input name={attr} type="checkbox" checked={this.props.saving_throw_proficiency[attr]} onChange={this.handleInputChange('SAVING_THROW_PROFICIENCY')} />
-          <span>{attr}</span>
-          <span className="bonus">{this.bonusText(this.savingThrowBonus(attr))}</span>
+        <div key={`${ability}-saving-throw`} className="row align-items-center">
+          <input name={ability} type="checkbox" checked={this.props.saving_throw_proficiency[ability]} onChange={this.handleInputChange('SAVING_THROW_PROFICIENCY')} />
+          <span>{ability}</span>
+          <span className="bonus">{Compendium.modifierText(this.savingThrowModifier(ability))}</span>
         </div>
       );
     })
-    const skills: JSX.Element[] = Object.entries(Compendium.skills).map(([skill, attr]) => {
+    const skills: JSX.Element[] = Object.entries(Compendium.skills).map(([skill, ability]) => {
       return <div key={skill} className="row align-items-center">
         <input name={skill} type="checkbox" checked={this.props.skill_proficiency[skill]} onChange={this.handleInputChange('SKILL_PROFICIENCY')} />
-        <span>{skill}&nbsp;<span className="fc-gray-1">({attr})</span></span>
-        <span className="bonus">{this.bonusText(this.skillBonus(skill, attr))}</span>
+        <span>{skill}&nbsp;<span className="fc-gray-1">({ability})</span></span>
+        <span className="bonus">{Compendium.modifierText(this.skillModifier(skill, ability))}</span>
       </div>
     });
     const coins: JSX.Element[] = Compendium.coinage.map((coin) => {
@@ -220,7 +203,7 @@ class CharacterSheet extends React.Component<Props, State> {
             <div className="column">
               <div className="row justify-content-space-around">
                 <div className="column justify-content-space-around" style={{backgroundColor: '#E5E5E5'}}>
-                  {attributes}
+                  {abilities}
                 </div>
                 <div className="column">
                   <div className="column align-items-center">

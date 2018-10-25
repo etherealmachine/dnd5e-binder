@@ -27,7 +27,7 @@ export class Compendium {
   public races: { [key: string]: any } = {}
   public spells: { [key: string]: any } = {}
 
-  public static attributes = [
+  public static abilities = [
 	  "Strength",
 	  "Dexterity",
 	  "Constitution",
@@ -79,6 +79,26 @@ export class Compendium {
 		"Warlock": 8,
 		"Wizard": 6
 	}
+
+  public static modifier(ability_score: number | string | undefined) {
+    if (ability_score === undefined) {
+      return NaN;
+    }
+    if (typeof(ability_score) === 'string') {
+      ability_score = parseInt(ability_score);
+    }
+    return Math.floor((ability_score - 10) / 2);
+  }
+
+  public static modifierText(bonus: number) {
+    if (isNaN(bonus)) {
+      return '';
+    }
+    if (bonus < 0) {
+      return bonus;
+    }
+    return '+' + bonus;
+  }
 
   public static types = {
     'background': 'backgrounds',
