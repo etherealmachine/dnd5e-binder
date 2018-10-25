@@ -1,6 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 
 import Compendium from './compendium';
+import { appInstance } from './App';
 
 export interface State {
   app: AppState
@@ -14,8 +15,6 @@ export interface AppState {
   signedIn: boolean
   compendium: Compendium
   compendiumLoading: boolean
-  snackbarOpen: boolean
-  snackbarQueue: string[]
 }
 
 export interface CharactersState {
@@ -76,8 +75,6 @@ function app(state: AppState | undefined, action: any): AppState {
       signedIn: false,
       compendium: new Compendium(),
       compendiumLoading: true,
-      snackbarOpen: false,
-      snackbarQueue: [],
     };
   }
   switch (action.type) {
@@ -99,14 +96,6 @@ function app(state: AppState | undefined, action: any): AppState {
     case 'COMPENDIUM_LOADING_FINISHED':
       window['Compendium'] = state.compendium;
       return { ...state, compendiumLoading: false };
-    case 'ADD_TO_ENCOUNTER':
-      let newQueue = state.snackbarQueue.slice();
-      newQueue.push(`Added ${action.monster.name}`);
-      return { ...state, snackbarOpen: true, snackbarQueue: newQueue };
-    case 'SNACKBAR_CLOSED':
-      newQueue = state.snackbarQueue.slice();
-      newQueue.shift();
-      return { ...state, snackbarOpen: newQueue.length > 0, snackbarQueue: newQueue };
   }
   return state;
 }
@@ -269,13 +258,33 @@ function encounter(state: EncounterState | undefined, action: any): EncounterSta
   }
   switch (action.type) {
     case 'ADD_TO_ENCOUNTER':
-      const newMonsters = state.monsters.slice();
-      newMonsters.push(action.monster);
+      let newMonsters = state.monsters.slice();
+      let newMonster = Object.assign({}, action.monster);
+      let i = 0;
+      newMonster.id = `Unnamed ${action.monster.name}`;
+      while (newMonsters.some((monster: any) => monster.id === newMonster.id)) {
+        i++;
+        newMonster.id = `Unnamed ${action.monster.name} ${i}`;
+      }
+      newMonsters.push(newMonster);
+      if (appInstance !== null) {
+        appInstance.addSnackbarMessage(`Added ${newMonster.id}`);
+      }
       return {
         monsters: newMonsters,
       };
     case 'REMOVE_FROM_ENCOUNTER':
-      break;
+      newMonsters = state.monsters.slice();
+      newMonsters.splice(newMonsters.findIndex((monster: any) => monster.id === action.monster.id), 1);
+      return {
+        monsters: newMonsters,
+      };
+    case 'UPDATE_ID':
+      newMonsters = state.monsters.slice();
+      newMonsters.find((monster: any) => monster.id === action.from).id = action.to;
+      return {
+        monsters: newMonsters,
+      };
   }
   return state;
 }

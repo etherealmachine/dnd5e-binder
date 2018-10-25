@@ -8,12 +8,14 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import Compendium from './compendium';
 import { State, store } from './store';
 
 export interface Props extends WithStyles<typeof styles> {
+  id?: string
   name: string
   imageURL?: string
   cr: string | number
@@ -24,11 +26,11 @@ export interface Props extends WithStyles<typeof styles> {
   speed: string
   str: number
   dex: number
-  con: number 
+  con: number
   int: string
   wis: number
-  cha: number 
-  alignment:string 
+  cha: number
+  alignment:string
   type: string
   description?: string
   action?: NameTextPair[] | NameTextPair
@@ -53,10 +55,15 @@ interface NameTextPair {
   text: string
 }
 
+interface LocalState {
+  id: string
+  editing: boolean
+}
+
 const styles = createStyles({
   card: {
     width: 400,
-    margin: '0 20px',
+    margin: '10px 20px',
     overflowY: 'auto',
   },
   media: {
@@ -72,7 +79,15 @@ const styles = createStyles({
   },
 });
 
-class MonsterCard extends React.Component<Props> {
+class MonsterCard extends React.Component<Props, LocalState> {
+
+  public constructor(props: Props) {
+    super(props);
+    this.state = {
+      id: props.id || '',
+      editing: false
+    };
+  }
 
   public static mapStateToProps(state: State): Partial<Props> {
     return {
@@ -96,8 +111,40 @@ class MonsterCard extends React.Component<Props> {
     </div>
   }
 
+  private monsterInstance = () => {
+    const monster = Object.assign({}, this.props.compendium[this.props.name]);
+    monster.id = this.props.id;
+    return monster;
+  }
+
+  private handleIDChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      id: event.currentTarget.value,
+    })
+  }
+
+  private handleIDKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      store.dispatch({
+        type: 'UPDATE_ID',
+        from: this.props.id,
+        to: this.state.id,
+      });
+      this.setState({
+        editing: false,
+      });
+    }
+  }
+
+  private handleIDClick = () => {
+    this.setState({
+      editing: true,
+    });
+  }
+
   public render() {
     const {
+      id,
       name,
       imageURL,
       cr, ac, hp, passive,
@@ -115,7 +162,6 @@ class MonsterCard extends React.Component<Props> {
       resist, vulnerable, immune, conditionImmune,
       spells, slots,
       classes,
-      compendium,
     } = this.props;
     const actions = this.renderActions(action);
     const reactions = this.renderActions(reaction);
@@ -128,7 +174,10 @@ class MonsterCard extends React.Component<Props> {
         title={name}
       />}
       <CardContent>
-        <Typography gutterBottom variant="h5">{name}</Typography>
+        {id !== undefined && this.state.editing ?
+          <TextField label="Name" value={this.state.id} onChange={this.handleIDChange} onKeyPress={this.handleIDKeyPress} /> :
+          <Typography gutterBottom variant="h5" onClick={this.handleIDClick}>{id? id : name}</Typography>
+        }
         <table>
           <thead>
             <tr>
@@ -205,12 +254,12 @@ class MonsterCard extends React.Component<Props> {
         {slots && <Typography>Slots: {slots}</Typography>}
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: compendium[name]})}>
+        {id === undefined && <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: this.monsterInstance()})}>
           Add to Encounter
-        </Button>
-        <Button size="small" color="secondary" onClick={() => store.dispatch({type: 'REMOVE_FROM_ENCOUNTER', monster: compendium[name]})}>
+        </Button>}
+        {id !== undefined && <Button size="small" color="secondary" onClick={() => store.dispatch({type: 'REMOVE_FROM_ENCOUNTER', monster: this.monsterInstance()})}>
           Remove from Encounter
-        </Button>
+        </Button>}
       </CardActions>
     </Card>
   }

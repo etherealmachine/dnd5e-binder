@@ -33,8 +33,12 @@ export interface Props {
   signedIn: boolean
   compendium: Compendium
   compendiumLoading: boolean
-  snackbarMessage: string
   dispatch: Dispatch
+}
+
+interface LocalState {
+  snackbarOpen: boolean
+  snackbarMessage?: { key: number, message: string }
 }
 
 const CLIENT_ID = '196165648382-s1585cq9b97a2tn9ulfg4ffkbvqgmaf9.apps.googleusercontent.com';
@@ -43,7 +47,20 @@ const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/r
 const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file';
 let gapi = window['gapi'];
 
-class App extends React.Component<Props> {
+export let appInstance: App | null = null;
+
+export class App extends React.Component<Props, LocalState> {
+
+  private snackbarQueue: { key: number, message: string }[] = [];
+
+  public constructor(props: Props) {
+    super(props);
+    appInstance = this;
+    this.state = {
+      snackbarOpen: false,
+      snackbarMessage: undefined,
+    };
+  }
 
   public static mapStateToProps(state: State): Partial<Props> {
     return {
@@ -52,12 +69,15 @@ class App extends React.Component<Props> {
       signedIn: state.app.signedIn,
       compendium: state.app.compendium,
       compendiumLoading: state.app.compendiumLoading,
-      snackbarMessage: state.app.snackbarQueue.length > 1 ? state.app.snackbarQueue[1] : state.app.snackbarOpen ? state.app.snackbarQueue[0] : '',
     };
   }
 
   public static mapDispatchToProps(dispatch: Dispatch): Partial<Props> {
     return { dispatch };
+  }
+
+  public componentDidMount() {
+    this.loadDriveApi();
   }
 
   private updateSigninStatus = (isSignedIn: boolean) => {
@@ -100,10 +120,6 @@ class App extends React.Component<Props> {
     document.body.appendChild(script);
   }
 
-  public componentDidMount() {
-    this.loadDriveApi();
-  }
-
   private toggleDrawer = (open: boolean) => {
   	return (event: React.MouseEvent<HTMLButtonElement>) => {
       if (open) {
@@ -121,6 +137,32 @@ class App extends React.Component<Props> {
 
   private handleTabChange = (event: React.ChangeEvent<{}>, value: number) => {
     this.props.dispatch({type: 'SELECT_TAB', value: value});
+  }
+
+  public addSnackbarMessage = (message: string) => {
+    this.snackbarQueue.push({ message: message, key: new Date().getTime() });
+    if (this.state.snackbarOpen) {
+      this.setState({ snackbarOpen : false });
+    } else {
+      this.processSnackbarQueue();
+    }
+  }
+
+  private handleSnackbarClosed = () => {
+    this.setState({ snackbarOpen: false });
+  }
+
+  private handleSnackbarExited = () => {
+    this.processSnackbarQueue();
+  }
+
+  private processSnackbarQueue = () => {
+    if (this.snackbarQueue.length > 0) {
+      this.setState({
+        snackbarOpen: true,
+        snackbarMessage: this.snackbarQueue.shift(),
+      });
+    }
   }
 
   public render() {
@@ -168,18 +210,20 @@ class App extends React.Component<Props> {
         {this.props.tabSelected === 7 && <RacesTab />}
         {this.props.tabSelected === 8 && <EncounterTab />}
 	    </div>
-      <Snackbar
+      {this.state.snackbarMessage !== undefined && <Snackbar
+          key={this.state.snackbarMessage.key}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'left',
           }}
-          open={this.props.snackbarMessage !== ''}
-          onClose={() => this.props.dispatch({type: 'SNACKBAR_CLOSED'})}
+          open={this.state.snackbarOpen}
+          onClose={this.handleSnackbarClosed}
+          onExited={this.handleSnackbarExited}
           autoHideDuration={3000}
           ContentProps={{
             'aria-describedby': 'snackbar-message',
           }}
-          message={<span id="snackbar-message">{this.props.snackbarMessage}</span>} />
+          message={<span id="snackbar-message">{this.state.snackbarMessage.message}</span>} />}
     </div>;
   }
 }
