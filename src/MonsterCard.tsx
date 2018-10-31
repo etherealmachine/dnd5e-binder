@@ -3,12 +3,12 @@ import * as React from 'react';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
 
 import Compendium from './compendium';
@@ -77,9 +77,26 @@ const styles = createStyles({
   actionName: {
     fontWeight: 600,
   },
+  h5InputParent: {
+    width: '100%',
+    marginBottom: '10px',
+  },
+  h5Input: {
+    width: '100%',
+    color: 'rgba(0, 0, 0, 0.87)',
+    fontSize: '1.5rem',
+    fontWeight: 400,
+    lineHeight: '1.33',
+    letterSpacing: '0em',
+    paddingTop: '3px',
+    marginBottom: '2.4px',
+    padding: '0',
+  }
 });
 
 class MonsterCard extends React.Component<Props, LocalState> {
+
+  inputRef = React.createRef<HTMLInputElement>();
 
   public constructor(props: Props) {
     super(props);
@@ -87,6 +104,22 @@ class MonsterCard extends React.Component<Props, LocalState> {
       id: props.id || '',
       editing: false
     };
+  }
+
+  public componentWillMount() {
+    document.addEventListener('mousedown', this.handleClick, false);
+  }
+
+  public componentWillUnmount() {
+    store.dispatch({
+      type: 'UPDATE_ID',
+      from: this.props.id,
+      to: this.state.id,
+    });
+    this.setState({
+      editing: false,
+    });
+    document.removeEventListener('mousedown', this.handleClick, false);
   }
 
   public static mapStateToProps(state: State): Partial<Props> {
@@ -125,6 +158,19 @@ class MonsterCard extends React.Component<Props, LocalState> {
 
   private handleIDKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
+      store.dispatch({
+        type: 'UPDATE_ID',
+        from: this.props.id,
+        to: this.state.id,
+      });
+      this.setState({
+        editing: false,
+      });
+    }
+  }
+
+  private handleClick = (e: any) => {
+    if (this.inputRef.current !== e.target) {
       store.dispatch({
         type: 'UPDATE_ID',
         from: this.props.id,
@@ -175,7 +221,15 @@ class MonsterCard extends React.Component<Props, LocalState> {
       />}
       <CardContent>
         {id !== undefined && this.state.editing ?
-          <TextField label="Name" value={this.state.id} onChange={this.handleIDChange} onKeyPress={this.handleIDKeyPress} /> :
+          <Input
+              autoFocus={true}
+              inputRef={this.inputRef}
+              value={this.state.id}
+              onChange={this.handleIDChange}
+              onKeyPress={this.handleIDKeyPress}
+              className={classes.h5InputParent}
+              classes={{input: classes.h5Input}}
+          /> :
           <Typography gutterBottom variant="h5" onClick={this.handleIDClick}>{id? id : name}</Typography>
         }
         <table>
