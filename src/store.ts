@@ -266,6 +266,9 @@ function encounter(state: EncounterState | undefined, action: any): EncounterSta
         i++;
         newMonster.id = `Unnamed ${action.monster.name} ${i}`;
       }
+      if (action.monster.hp !== undefined) {
+        newMonster.currentHP = (typeof(action.monster.hp) === 'string')? parseInt(action.monster.hp.split(' ')[0]) : action.monster.hp;
+      }
       newMonsters.push(newMonster);
       if (appInstance !== null) {
         appInstance.addSnackbarMessage(`Added ${newMonster.id}`);
@@ -279,9 +282,14 @@ function encounter(state: EncounterState | undefined, action: any): EncounterSta
       return {
         monsters: newMonsters,
       };
-    case 'UPDATE_ID':
+    case 'UPDATE_MONSTER':
       newMonsters = state.monsters.slice();
-      newMonsters.find((monster: any) => monster.id === action.from).id = action.to;
+      const newMonsterIndex = newMonsters.findIndex((monster: any) => monster.id === action.id);
+      if (newMonsterIndex < 0) {
+        return { monsters: newMonsters };
+      }
+      newMonster = Object.assign(newMonsters[newMonsterIndex], action.newValues);
+      newMonsters[newMonsterIndex] = newMonster;
       return {
         monsters: newMonsters,
       };

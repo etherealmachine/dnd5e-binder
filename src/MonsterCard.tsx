@@ -2,6 +2,7 @@ import "core-js/library";
 import * as React from 'react';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -47,7 +48,9 @@ export interface Props extends WithStyles<typeof styles> {
   senses?: string
   spells?: string
   slots?: string
-  compendium: { [key: string]: any }
+  compendium: { [key: string]: any },
+  currentHP?: number,
+  initiative?: number,
 }
 
 interface NameTextPair {
@@ -56,8 +59,8 @@ interface NameTextPair {
 }
 
 interface LocalState {
-  id: string
-  editing: boolean
+  editableProps: { [key: string]: any }
+  editingName: boolean
 }
 
 const styles = createStyles({
@@ -91,7 +94,14 @@ const styles = createStyles({
     paddingTop: '3px',
     marginBottom: '2.4px',
     padding: '0',
-  }
+  },
+  table: {
+    textAlign: 'center',
+  },
+  numberInputParent: {
+    maxWidth: '2em',
+    alignSelf: 'center',
+  },
 });
 
 class MonsterCard extends React.Component<Props, LocalState> {
@@ -101,8 +111,12 @@ class MonsterCard extends React.Component<Props, LocalState> {
   public constructor(props: Props) {
     super(props);
     this.state = {
-      id: props.id || '',
-      editing: false
+      editableProps: {
+        id: props.id || '',
+        initiative: props.initiative || '',
+        currentHP: props.currentHP || '',
+      },
+      editingName: false
     };
   }
 
@@ -112,12 +126,12 @@ class MonsterCard extends React.Component<Props, LocalState> {
 
   public componentWillUnmount() {
     store.dispatch({
-      type: 'UPDATE_ID',
-      from: this.props.id,
-      to: this.state.id,
+      type: 'UPDATE_MONSTER',
+      id: this.props.id,
+      newValues: this.state.editableProps,
     });
     this.setState({
-      editing: false,
+      editingName: false,
     });
     document.removeEventListener('mousedown', this.handleClick, false);
   }
@@ -144,27 +158,57 @@ class MonsterCard extends React.Component<Props, LocalState> {
     </div>
   }
 
+  private renderInitiativeTracker = () => {
+    return <div className="column align-self-flex-end" style={{minWidth: '110px'}}>
+      <label htmlFor="initiative" className="align-self-center">Initiative</label>
+      <Input
+          name="initiative"
+          className={this.props.classes.numberInputParent}
+          onChange={this.handleChange('initiative')}
+          onKeyPress={this.handleKeyPress('initiative')}
+          type={'number'}
+          value={this.state.editableProps.initiative}
+      />
+    </div>;
+  }
+
+  private renderCurrentHP = () => {
+    return <div className="column align-self-flex-end" style={{minWidth: '110px'}}>
+      <label htmlFor="currentHP" className="align-self-center">Current HP</label>
+      <Input
+          name="currentHP"
+          className={this.props.classes.numberInputParent}
+          onChange={this.handleChange('currentHP')}
+          onKeyPress={this.handleKeyPress('currentHP')}
+          type={'number'}
+          value={this.state.editableProps.currentHP}
+      />
+    </div>;
+  }
+
   private monsterInstance = () => {
     const monster = Object.assign({}, this.props.compendium[this.props.name]);
     monster.id = this.props.id;
     return monster;
   }
 
-  private handleIDChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  private handleChange = (prop: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const props = this.state.editableProps;
+    props[prop] = event.currentTarget.value;
     this.setState({
-      id: event.currentTarget.value,
+      editableProps: props,
     })
   }
 
-  private handleIDKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  private handleKeyPress = (prop: string) => (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
       store.dispatch({
-        type: 'UPDATE_ID',
-        from: this.props.id,
-        to: this.state.id,
+        type: 'UPDATE_MONSTER',
+        id: this.props.id,
+        newValues: this.state.editableProps,
       });
       this.setState({
-        editing: false,
+        editingName: false,
       });
     }
   }
@@ -172,19 +216,19 @@ class MonsterCard extends React.Component<Props, LocalState> {
   private handleClick = (e: any) => {
     if (this.inputRef.current !== e.target) {
       store.dispatch({
-        type: 'UPDATE_ID',
-        from: this.props.id,
-        to: this.state.id,
+        type: 'UPDATE_MONSTER',
+        id: this.props.id,
+        newValues: this.state.editableProps,
       });
       this.setState({
-        editing: false,
+        editingName: false,
       });
     }
   }
 
   private handleIDClick = () => {
     this.setState({
-      editing: true,
+      editingName: true,
     });
   }
 
@@ -220,70 +264,76 @@ class MonsterCard extends React.Component<Props, LocalState> {
         title={name}
       />}
       <CardContent>
-        {id !== undefined && this.state.editing ?
+        {id !== undefined && this.state.editingName ?
           <Input
               autoFocus={true}
               inputRef={this.inputRef}
-              value={this.state.id}
-              onChange={this.handleIDChange}
-              onKeyPress={this.handleIDKeyPress}
+              value={this.state.editableProps.id}
+              onChange={this.handleChange('id')}
+              onKeyPress={this.handleKeyPress('id')}
               className={classes.h5InputParent}
               classes={{input: classes.h5Input}}
           /> :
           <Typography gutterBottom variant="h5" onClick={this.handleIDClick}>{id? id : name}</Typography>
         }
-        <table>
-          <thead>
-            <tr>
-              <th>CR</th>
-              <th>XP</th>
-              <th>AC</th>
-              <th>HP</th>
-              <th>Passive</th>
-              <th>Size</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{cr}</td>
-              <td>{Compendium.cr_to_xp[cr]}</td>
-              <td>{(typeof(ac) === 'string')? ac.split(' ')[0] : ac}</td>
-              <td>{(typeof(hp) === 'string')? hp.split(' ' )[0] : hp}</td>
-              <td>{passive}</td>
-              <td>{size}</td>
-            </tr>
-          </tbody>
-        </table>
-        <table>
-          <thead>
-            <tr>
-              <th>Str</th>
-              <th>Dex</th>
-              <th>Con</th>
-              <th>Int</th>
-              <th>Wis</th>
-              <th>Cha</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{Compendium.modifierText(Compendium.modifier(str))}</td>
-              <td>{Compendium.modifierText(Compendium.modifier(dex))}</td>
-              <td>{Compendium.modifierText(Compendium.modifier(con))}</td>
-              <td>{Compendium.modifierText(Compendium.modifier(int))}</td>
-              <td>{Compendium.modifierText(Compendium.modifier(wis))}</td>
-              <td>{Compendium.modifierText(Compendium.modifier(cha))}</td>
-            </tr>
-            <tr>
-              <td>{str}</td>
-              <td>{dex}</td>
-              <td>{con}</td>
-              <td>{int}</td>
-              <td>{wis}</td>
-              <td>{cha}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="row justify-content-space-around">
+          <table className={classNames("flex-1", classes.table)}>
+            <thead>
+              <tr>
+                <th>CR</th>
+                <th>XP</th>
+                <th>AC</th>
+                <th>HP</th>
+                <th>Passive</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{cr}</td>
+                <td>{Compendium.cr_to_xp[cr]}</td>
+                <td>{(typeof(ac) === 'string')? ac.split(' ')[0] : ac}</td>
+                <td>{(typeof(hp) === 'string')? hp.split(' ' )[0] : hp}</td>
+                <td>{passive}</td>
+                <td>{size}</td>
+              </tr>
+            </tbody>
+          </table>
+          {id !== undefined && this.renderInitiativeTracker()}
+        </div>
+        <div className="row">
+          <table className={classNames("flex-1", classes.table)}>
+            <thead>
+              <tr>
+                <th>Str</th>
+                <th>Dex</th>
+                <th>Con</th>
+                <th>Int</th>
+                <th>Wis</th>
+                <th>Cha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{Compendium.modifierText(Compendium.modifier(str))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(dex))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(con))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(int))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(wis))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(cha))}</td>
+              </tr>
+              <tr>
+                <td>{str}</td>
+                <td>{dex}</td>
+                <td>{con}</td>
+                <td>{int}</td>
+                <td>{wis}</td>
+                <td>{cha}</td>
+              </tr>
+            </tbody>
+          </table>
+          {id !== undefined && this.renderCurrentHP()}
+        </div>
         <Typography>Speed: {speed}</Typography>
         <Typography>Skills: {skill}</Typography>
         <Typography>Senses: {senses}</Typography>
