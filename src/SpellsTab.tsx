@@ -1,6 +1,6 @@
 import "core-js/library";
 import * as React from 'react';
-import { AutoSizer, Column, Table, TableCellProps, CellMeasurer, CellMeasurerCache, SortDirection, SortDirectionType } from 'react-virtualized';
+import { AutoSizer, Column, Table, TableCellProps, SortDirection, SortDirectionType } from 'react-virtualized';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
@@ -73,46 +73,15 @@ class SpellsTab extends React.Component<Props, State> {
   }
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO: keep cache but use remapped index when filtering list.
-    this.cache.clearAll();
     this.setState({
       query: event.currentTarget.value,
     });
-  }
-
-  private cache = new CellMeasurerCache({
-    fixedWidth: true,
-    minHeight: 25,
-  });
-
-  private renderText = ({cellData, dataKey, parent, rowIndex}: any): JSX.Element => {
-    let content = <span></span>;
-    if (cellData) {
-      const { classes } = this.props;
-      const text = cellData;
-      if (text instanceof Array) {
-        content = <div className={classes.text}>
-          {text.filter((text: string) => text).map((line, i) => <div key={i}>{line}</div>)}
-        </div>;
-      } else {
-        content = <span className={classes.text}>{text}</span>;
-      }
-    }
-    return <CellMeasurer
-        cache={this.cache}
-        columnIndex={0}
-        key={dataKey}
-        parent={parent}
-        rowIndex={rowIndex}>
-      {content}
-    </CellMeasurer>;
   }
 
   private sort = ({sortBy, sortDirection}: {sortBy?: string, sortDirection?: SortDirectionType}) => {
     const {
       sortDirection: prevSortDirection
     } = this.state;
-    this.cache.clearAll();
 
     // If list was sorted DESC by this column.
     // Rather than switch to ASC, return to "natural" order.
@@ -152,7 +121,7 @@ class SpellsTab extends React.Component<Props, State> {
                   height={height}
                   rowClassName={({index}: {index: number}) => (index % 2 == 0 ? classes.row : classes.odd)}
                   noRowsRenderer={() => <div>No rows</div>}
-                  rowHeight={this.cache.rowHeight}
+                  rowHeight={80}
                   rowGetter={({index}: {index: number}) => list[index]}
                   rowCount={list.length}
                   width={width}
@@ -190,14 +159,6 @@ class SpellsTab extends React.Component<Props, State> {
                   dataKey="time"
                   className={classes.wrap}
                   flexGrow={1}
-                  width={0} />
-                <Column
-                  disableSort
-                  label="text"
-                  dataKey="text"
-                  cellRenderer={this.renderText}
-                  className={classes.wrap}
-                  flexGrow={4}
                   width={0} />
                 <Column
                   disableSort

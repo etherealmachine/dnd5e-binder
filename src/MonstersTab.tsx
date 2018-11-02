@@ -75,8 +75,6 @@ class MonstersTab extends React.Component<Props, State> {
   }
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO: keep cache but use remapped index when filtering list.
-    this.cache.clearAll();
     this.setState({
       query: event.currentTarget.value,
     });
