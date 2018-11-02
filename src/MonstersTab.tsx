@@ -28,6 +28,11 @@ const styles = createStyles({
     flexDirection: 'column',
     flex: '1',
   },
+  tableWithCard: {
+    display: 'flex',
+    flex: '1',
+    marginBottom: '20px',
+  },
   table: {
     flex: '1',
     overflow: 'hidden',
@@ -52,11 +57,6 @@ const styles = createStyles({
     backgroundColor: '#fafafa',
     cursor: 'pointer',
   },
-  tableWithCard: {
-    display: 'flex',
-    flex: '1',
-    marginBottom: '20px',
-  },
 });
 
 class MonstersTab extends React.Component<Props, State> {
@@ -76,6 +76,7 @@ class MonstersTab extends React.Component<Props, State> {
 
   private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     // TODO: keep cache but use remapped index when filtering list.
+    this.cache.clearAll();
     this.setState({
       query: event.currentTarget.value,
     });
