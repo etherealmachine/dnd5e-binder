@@ -4,7 +4,6 @@ import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
-//import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 export interface Props extends WithStyles<typeof styles> {
@@ -26,9 +25,6 @@ const styles = createStyles({
     flexDirection: 'column',
     flex: '1',
     marginBottom: '20px',
-  },
-  featureName: {
-    fontWeight: 600,
   },
 });
 
@@ -64,7 +60,6 @@ class ClassesTab extends React.Component<Props, State> {
   }
 
   private renderClass = (clazz: any, index: number): JSX.Element => {
-    console.log(clazz);
     const content: JSX.Element[] = [];
     const autolevel = clazz.autolevel;
     autolevel.filter((level: Autolevel) => level.feature).forEach((level: Autolevel) => {
@@ -78,18 +73,17 @@ class ClassesTab extends React.Component<Props, State> {
           text = [feature.text];
         }
         content.push(
-          <p key={content.length}><span className={this.props.classes.featureName}>{feature.name}:</span>&nbsp;{(text as string[]).map(t => <span>{t}<br /></span>)}</p>)
+          <p key={content.length}><span className="term">{feature.name}:</span>&nbsp;{(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}</p>)
       });
     });
     return <div key={index}>
       <h2>{clazz.name}</h2>
-      <p>Hit Die: {clazz.hd}</p>
-      <p>Proficiency: {clazz.proficiency}</p>
-      <p>{clazz.spellAbility && `Spell Ability: ${clazz.spellAbility}`}</p>
+      <p><span className="term">Hit Die: {clazz.hd}</span></p>
+      <p><span className="term">Proficiency: {clazz.proficiency}</span></p>
+      <p>{clazz.spellAbility && <span><span className="term">Spell Ability:</span>{clazz.spellAbility}</span>}</p>
       {content}
     </div>;
   }
-
 
   public render() {
     const { classes, compendium } = this.props;
