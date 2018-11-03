@@ -4,10 +4,11 @@ import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State } from './store';
+import { Monster } from './compendium';
 import MonsterCard from './MonsterCard';
 
 export interface Props extends WithStyles<typeof styles> {
-  monsters: any[],
+  monsters: Monster[],
 }
 
 const styles = createStyles({
@@ -28,7 +29,7 @@ class EncounterTab extends React.Component<Props> {
   public render() {
     const { monsters, classes } = this.props;
     return <div className={classes.container}>
-      {monsters.map((monster, i) => <MonsterCard key={i} {...monster} />)}
+      {monsters.map((monster, i) => <MonsterCard key={i} monster={monster} />)}
     </div>;
   }
 }

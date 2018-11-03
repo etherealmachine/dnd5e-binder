@@ -73,3 +73,7 @@ body {
 .term {
   font-weight: 600;
 }
+
+.wrap: {
+  whiteSpace: normal,
+}

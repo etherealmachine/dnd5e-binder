@@ -12,50 +12,12 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
 
-import Compendium from './compendium';
+import { Compendium, Monster, NameTextPair } from './compendium';
 import { State, store } from './store';
 
 export interface Props extends WithStyles<typeof styles> {
-  id?: string
-  name: string
-  imageURL?: string
-  cr: string | number
-  ac: string | number
-  hp: string | number
-  passive: number
-  size: string
-  speed: string
-  str: number
-  dex: number
-  con: number
-  int: string
-  wis: number
-  cha: number
-  alignment:string
-  type: string
-  description?: string
-  action?: NameTextPair[] | NameTextPair
-  reaction?: NameTextPair[] | NameTextPair
-  legendary?: NameTextPair[] | NameTextPair
-  save?: string
-  trait?: NameTextPair[] | NameTextPair
-  languages?: string
-  skill?: string
-  resist?: string
-  vulnerable?: string
-  immune?: string
-  conditionImmune?: string
-  senses?: string
-  spells?: string
-  slots?: string
-  compendium: { [key: string]: any },
-  currentHP?: number,
-  initiative?: number,
-}
-
-interface NameTextPair {
-  name: string
-  text: string
+  monster: Monster
+  monsters: { [key: string]: Monster }
 }
 
 interface LocalState {
@@ -112,9 +74,9 @@ class MonsterCard extends React.Component<Props, LocalState> {
     super(props);
     this.state = {
       editableProps: {
-        id: props.id || '',
-        initiative: props.initiative || '',
-        currentHP: props.currentHP || '',
+        id: props.monster.id || '',
+        initiative: props.monster.initiative || '',
+        currentHP: props.monster.currentHP || '',
       },
       editingName: false
     };
@@ -127,7 +89,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
   public componentWillUnmount() {
     store.dispatch({
       type: 'UPDATE_MONSTER',
-      id: this.props.id,
+      id: this.props.monster.id,
       newValues: this.state.editableProps,
     });
     this.setState({
@@ -138,7 +100,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
 
   public static mapStateToProps(state: State): Partial<Props> {
     return {
-      compendium: state.app.compendium.monsters,
+      monsters: state.app.compendium.monsters,
     };
   }
 
@@ -187,8 +149,8 @@ class MonsterCard extends React.Component<Props, LocalState> {
   }
 
   private monsterInstance = () => {
-    const monster = Object.assign({}, this.props.compendium[this.props.name]);
-    monster.id = this.props.id;
+    const monster = Object.assign({}, this.props.monsters[this.props.monster.name]);
+    monster.id = this.props.monster.id;
     return monster;
   }
 
@@ -204,7 +166,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
     if (event.key === 'Enter') {
       store.dispatch({
         type: 'UPDATE_MONSTER',
-        id: this.props.id,
+        id: this.props.monster.id,
         newValues: this.state.editableProps,
       });
       this.setState({
@@ -217,7 +179,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
     if (this.inputRef.current !== e.target) {
       store.dispatch({
         type: 'UPDATE_MONSTER',
-        id: this.props.id,
+        id: this.props.monster.id,
         newValues: this.state.editableProps,
       });
       this.setState({
@@ -233,6 +195,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
   }
 
   public render() {
+    const { classes, monster } = this.props;
     const {
       id,
       name,
@@ -251,8 +214,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
       save,
       resist, vulnerable, immune, conditionImmune,
       spells, slots,
-      classes,
-    } = this.props;
+    } = monster;
     const actions = this.renderActions(action);
     const reactions = this.renderActions(reaction);
     const legendaryActions = this.renderActions(legendary);
@@ -377,4 +339,10 @@ class MonsterCard extends React.Component<Props, LocalState> {
   }
 }
 
-export default connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard));
+// connect is not working welll with type inference
+interface PassedProps {
+  monster: Monster
+}
+
+const component: () => React.Component<PassedProps> = (connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard)) as any);
+export default component;

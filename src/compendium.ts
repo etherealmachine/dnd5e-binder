@@ -1,20 +1,69 @@
 import store from './store';
 
-export interface KeyValuePair {
+export interface NameTextPair {
   name: string
   text: string
 }
 
-export type KeyValuePairList = KeyValuePair | KeyValuePair[] | undefined;
+export interface Monster {
+  id?: string
+  name: string
+  imageURL?: string
+  cr: string | number
+  ac: string | number
+  hp: string | number
+  passive: number
+  size: string
+  speed: string
+  str: number
+  dex: number
+  con: number
+  int: string
+  wis: number
+  cha: number
+  alignment:string
+  type: string
+  description?: string
+  action?: NameTextPair[] | NameTextPair
+  reaction?: NameTextPair[] | NameTextPair
+  legendary?: NameTextPair[] | NameTextPair
+  save?: string
+  trait?: NameTextPair[] | NameTextPair
+  languages?: string
+  skill?: string
+  resist?: string
+  vulnerable?: string
+  immune?: string
+  conditionImmune?: string
+  senses?: string
+  spells?: string
+  slots?: string
+  compendium: { [key: string]: any }
+  currentHP?: number
+  initiative?: number
+}
 
-export function MapPairs(pairs: KeyValuePairList, callback: (pair: KeyValuePair, index: number) => any): any[] | undefined{
-  if (pairs === undefined) {
-    return undefined;
-  } else if ((<KeyValuePair>pairs).hasOwnProperty('name')) {
-    return [callback(<KeyValuePair>pairs, 0)];
-  } else {
-    return Object.values(<KeyValuePair[]>pairs).map(callback);
-  }
+export interface Spell {
+  name: string
+  level: number
+  classes: string
+  time: string
+  duration: string
+  range: string
+  components: string
+  school: string
+  text: string[] | string
+}
+
+export interface Item {
+  name: string
+  range: string
+  dmg1: string
+  dmg2: string
+  dmgType: string
+  value: string
+  ac: string
+  text: string[] | string
 }
 
 export class Compendium {

@@ -6,10 +6,10 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import { Spell } from './compendium';
+import { Item } from './compendium';
 
 export interface Props extends WithStyles<typeof styles> {
-  spell: Spell
+  item: Item
 }
 
 const styles = createStyles({
@@ -53,7 +53,7 @@ const styles = createStyles({
   },
 });
 
-class SpellCard extends React.Component<Props> {
+class ItemCard extends React.Component<Props> {
 
   private renderText(text: string[] | string) {
     if (!(text instanceof Array)) {
@@ -63,21 +63,19 @@ class SpellCard extends React.Component<Props> {
   }
 
   public render() {
-    const { classes, spell } = this.props;
+    const { classes, item } = this.props;
     return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom variant="h5">{spell.name}</Typography>
-        <Typography>Level: {spell.level}</Typography>
-        <Typography>Classes: {spell.classes}</Typography>
-        <Typography>Time: {spell.time}</Typography>
-        <Typography>Duration: {spell.duration}</Typography>
-        <Typography>Range: {spell.range}</Typography>
-        <Typography>Components: {spell.components}</Typography>
-        <Typography>School: {spell.school}</Typography>
-        {this.renderText(spell.text)}
+        <Typography gutterBottom variant="h5">{item.name}</Typography>
+        <Typography>Range: {item.range}</Typography>
+        <Typography>Damage: {item.dmg1}</Typography>
+        <Typography>Type: {item.dmgType}</Typography>
+        <Typography>Value: {item.value}</Typography>
+        <Typography>AC: {item.ac}</Typography>
+        {this.renderText(item.text)}
       </CardContent>
     </Card>
   }
 }
 
-export default withStyles(styles)(SpellCard);
+export default withStyles(styles)(ItemCard);
