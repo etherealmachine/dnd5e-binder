@@ -3,22 +3,10 @@ This is a binder app for D&D 5E. It can run online or offline. Data is saved to 
 
 ## TODO
 
-### Character Sheet
-- [ ] Beautifully styled character sheet
-- [ ] Add/delete characters
-- [ ] Edit character sheet
-- [ ] Add character sheet content from Compendium
-
-### Compendium
-- [ ] Beautifully styled object cards
-- [ ] Search Compendium objects
-- [ ] Filter Compendium objects
-- [ ] Tag spells, items, and monsters
-- [ ] Show tagged objects on dashboard
-
-### Export/Import
-- [ ] Print character sheet with beautiful print stylesheet
-- [ ] Export/import characters and taggings to/from JSON
+- [ ] Refactor backgrounds, feats, classes, and races into shared component
+- [ ] Search within text of all tabs
+- [ ] Add spells, items, backgrounds, feats, classes, and races to character sheet
+- [ ] Print character sheet
 - [ ] Save to disk or Google Drive
 
 # Development
