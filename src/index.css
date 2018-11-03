@@ -15,6 +15,7 @@ body {
 
 .row {
   display: flex;
+  flex-direction: row;
 }
 
 .column {
@@ -40,6 +41,10 @@ body {
 
 .justify-content-space-around {
   justify-content: space-around;
+}
+
+.justify-content-space-between {
+  justify-content: space-between;
 }
 
 .flex-wrap {

@@ -13,6 +13,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
 
 import './App.css';
 import { State } from './store';
@@ -168,26 +169,28 @@ export class App extends React.Component<Props, LocalState> {
   public render() {
     return <div style={{height: '100%'}} className="column">
 	    <AppBar position="static">
-        <Toolbar>
+        <Toolbar className="justify-content-space-between">
           <IconButton color="inherit" aria-label="Menu" onClick={this.toggleDrawer(true)}>
             <MenuIcon />
           </IconButton>
-          {!this.props.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
           {this.props.compendiumLoading && <CircularProgress color="secondary" />}
+          <Tabs value={this.props.tabSelected} onChange={this.handleTabChange} className="flex-1">
+            <Tab label="Characters" />
+            <Tab label="Spells" />
+            <Tab label="Items" />
+            <Tab label="Monsters" />
+            <Tab label="Backgrounds" />
+            <Tab label="Feats" />
+            <Tab label="Classes" />
+            <Tab label="Races" />
+            <Tab label="Encounter" />
+          </Tabs>
+          {!this.props.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
+          {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
         </Toolbar>
-        <Tabs value={this.props.tabSelected} onChange={this.handleTabChange}>
-          <Tab label="Characters" />
-          <Tab label="Spells" />
-          <Tab label="Items" />
-          <Tab label="Monsters" />
-          <Tab label="Backgrounds" />
-          <Tab label="Feats" />
-          <Tab label="Classes" />
-          <Tab label="Races" />
-          <Tab label="Encounter" />
-        </Tabs>
       </AppBar>
       <SwipeableDrawer open={this.props.drawerOpen} onClose={this.toggleDrawer(false)} onOpen={this.toggleDrawer(true)}>
+        <Typography className="align-self-center" variant="h5" style={{marginTop: '5px'}}>D&amp;D Binder</Typography>
         <Button data-tabindex="0" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Characters</Button>
         <Button data-tabindex="1" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Spells</Button>
         <Button data-tabindex="2" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Items</Button>
@@ -197,6 +200,7 @@ export class App extends React.Component<Props, LocalState> {
         <Button data-tabindex="6" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Classes</Button>
         <Button data-tabindex="7" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Races</Button>
         <Button data-tabindex="8" onClick={this.selectTab} style={{fontSize: '20px', textAlign: 'left'}}>Encounter</Button>
+        {!this.props.signedIn && <Button onClick={this.handleAuthClick}>Sign In</Button>}
         {this.props.signedIn && <Button onClick={this.handleSignoutClick}>Sign Out</Button>}
       </SwipeableDrawer>
     	<div className="container">
