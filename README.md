@@ -3,9 +3,8 @@ This is a binder app for D&D 5E. It can run online or offline. Data is saved to 
 
 ## TODO
 
-- [ ] Refactor backgrounds, feats, classes, and races into shared component
-- [ ] Search within text of all tabs
 - [ ] Add spells, items, backgrounds, feats, classes, and races to character sheet
+- [ ] Search within text of all tabs
 - [ ] Print character sheet
 - [ ] Save to disk or Google Drive
 

@@ -1,57 +1,20 @@
 import "core-js/library";
 import * as React from 'react';
-import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
-import TextField from '@material-ui/core/TextField';
+import SearchableList from './SearchableList';
 
-export interface Props extends WithStyles<typeof styles> {
-  compendium: { [key: string]: any }
+export interface Props {
+  backgrounds: { [key: string]: any }
 }
 
-interface State {
-  query: string,
-}
-
-const styles = createStyles({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1',
-  },
-  table: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1',
-    marginBottom: '20px',
-  },
-  trait: {
-    padding: '10px 0',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-});
-
-class BackgroundsTab extends React.Component<Props, State> {
-
-  public constructor(props: Props) {
-    super(props);
-    this.state = {
-      query: '',
-    };
-  }
+class BackgroundsTab extends React.Component<Props> {
 
   public static mapStateToProps(state: AppState): Partial<Props> {
     return {
-      compendium: state.app.compendium.backgrounds,
+      backgrounds: state.app.compendium.backgrounds,
     };
-  }
-
-  private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      query: event.currentTarget.value,
-    });
   }
 
   private renderBackground = (background: any, index: number): JSX.Element => {
@@ -73,21 +36,12 @@ class BackgroundsTab extends React.Component<Props, State> {
   }
 
   public render() {
-    const { classes, compendium } = this.props;
-    const { query } = this.state;
-    const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
-    return <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
-      <TextField
-          label="Search Backgrounds"
-          type="search"
-          margin="normal"
-          value={this.state.query}
-          onChange={this.handleSearchChanged} />
-      <div className={classes.table}>
-        {list.map(this.renderBackground)}
-      </div>
-    </div>;
+    const { backgrounds } = this.props;
+    return <SearchableList
+      items={backgrounds}
+      renderItem={this.renderBackground}
+    />;
   }
 }
 
-export default connect(BackgroundsTab.mapStateToProps)(withStyles(styles)(BackgroundsTab));
+export default connect(BackgroundsTab.mapStateToProps)(BackgroundsTab);

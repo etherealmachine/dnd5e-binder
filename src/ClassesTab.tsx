@@ -1,32 +1,13 @@
 import "core-js/library";
 import * as React from 'react';
-import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import { State as AppState } from './store';
-import TextField from '@material-ui/core/TextField';
+import SearchableList from './SearchableList';
 
-export interface Props extends WithStyles<typeof styles> {
-  compendium: { [key: string]: any }
+export interface Props {
+  classes: { [key: string]: any }
 }
-
-interface State {
-  query: string,
-}
-
-const styles = createStyles({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1',
-  },
-  table: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1',
-    marginBottom: '20px',
-  },
-});
 
 interface Autolevel {
   slots?: string
@@ -38,25 +19,12 @@ interface Feature {
   text: string | string[]
 }
 
-class ClassesTab extends React.Component<Props, State> {
-
-  public constructor(props: Props) {
-    super(props);
-    this.state = {
-      query: '',
-    };
-  }
+class ClassesTab extends React.Component<Props> {
 
   public static mapStateToProps(state: AppState): Partial<Props> {
     return {
-      compendium: state.app.compendium.classes,
+      classes: state.app.compendium.classes,
     };
-  }
-
-  private handleSearchChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      query: event.currentTarget.value,
-    });
   }
 
   private renderClass = (clazz: any, index: number): JSX.Element => {
@@ -86,21 +54,12 @@ class ClassesTab extends React.Component<Props, State> {
   }
 
   public render() {
-    const { classes, compendium } = this.props;
-    const { query } = this.state;
-    const list = Object.values(compendium).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
-    return <div className={classes.container}>
-      <TextField
-          label="Search Classes"
-          type="search"
-          margin="normal"
-          value={this.state.query}
-          onChange={this.handleSearchChanged} />
-      <div className={classes.table}>
-        {list.map(this.renderClass)}
-      </div>
-    </div>;
+    const { classes } = this.props;
+    return <SearchableList
+      items={classes}
+      renderItem={this.renderClass}
+    />;
   }
 }
 
-export default connect(ClassesTab.mapStateToProps)(withStyles(styles)(ClassesTab));
+export default connect(ClassesTab.mapStateToProps)(ClassesTab);
