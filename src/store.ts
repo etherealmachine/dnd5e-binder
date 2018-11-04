@@ -33,10 +33,10 @@ export interface CharacterState {
   abilities: { [key: string]: number | undefined }
   saving_throw_proficiency: { [key: string]: boolean }
   skill_proficiency: { [key: string]: boolean }
-  class: string
-  level?: number
+  levels: { [key: string]: number }
   race: string
   background: string
+  feats: string[]
   alignment: string
   player_name: string
   experience_points?: number
@@ -45,8 +45,7 @@ export interface CharacterState {
   current_hit_points?: number
   current_hit_dice?: number
   temporary_hit_points?: number
-  special_abilities: string
-  equipment: string
+  equipment: string[]
   coinage: { [key: string]: number | undefined }
   proficiencies: string
   languages: string
@@ -61,6 +60,7 @@ export interface CharacterState {
   flaws: string
   features_and_traits: string
   attacks: Attack[]
+  spells: string[]
 }
 
 export interface EncounterState {
@@ -107,10 +107,10 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
       abilities: Compendium.abilities.reduce((obj, ability) => { obj[ability] = undefined; return obj }, {}),
       saving_throw_proficiency: Compendium.abilities.reduce((obj, ability) => { obj[ability] = false; return obj }, {}),
       skill_proficiency: Object.entries(Compendium.skills).reduce((obj, [skill, ability]) => { obj[skill] = false; return obj }, {}),
-      class: '',
-      level: undefined,
+      levels: {},
       race: '',
       background: '',
+      feats: [],
       alignment: '',
       player_name: '',
       experience_points: undefined,
@@ -119,9 +119,8 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
       current_hit_points: undefined,
       current_hit_dice: undefined,
       temporary_hit_points: undefined,
-      special_abilities: '',
       coinage: {},
-      equipment: '',
+      equipment: [],
       proficiencies: '',
       languages: '',
       expertise: '',
@@ -135,6 +134,7 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
       flaws: '',
       features_and_traits: '',
       attacks: [],
+      spells: [],
     };
   }
   switch (action.type) {
@@ -189,6 +189,16 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
       return {
         ...state,
         attacks: newAttacks,
+      };
+    case 'RACE_CHANGE':
+      return {
+        ...state,
+        race: action.race,
+      };
+    case 'BACKGROUND_CHANGE':
+      return {
+        ...state,
+        background: action.background,
       };
   }
   return state;

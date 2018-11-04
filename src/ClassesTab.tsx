@@ -2,11 +2,12 @@ import "core-js/library";
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import { Class } from './compendium';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
 
 export interface Props {
-  classes: { [key: string]: any }
+  classes: { [key: string]: Class }
 }
 
 interface Autolevel {

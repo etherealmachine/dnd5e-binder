@@ -1,13 +1,21 @@
 import "core-js/library";
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+
 import './CharacterSheet.css';
+import { State as AppState } from './store';
 import Compendium from './compendium';
 import { CharacterState } from './store';
 import NumberInput from './NumberInput';
 
 export interface Props extends CharacterState {
+  compendium: Compendium
   dispatch: Dispatch
 }
 
@@ -27,6 +35,18 @@ class CharacterSheet extends React.Component<Props, State> {
       new_attack_damage: '',
     };
     this.handleFieldChange = this.handleInputChange('FIELD');
+  }
+
+  public static mapStateToProps(state: AppState): Partial<Props> {
+    return {
+      compendium: state.app.compendium,
+    };
+  }
+
+  public static mapDispatchToProps(dispatch: Dispatch): Partial<Props> {
+    return {
+      dispatch: dispatch,
+    };
   }
 
   private skillModifier(skill: string, ability: string): number {
@@ -113,6 +133,11 @@ class CharacterSheet extends React.Component<Props, State> {
     }
   }
 
+  private renderItem = (item: any) => {
+    console.log(item);
+    return <div>{item.name}</div>;
+  }
+
   public render() {
     const abilities: JSX.Element[] = [];
     const savingThrows: JSX.Element[] = [];
@@ -183,15 +208,45 @@ class CharacterSheet extends React.Component<Props, State> {
           <div className="row flex-3 flex-wrap">
             <div className="column flex-1">
               <div className="row">
-                <input className="flex-1" name="class" placeholder="Class" type="text" value={this.props.class} onChange={this.handleFieldChange} />
-                <NumberInput name="level" placeholder="Level" type="number" min="1" value={this.props.level} onChange={this.handleFieldChange} />
+                {Object.entries(this.props.levels).map(level => (
+                  <div key={level[0]}>
+                    <span>{level[0]}</span>
+                    <NumberInput name={level[0]} placeholder="Level" type="number" min="1" value={level[1]} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      this.props.dispatch({type: 'LEVEL_CHANGE', class: level[0], level: event.currentTarget.value});
+                    }} />
+                  </div>
+                ))}
               </div>
-              <input name="race" placeholder="Race" type="text" value={this.props.race} onChange={this.handleFieldChange} />
+              <FormControl>
+                <InputLabel htmlFor="race-simple">Race</InputLabel>
+                <Select
+                    value={this.props.race}
+                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                      this.props.dispatch({type: 'RACE_CHANGE', race: event.target.value});
+                    }}
+                    inputProps={{
+                      name: 'race',
+                      id: 'race-simple',
+                    }}>
+                  {Object.keys(this.props.compendium.races).map((race, i) => <MenuItem key={i} value={race}>{race}</MenuItem>)}
+                </Select>
+               </FormControl>
             </div>
-            <div className="column flex-1">
-              <input name="background" placeholder="Background" type="text" value={this.props.background} onChange={this.handleFieldChange} />
+            <FormControl className="column flex-1">
+              <InputLabel htmlFor="background-simple">Background</InputLabel>
+              <Select
+                  value={this.props.background}
+                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                    this.props.dispatch({type: 'BACKGROUND_CHANGE', background: event.target.value});
+                  }}
+                  inputProps={{
+                    name: 'background',
+                    id: 'background-simple',
+                  }}>
+                {Object.keys(this.props.compendium.backgrounds).map((background, i) => <MenuItem key={i} value={background}>{background}</MenuItem>)}
+              </Select>
               <input name="alignment" placeholder="Alignment" type="text" value={this.props.alignment} onChange={this.handleFieldChange} />
-            </div>
+            </FormControl>
             <div className="column flex-1">
               <input name="player_name" placeholder="Player Name" type="text" value={this.props.player_name} onChange={this.handleFieldChange} />
               <NumberInput name="experience_points" placeholder="XP" type="number" min="0" value={this.props.experience_points} onChange={this.handleFieldChange} />
@@ -272,8 +327,8 @@ class CharacterSheet extends React.Component<Props, State> {
                   <label htmlFor="maximum_hit_points">Max HP</label>
                 </div>
                 <div className="column align-items-center">
-                  <span>Total: {this.props.level}d{Compendium.hit_dice_for_class[this.props.class]}</span>
-                  <NumberInput name="current_hit_dice" type="number" min="0" max={this.props.level} value={this.props.current_hit_dice} onChange={this.handleFieldChange} />
+                  <span>Total: ???</span>
+                  <NumberInput name="current_hit_dice" type="number" min="0" max={Object.values(this.props.levels).reduce((acc, level) => acc+level, 0)} value={this.props.current_hit_dice} onChange={this.handleFieldChange} />
                   <label htmlFor="hit_dice">Hit Dice</label>
                 </div>
                 <div className="column align-items-center">
@@ -284,16 +339,19 @@ class CharacterSheet extends React.Component<Props, State> {
               </div>
             </div>
             <div className="column flex-1">
-              {attacks}
-              <textarea className="flex-1" name="special_abilities" value={this.props.special_abilities} onChange={this.handleTextAreaChange} />
-              <h4>Attacks &amp; Spellcasting</h4>
+              <div className="flex-1">
+                {attacks}
+              </div>
+              <h4>Attacks</h4>
             </div>
             <div className="column flex-1">
               <div className="row justify-content-space-around">
                 {coins}
               </div>
               <div className="column flex-1">
-                <textarea className="flex-1" name="equipment" value={this.props.equipment} onChange={this.handleTextAreaChange} />
+                <div className="flex-1">
+                  {this.props.equipment.map(this.renderItem)}
+                </div>
                 <h4>Equipment</h4>
               </div>
             </div>
@@ -328,4 +386,4 @@ class CharacterSheet extends React.Component<Props, State> {
   }
 }
 
-export default CharacterSheet;
+export default connect(CharacterSheet.mapStateToProps, CharacterSheet.mapDispatchToProps)(CharacterSheet);

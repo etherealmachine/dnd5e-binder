@@ -2,11 +2,12 @@ import "core-js/library";
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import { Race } from './compendium';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
 
 export interface Props {
-  races: { [key: string]: any }
+  races: { [key: string]: Race }
 }
 
 class RacesTab extends React.Component<Props> {

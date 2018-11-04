@@ -103,7 +103,7 @@ class CharactersTab extends React.Component<Props> {
         <Button onClick={this.handleShare}>Share</Button>
         <Button color="secondary" onClick={this.handleDelete}>Delete</Button>
       </div>
-      <CharacterSheet {...this.props.characters[this.props.selected]} dispatch={this.props.dispatch} />
+      <CharacterSheet {...this.props.characters[this.props.selected]} />
     </div>;
   }
 }

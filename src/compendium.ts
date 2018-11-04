@@ -66,15 +66,31 @@ export interface Item {
   text: string[] | string
 }
 
+export interface Class {
+  name: string
+}
+
+export interface Feat {
+  name: string
+}
+
+export interface Race {
+  name: string
+}
+
+export interface Background {
+  name: string
+}
+
 export class Compendium {
 
-  public backgrounds: { [key: string]: any } = {}
-  public classes: { [key: string]: any } = {}
-  public feats: { [key: string]: any } = {}
-  public items: { [key: string]: any } = {}
-  public monsters: { [key: string]: any } = {}
-  public races: { [key: string]: any } = {}
-  public spells: { [key: string]: any } = {}
+  public backgrounds: { [key: string]: Background } = {}
+  public classes: { [key: string]: Class } = {}
+  public feats: { [key: string]: Feat } = {}
+  public items: { [key: string]: Item } = {}
+  public monsters: { [key: string]: Monster } = {}
+  public races: { [key: string]: Race } = {}
+  public spells: { [key: string]: Spell } = {}
 
   public static abilities = [
 	  "Strength",

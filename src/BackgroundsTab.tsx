@@ -2,11 +2,12 @@ import "core-js/library";
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import { Background } from './compendium';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
 
 export interface Props {
-  backgrounds: { [key: string]: any }
+  backgrounds: { [key: string]: Background }
 }
 
 class BackgroundsTab extends React.Component<Props> {
