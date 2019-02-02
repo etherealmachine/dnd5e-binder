@@ -134,7 +134,6 @@ class CharacterSheet extends React.Component<Props, State> {
   }
 
   private renderItem = (item: any) => {
-    console.log(item);
     return <div>{item.name}</div>;
   }
 

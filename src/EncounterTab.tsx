@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import { State } from './store';
 import { Monster } from './compendium';
+import AddPlayerCard from './AddPlayerCard';
 import MonsterCard from './MonsterCard';
 
 export interface Props extends WithStyles<typeof styles> {
@@ -30,6 +31,7 @@ class EncounterTab extends React.Component<Props> {
     const { monsters, classes } = this.props;
     return <div className={classes.container}>
       {monsters.map((monster, i) => <MonsterCard key={i} monster={monster} />)}
+      <AddPlayerCard />
     </div>;
   }
 }

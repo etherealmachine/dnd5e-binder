@@ -4,6 +4,8 @@ This is a binder app for D&D 5E. It can run online or offline. Data is saved to 
 ## TODO
 
 - [ ] Add spells, items, backgrounds, feats, classes, and races to character sheet
+- [ ] Rename Monsters to NPCs
+- [ ] Encounter map
 - [ ] Search within text of all tabs
 - [ ] Print character sheet
 - [ ] Save to disk or Google Drive

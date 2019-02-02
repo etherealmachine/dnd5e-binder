@@ -263,7 +263,7 @@ function characters(state: CharactersState | undefined, action: any): Characters
 function encounter(state: EncounterState | undefined, action: any): EncounterState {
   if (state === undefined) {
     return {
-      monsters: [],
+      monsters: []
     };
   }
   switch (action.type) {
@@ -271,10 +271,12 @@ function encounter(state: EncounterState | undefined, action: any): EncounterSta
       let newMonsters = state.monsters.slice();
       let newMonster = Object.assign({}, action.monster);
       let i = 0;
-      newMonster.id = `Unnamed ${action.monster.name}`;
-      while (newMonsters.some((monster: any) => monster.id === newMonster.id)) {
-        i++;
-        newMonster.id = `Unnamed ${action.monster.name} ${i}`;
+      if (newMonster.id === '') {
+        newMonster.id = `Unnamed ${action.monster.name}`;
+        while (newMonsters.some((monster: any) => monster.id === newMonster.id)) {
+          i++;
+          newMonster.id = `Unnamed ${action.monster.name} ${i}`;
+        }
       }
       if (action.monster.hp !== undefined) {
         newMonster.currentHP = (typeof(action.monster.hp) === 'string')? parseInt(action.monster.hp.split(' ')[0]) : action.monster.hp;
