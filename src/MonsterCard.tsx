@@ -9,8 +9,11 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import Dice6 from 'mdi-material-ui/Dice6';
+import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
+
 
 import { Compendium, Monster, NameTextPair } from './compendium';
 import { State, store } from './store';
@@ -63,6 +66,9 @@ const styles = createStyles({
   numberInputParent: {
     maxWidth: '2em',
     alignSelf: 'center',
+  },
+  iconButton: {
+    padding: 0,
   },
 });
 
@@ -123,14 +129,19 @@ class MonsterCard extends React.Component<Props, LocalState> {
   private renderInitiativeTracker = () => {
     return <div className="column align-self-flex-end" style={{minWidth: '110px'}}>
       <label htmlFor="initiative" className="align-self-center">Initiative</label>
-      <Input
-          name="initiative"
-          className={this.props.classes.numberInputParent}
-          onChange={this.handleChange('initiative')}
-          onKeyPress={this.handleKeyPress('initiative')}
-          type={'number'}
-          value={this.state.editableProps.initiative}
-      />
+      <div className="row align-self-center">
+        <Input
+            name="initiative"
+            className={this.props.classes.numberInputParent}
+            onChange={this.handleChange('initiative')}
+            onKeyPress={this.handleKeyPress('initiative')}
+            type={'number'}
+            value={this.state.editableProps.initiative}
+        />
+        <IconButton onClick={this.rollInitiative} className={this.props.classes.iconButton}>
+          <Dice6 />
+        </IconButton>
+      </div>
     </div>;
   }
 
@@ -159,7 +170,20 @@ class MonsterCard extends React.Component<Props, LocalState> {
     props[prop] = event.currentTarget.value;
     this.setState({
       editableProps: props,
-    })
+    });
+  }
+
+  private rollInitiative = () => {
+    const initiative = Math.floor(Math.random()*20)+Compendium.modifier(this.props.monster.dex);
+    this.state.editableProps.initiative = initiative;
+    store.dispatch({
+        type: 'UPDATE_MONSTER',
+        id: this.props.monster.id,
+        newValues: this.state.editableProps,
+    });
+    this.setState({
+      editableProps: this.state.editableProps,
+    });
   }
 
   private handleKeyPress = (prop: string) => (event: React.KeyboardEvent<HTMLDivElement>) => {
