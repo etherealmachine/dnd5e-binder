@@ -7,6 +7,7 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Input from '@material-ui/core/Input';
+import Typography from '@material-ui/core/Typography';
 
 import { store } from './store';
 
@@ -78,6 +79,7 @@ class AddPlayerCard extends React.Component<Props, LocalState> {
     const { name, initiative } = this.state;
     return <Card className={classes.card}>
       <CardContent>
+        <Typography gutterBottom variant="h5">New Player</Typography>
         <Input
             autoFocus={true}
             value={name}

@@ -10,10 +10,10 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Dice6 from 'mdi-material-ui/Dice6';
+import DiceD20 from 'mdi-material-ui/DiceD20';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
-
 
 import { Compendium, Monster, NameTextPair } from './compendium';
 import { State, store } from './store';
@@ -26,6 +26,7 @@ export interface Props extends WithStyles<typeof styles> {
 interface LocalState {
   editableProps: { [key: string]: any }
   editingName: boolean
+  rolls: { [key: string]: number }
 }
 
 const styles = createStyles({
@@ -84,7 +85,8 @@ class MonsterCard extends React.Component<Props, LocalState> {
         initiative: props.monster.initiative || '',
         currentHP: props.monster.currentHP || '',
       },
-      editingName: false
+      editingName: false,
+      rolls: {},
     };
   }
 
@@ -110,6 +112,48 @@ class MonsterCard extends React.Component<Props, LocalState> {
     };
   }
 
+  private roll = (dice: number, sides: number, modifier: number) => {
+    let total = 0;
+    for (let i = 0; i < dice; i++) {
+      total += Math.floor(Math.random()*sides);
+    }
+    return total + modifier;
+  }
+
+  private renderAction = (action: NameTextPair, i: number) => {
+    const toHitModifierRe = action.text.match(/\+(\d+) to hit/);
+    const rollRe = action.text.match(/(\d+)d(\d+)\s*\+\s*(\d+)/);
+    return <span key={`action-${i}`}>
+      <span>
+        <span className={this.props.classes.actionName}>{action.name}</span>: {action.text}
+      </span>
+      {toHitModifierRe !== null &&
+        <IconButton
+            className={this.props.classes.iconButton}
+            onClick={(event: React.MouseEvent) => {
+              const roll = this.roll(1, 20, parseInt(toHitModifierRe[1]));
+              this.state.rolls[action.name+' Attack'] = roll;
+              this.setState({rolls: this.state.rolls});
+            }}>
+          <DiceD20 />
+          {this.state.rolls[action.name+' Attack'] && <span>{this.state.rolls[action.name+' Attack']}</span>}
+        </IconButton>
+      }
+      {rollRe !== null &&
+        <IconButton
+            className={this.props.classes.iconButton}
+            onClick={(event: React.MouseEvent) => {
+              const roll = this.roll(parseInt(rollRe[1]), parseInt(rollRe[2]), parseInt(rollRe[3]));
+              this.state.rolls[action.name+' Roll'] = roll;
+              this.setState({rolls: this.state.rolls});
+            }}>
+          <Dice6 />
+          {this.state.rolls[action.name+' Roll'] && <span>{this.state.rolls[action.name+' Roll']}</span>}
+        </IconButton>
+      }
+    </span>;
+  }
+
   private renderActions = (actions: NameTextPair[] | NameTextPair | undefined) => {
     if (!actions) {
       return null;
@@ -117,11 +161,8 @@ class MonsterCard extends React.Component<Props, LocalState> {
     if (!(actions instanceof Array)) {
       actions = [actions];
     }
-    const { classes } = this.props;
-    const content = actions.map((action, i) => {
-      return <span key={`action-${i}`}><span className={classes.actionName}>{action.name}</span>: {action.text}</span>
-    });
-    return <div className={classes.action}>
+    const content = actions.map(this.renderAction)
+    return <div className={this.props.classes.action}>
       {content}
     </div>
   }
