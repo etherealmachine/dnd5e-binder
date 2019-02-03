@@ -121,8 +121,8 @@ class MonsterCard extends React.Component<Props, LocalState> {
   }
 
   private renderAction = (action: NameTextPair, i: number) => {
-    const toHitModifierRe = action.text.match(/\+(\d+) to hit/);
-    const rollRe = action.text.match(/(\d+)d(\d+)\s*\+\s*(\d+)/);
+    const toHitModifierRe = (action.text && action.text.match) ? action.text.match(/\+(\d+) to hit/) : null;
+    const rollRe = (action.text && action.text.match) ? action.text.match(/(\d+)d(\d+)\s*\+\s*(\d+)/) : null;
     return <span key={`action-${i}`}>
       <span>
         <span className={this.props.classes.actionName}>{action.name}</span>: {action.text}
