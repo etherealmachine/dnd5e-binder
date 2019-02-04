@@ -74,6 +74,11 @@ class AddPlayerCard extends React.Component<Props, LocalState> {
     };
   }
 
+  private addToEncounter = () => {
+    store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: this.monsterInstance()});
+    this.setState({name: '', initiative: 0});
+  }
+
   public render() {
     const { classes } = this.props;
     const { name, initiative } = this.state;
@@ -101,10 +106,7 @@ class AddPlayerCard extends React.Component<Props, LocalState> {
         </div>
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary" onClick={() => {
-        		store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: this.monsterInstance()});
-        		this.setState({name: '', initiative: 0});
-        }}>
+        <Button size="small" color="primary" onClick={this.addToEncounter}>
           Add to Encounter
         </Button>
       </CardActions>

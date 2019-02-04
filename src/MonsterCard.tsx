@@ -120,6 +120,20 @@ class MonsterCard extends React.Component<Props, LocalState> {
     return total + modifier;
   }
 
+  private cachedHandlers: { [key: string]: (event: React.MouseEvent) => void } = {}
+  private handleRoll = (rollName: string, dice: number, sides: number, modifier: number) => {
+    const name = `${rollName}-${dice}d${sides}+${modifier}`;
+    if (this.cachedHandlers[name]) {
+      return this.cachedHandlers[name];
+    }
+    const handler = (event: React.MouseEvent) => {
+      const roll = this.roll(dice, sides, modifier);
+      this.state.rolls[rollName] = roll;
+      this.setState({rolls: this.state.rolls});
+    }
+    return handler;
+  }
+
   private renderAction = (action: NameTextPair, i: number) => {
     const toHitModifierRe = (action.text && action.text.match) ? action.text.match(/\+(\d+) to hit/) : null;
     const rollRe = (action.text && action.text.match) ? action.text.match(/(\d+)d(\d+)\s*\+\s*(\d+)/) : null;
@@ -130,11 +144,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
       {toHitModifierRe !== null &&
         <IconButton
             className={this.props.classes.iconButton}
-            onClick={(event: React.MouseEvent) => {
-              const roll = this.roll(1, 20, parseInt(toHitModifierRe[1]));
-              this.state.rolls[action.name+' Attack'] = roll;
-              this.setState({rolls: this.state.rolls});
-            }}>
+            onClick={this.handleRoll(action.name+' Attack', 1, 20, parseInt(toHitModifierRe[1]))}>
           <DiceD20 />
           {this.state.rolls[action.name+' Attack'] && <span>{this.state.rolls[action.name+' Attack']}</span>}
         </IconButton>
@@ -142,11 +152,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
       {rollRe !== null &&
         <IconButton
             className={this.props.classes.iconButton}
-            onClick={(event: React.MouseEvent) => {
-              const roll = this.roll(parseInt(rollRe[1]), parseInt(rollRe[2]), parseInt(rollRe[3]));
-              this.state.rolls[action.name+' Roll'] = roll;
-              this.setState({rolls: this.state.rolls});
-            }}>
+            onClick={this.handleRoll(action.name+' Roll', parseInt(rollRe[1]), parseInt(rollRe[2]), parseInt(rollRe[3]))}>
           <Dice6 />
           {this.state.rolls[action.name+' Roll'] && <span>{this.state.rolls[action.name+' Roll']}</span>}
         </IconButton>
@@ -257,6 +263,14 @@ class MonsterCard extends React.Component<Props, LocalState> {
     this.setState({
       editingName: true,
     });
+  }
+
+  private addToEncounter = () => {
+    store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: this.monsterInstance()});
+  }
+
+  private removeFromEncounter = () => {
+    store.dispatch({type: 'REMOVE_FROM_ENCOUNTER', monster: this.monsterInstance()});
   }
 
   public render() {
@@ -393,10 +407,10 @@ class MonsterCard extends React.Component<Props, LocalState> {
         {slots && <Typography>Slots: {slots}</Typography>}
       </CardContent>
       <CardActions>
-        {id === undefined && <Button size="small" color="primary" onClick={() => store.dispatch({type: 'ADD_TO_ENCOUNTER', monster: this.monsterInstance()})}>
+        {id === undefined && <Button size="small" color="primary" onClick={this.addToEncounter}>
           Add to Encounter
         </Button>}
-        {id !== undefined && <Button size="small" color="secondary" onClick={() => store.dispatch({type: 'REMOVE_FROM_ENCOUNTER', monster: this.monsterInstance()})}>
+        {id !== undefined && <Button size="small" color="secondary" onClick={this.removeFromEncounter}>
           Remove from Encounter
         </Button>}
       </CardActions>
