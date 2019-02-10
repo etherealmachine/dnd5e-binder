@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField';
 export interface Props extends WithStyles<typeof styles> {
   name: string
   compare: (sortBy: string, sortDirection: SortDirectionType) => (a: any, b: any) => number
-  renderItemCard: (item: any) => JSX.Element
+  renderItemCard: (item: any, handleCloseClicked: (event: React.MouseEvent) => void) => JSX.Element
   items: { [key: string]: any }
 }
 
@@ -18,6 +18,7 @@ interface State {
   sortBy?: string,
   sortDirection?: SortDirectionType,
   scrollToRow?: number,
+  selectedItemIndex?: number,
 }
 
 const styles = createStyles({
@@ -70,7 +71,11 @@ class TableWithCard extends React.Component<Props, State> {
   }
 
   private handleRowClick = ({event, index, rowData}: { event: React.MouseEvent<any>, index: number, rowData: any }) => {
-    this.setState({ scrollToRow: index });
+    this.setState({ selectedItemIndex: index, scrollToRow: index });
+  }
+
+  private handleCloseClicked = (event: React.MouseEvent<any>) => {
+    this.setState({ selectedItemIndex: undefined });
   }
 
   private onScrollToChange = (params: ScrollIndices) => {
@@ -100,7 +105,7 @@ class TableWithCard extends React.Component<Props, State> {
 
   public render() {
     const { classes, name, compare, renderItemCard, items, children } = this.props;
-    const { query, sortBy, sortDirection, scrollToRow } = this.state;
+    const { query, sortBy, sortDirection, scrollToRow, selectedItemIndex } = this.state;
     const list = Object.values(items).filter((obj) => query === '' || obj.name.toLowerCase().includes(query.toLowerCase()));
     list.sort(compare(sortBy || 'name', sortDirection || SortDirection.ASC));
     return <div className={classes.container}>
@@ -145,7 +150,7 @@ class TableWithCard extends React.Component<Props, State> {
             )}
           </AutoSizer>
         </div>
-        {scrollToRow !== undefined && scrollToRow < list.length && renderItemCard(list[scrollToRow])}
+        {selectedItemIndex !== undefined && selectedItemIndex < list.length && renderItemCard(list[selectedItemIndex], this.handleCloseClicked)}
       </div>
     </div>;
   }

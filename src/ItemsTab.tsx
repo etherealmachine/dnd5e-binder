@@ -57,7 +57,7 @@ class ItemsTab extends React.Component<Props> {
     return <TableWithCard
         name="Items"
         items={items}
-        renderItemCard={(item: Item) => <ItemCard item={item} />}
+        renderItemCard={(item: Item, handleCloseClicked: (event: React.MouseEvent) => void) => <ItemCard item={item} handleCloseClicked={handleCloseClicked} />}
         compare={this.compare}>
       <Column
         label="name"

@@ -48,7 +48,7 @@ class MonstersTab extends React.Component<Props> {
         name="Monsters"
         items={monsters}
         compare={this.compare}
-        renderItemCard={(monster: Monster) => <MonsterCard monster={monster} />}>
+        renderItemCard={(monster: Monster, handleCloseClicked: (event: React.MouseEvent) => void) => <MonsterCard monster={monster} handleCloseClicked={handleCloseClicked} />}>
       <Column
           label="name"
           dataKey="name"

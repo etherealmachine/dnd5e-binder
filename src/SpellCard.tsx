@@ -4,12 +4,15 @@ import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Close from 'mdi-material-ui/Close';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 
 import { Spell } from './compendium';
 
 export interface Props extends WithStyles<typeof styles> {
   spell: Spell
+  handleCloseClicked?: (event: React.MouseEvent) => void
 }
 
 const styles = createStyles({
@@ -51,6 +54,13 @@ const styles = createStyles({
     maxWidth: '2em',
     alignSelf: 'center',
   },
+  titleRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+  },
 });
 
 class SpellCard extends React.Component<Props> {
@@ -63,10 +73,13 @@ class SpellCard extends React.Component<Props> {
   }
 
   public render() {
-    const { classes, spell } = this.props;
+    const { classes, spell, handleCloseClicked } = this.props;
     return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom variant="h5">{spell.name}</Typography>
+        <div className={classes.titleRow}>
+          <Typography variant="h5">{spell.name}</Typography>
+          {handleCloseClicked && <IconButton onClick={handleCloseClicked}><Close /></IconButton>}
+        </div>
         <Typography>Level: {spell.level}</Typography>
         <Typography>Classes: {spell.classes}</Typography>
         <Typography>Time: {spell.time}</Typography>

@@ -9,6 +9,7 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import Close from 'mdi-material-ui/Close';
 import Dice6 from 'mdi-material-ui/Dice6';
 import DiceD20 from 'mdi-material-ui/DiceD20';
 import IconButton from '@material-ui/core/IconButton';
@@ -21,6 +22,7 @@ import { State, store } from './store';
 export interface Props extends WithStyles<typeof styles> {
   monster: Monster
   monsters: { [key: string]: Monster }
+  handleCloseClicked?: (event: React.MouseEvent) => void
 }
 
 interface LocalState {
@@ -70,6 +72,13 @@ const styles = createStyles({
   },
   iconButton: {
     padding: 0,
+  },
+  titleRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
   },
 });
 
@@ -274,7 +283,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
   }
 
   public render() {
-    const { classes, monster } = this.props;
+    const { classes, monster, handleCloseClicked } = this.props;
     const {
       id,
       name,
@@ -305,18 +314,21 @@ class MonsterCard extends React.Component<Props, LocalState> {
         title={name}
       />}
       <CardContent>
-        {id !== undefined && this.state.editingName ?
-          <Input
-              autoFocus={true}
-              inputRef={this.inputRef}
-              value={this.state.editableProps.id}
-              onChange={this.handleChange('id')}
-              onKeyPress={this.handleKeyPress('id')}
-              className={classes.h5InputParent}
-              classes={{input: classes.h5Input}}
-          /> :
-          <Typography gutterBottom variant="h5" onClick={this.handleIDClick}>{id? id : name}</Typography>
-        }
+        <div className={classes.titleRow}>
+          {id !== undefined && this.state.editingName ?
+            <Input
+                autoFocus={true}
+                inputRef={this.inputRef}
+                value={this.state.editableProps.id}
+                onChange={this.handleChange('id')}
+                onKeyPress={this.handleKeyPress('id')}
+                className={classes.h5InputParent}
+                classes={{input: classes.h5Input}}
+            /> :
+            <Typography variant="h5" onClick={this.handleIDClick}>{id? id : name}</Typography>
+          }
+          {handleCloseClicked && <IconButton onClick={handleCloseClicked}><Close /></IconButton>}
+        </div>
         <div className="row justify-content-space-around">
           <table className={classNames("flex-1", classes.table)}>
             <thead>
@@ -421,6 +433,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
 // connect is not working welll with type inference
 interface PassedProps {
   monster: Monster
+  handleCloseClicked?: (event: React.MouseEvent) => void
 }
 
 const component: () => React.Component<PassedProps> = (connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard)) as any);

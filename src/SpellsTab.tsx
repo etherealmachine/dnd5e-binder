@@ -34,7 +34,7 @@ class SpellsTab extends React.Component<Props> {
         name="Spells"
         items={spells}
         compare={this.compare}
-        renderItemCard={(spell: Spell) => <SpellCard spell={spell} />}>
+        renderItemCard={(spell: Spell, handleCloseClicked: (event: React.MouseEvent) => void) => <SpellCard spell={spell} handleCloseClicked={handleCloseClicked} />}>
       <Column
           label="name"
           dataKey="name"

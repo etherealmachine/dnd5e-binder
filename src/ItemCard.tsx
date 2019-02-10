@@ -4,12 +4,15 @@ import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Close from 'mdi-material-ui/Close';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 
 import { Item } from './compendium';
 
 export interface Props extends WithStyles<typeof styles> {
   item: Item
+  handleCloseClicked?: (event: React.MouseEvent) => void
 }
 
 const styles = createStyles({
@@ -51,6 +54,13 @@ const styles = createStyles({
     maxWidth: '2em',
     alignSelf: 'center',
   },
+  titleRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+  },
 });
 
 class ItemCard extends React.Component<Props> {
@@ -63,10 +73,13 @@ class ItemCard extends React.Component<Props> {
   }
 
   public render() {
-    const { classes, item } = this.props;
+    const { classes, item, handleCloseClicked } = this.props;
     return <Card className={classes.card}>
       <CardContent>
-        <Typography gutterBottom variant="h5">{item.name}</Typography>
+        <div className={classes.titleRow}>
+          <Typography variant="h5">{item.name}</Typography>
+          {handleCloseClicked && <IconButton onClick={handleCloseClicked}><Close /></IconButton>}
+        </div>
         <Typography>Range: {item.range}</Typography>
         <Typography>Damage: {item.dmg1}</Typography>
         <Typography>Type: {item.dmgType}</Typography>
