@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { Item } from './compendium';
 import { State as AppState, store } from './store';
 import Button from '@material-ui/core/Button';
+import Plus from 'mdi-material-ui/Plus';
 import TableWithCard from './TableWithCard';
 import ItemCard from './ItemCard';
 
@@ -50,6 +51,22 @@ class ItemsTab extends React.Component<Props> {
       }
       return (a[sortBy] || '').toString().toLowerCase() <= (b[sortBy] || '').toString().toLowerCase() ? -direction : direction;
     };
+  }
+
+  private handleAddItemClicked = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    store.dispatch({
+      type: 'ADD_ITEM',
+      item: event.currentTarget.getAttribute('data-item'),
+    });
+  }
+
+  private renderAddItemButton = (col: TableCellProps) => {
+    return <Button
+        onClick={this.handleAddItemClicked}
+        data-item={col.cellData}>
+      <Plus />
+    </Button>;
   }
 
   public render() {
@@ -97,7 +114,7 @@ class ItemsTab extends React.Component<Props> {
         disableSort
         label=""
         dataKey="name"
-        cellRenderer={(col: TableCellProps) => <Button onClick={() => store.dispatch({type: 'ADD_TO_CHARACTER', item: col.cellData})}>+</Button>}
+        cellRenderer={this.renderAddItemButton}
         width={50} />
     </TableWithCard>
   }

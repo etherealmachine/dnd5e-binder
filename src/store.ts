@@ -22,44 +22,14 @@ export interface CharactersState {
   characters: CharacterState[]
 }
 
-export interface Attack {
-  name: string;
-  bonus: number;
-  damage: string;
-}
-
 export interface CharacterState {
+  player_name: string
   character_name: string
-  abilities: { [key: string]: number | undefined }
-  saving_throw_proficiency: { [key: string]: boolean }
-  skill_proficiency: { [key: string]: boolean }
-  levels: { [key: string]: number }
   race: string
   background: string
+  abilities: { [key: string]: number | undefined }
   feats: string[]
-  alignment: string
-  player_name: string
-  experience_points?: number
-  proficiency_bonus?: number
-  maximum_hit_points?: number
-  current_hit_points?: number
-  current_hit_dice?: number
-  temporary_hit_points?: number
-  equipment: string[]
-  coinage: { [key: string]: number | undefined }
-  proficiencies: string
-  languages: string
-  expertise: string
-  armor_class?: number
-  initiative_bonus?: number
-  speed?: number
-  passive_perception?: number
-  personality_traits: string
-  ideals: string
-  bonds: string
-  flaws: string
-  features_and_traits: string
-  attacks: Attack[]
+  items: string[]
   spells: string[]
 }
 
@@ -103,37 +73,13 @@ function app(state: AppState | undefined, action: any): AppState {
 function character(state: CharacterState | undefined, action: any): CharacterState {
   if (state === undefined) {
     return {
+      player_name: '',
       character_name: '',
       abilities: Compendium.abilities.reduce((obj, ability) => { obj[ability] = undefined; return obj }, {}),
-      saving_throw_proficiency: Compendium.abilities.reduce((obj, ability) => { obj[ability] = false; return obj }, {}),
-      skill_proficiency: Object.entries(Compendium.skills).reduce((obj, [skill, ability]) => { obj[skill] = false; return obj }, {}),
-      levels: {},
       race: '',
       background: '',
       feats: [],
-      alignment: '',
-      player_name: '',
-      experience_points: undefined,
-      proficiency_bonus: undefined,
-      maximum_hit_points: undefined,
-      current_hit_points: undefined,
-      current_hit_dice: undefined,
-      temporary_hit_points: undefined,
-      coinage: {},
-      equipment: [],
-      proficiencies: '',
-      languages: '',
-      expertise: '',
-      armor_class: undefined,
-      initiative_bonus: undefined,
-      speed: undefined,
-      passive_perception: undefined,
-      personality_traits: '',
-      ideals: '',
-      bonds: '',
-      flaws: '',
-      features_and_traits: '',
-      attacks: [],
+      items: [],
       spells: [],
     };
   }
@@ -148,57 +94,20 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
           [action.key]: action.value,
         }
       };
-    case 'SAVING_THROW_PROFICIENCY_CHANGE':
+    case 'ADD_FEAT':
       return {
         ...state,
-        saving_throw_proficiency: {
-          ...state.saving_throw_proficiency,
-          [action.key]: action.value,
-        }
+        feats: [ ...state.feats, action.feat ],
       };
-    case 'SKILL_PROFICIENCY_CHANGE':
+    case 'ADD_ITEM':
       return {
         ...state,
-        skill_proficiency: {
-          ...state.skill_proficiency,
-          [action.key]: action.value,
-        }
+        items: [ ...state.items, action.item ],
       };
-    case 'COINAGE_CHANGE':
+    case 'ADD_SPELL':
       return {
         ...state,
-        coinage: {
-          ...state.coinage,
-          [action.key]: action.value,
-        }
-      };
-    case 'ADD_ATTACK':
-      let newAttacks = state.attacks.slice();
-      newAttacks.push({
-        name: action.name,
-        bonus: action.bonus,
-        damage: action.damage,
-      });
-      return {
-        ...state,
-        attacks: newAttacks,
-      };
-    case 'REMOVE_ATTACK':
-      newAttacks = state.attacks.slice();
-      newAttacks.splice(action.index, 1);
-      return {
-        ...state,
-        attacks: newAttacks,
-      };
-    case 'RACE_CHANGE':
-      return {
-        ...state,
-        race: action.race,
-      };
-    case 'BACKGROUND_CHANGE':
-      return {
-        ...state,
-        background: action.background,
+        spells: [ ...state.spells, action.spell ],
       };
   }
   return state;
