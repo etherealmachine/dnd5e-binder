@@ -2,6 +2,7 @@ import "core-js/library";
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import Button from '@material-ui/core/Button';
 import { Race } from './compendium';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
@@ -38,6 +39,7 @@ class RacesTab extends React.Component<Props> {
       <p><span className="term">Size: {race.size}</span></p>
       <p><span className="term">Speed: {race.speed}</span></p>
       {content}
+      <Button>Add To Character</Button>
     </div>;
   }
 

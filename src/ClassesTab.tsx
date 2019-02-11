@@ -2,6 +2,7 @@ import "core-js/library";
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import Button from '@material-ui/core/Button';
 import { Class } from './compendium';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
@@ -51,6 +52,7 @@ class ClassesTab extends React.Component<Props> {
       <p><span className="term">Proficiency: {clazz.proficiency}</span></p>
       <p>{clazz.spellAbility && <span><span className="term">Spell Ability:</span>{clazz.spellAbility}</span>}</p>
       {content}
+      <Button color="primary">Add To Character</Button>
     </div>;
   }
 

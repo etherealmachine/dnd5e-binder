@@ -80,6 +80,8 @@ export interface Race {
 
 export interface Background {
   name: string
+  trait: NameTextPair[]
+  proficiency: string
 }
 
 export class Compendium {

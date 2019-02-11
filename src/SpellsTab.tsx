@@ -3,11 +3,12 @@ import * as React from 'react';
 import { Column, SortDirection, SortDirectionType, TableCellProps } from 'react-virtualized';
 import { connect } from 'react-redux';
 
+import IconButton from '@material-ui/core/IconButton';
+import Plus from 'mdi-material-ui/Plus';
 import { Spell } from './compendium';
-import { State as AppState, store } from './store';
-import Button from '@material-ui/core/Button';
-import TableWithCard from './TableWithCard';
 import SpellCard from './SpellCard';
+import { State as AppState, store } from './store';
+import TableWithCard from './TableWithCard';
 
 export interface Props {
   spells: { [key: string]: Spell }
@@ -72,13 +73,13 @@ class SpellsTab extends React.Component<Props> {
           label=""
           dataKey="name"
           cellRenderer={(col: TableCellProps) => (
-            <Button
+            <IconButton
                 onClick={(event: React.MouseEvent<HTMLElement>) => {
                   event.stopPropagation();
                   store.dispatch({type: 'ADD_TO_CHARACTER', spell: spells[col.cellData]});
                 }}>
-              +
-            </Button>
+              <Plus />
+            </IconButton>
           )}
           width={50} />
     </TableWithCard>

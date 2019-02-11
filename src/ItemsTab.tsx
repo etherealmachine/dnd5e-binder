@@ -3,12 +3,12 @@ import * as React from 'react';
 import { Column, SortDirection, SortDirectionType, TableCellProps } from 'react-virtualized';
 import { connect } from 'react-redux';
 
+import IconButton from '@material-ui/core/IconButton';
 import { Item } from './compendium';
-import { State as AppState, store } from './store';
-import Button from '@material-ui/core/Button';
-import Plus from 'mdi-material-ui/Plus';
-import TableWithCard from './TableWithCard';
 import ItemCard from './ItemCard';
+import Plus from 'mdi-material-ui/Plus';
+import { State as AppState, store } from './store';
+import TableWithCard from './TableWithCard';
 
 export interface Props {
   items: { [key: string]: Item }
@@ -62,11 +62,15 @@ class ItemsTab extends React.Component<Props> {
   }
 
   private renderAddItemButton = (col: TableCellProps) => {
-    return <Button
+    return <IconButton
         onClick={this.handleAddItemClicked}
         data-item={col.cellData}>
       <Plus />
-    </Button>;
+    </IconButton>;
+  }
+
+  private renderItemCard = (item: Item, handleCloseClicked: (event: React.MouseEvent) => void) => {
+    return <ItemCard item={item} handleCloseClicked={handleCloseClicked} />
   }
 
   public render() {
@@ -74,7 +78,7 @@ class ItemsTab extends React.Component<Props> {
     return <TableWithCard
         name="Items"
         items={items}
-        renderItemCard={(item: Item, handleCloseClicked: (event: React.MouseEvent) => void) => <ItemCard item={item} handleCloseClicked={handleCloseClicked} />}
+        renderItemCard={this.renderItemCard}
         compare={this.compare}>
       <Column
         label="name"

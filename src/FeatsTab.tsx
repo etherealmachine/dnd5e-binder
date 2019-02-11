@@ -2,6 +2,7 @@ import "core-js/library";
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import Button from '@material-ui/core/Button';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
 
@@ -28,6 +29,7 @@ class FeatsTab extends React.Component<Props> {
       <p>
         {(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}
       </p>
+      <Button color="primary">Add To Character</Button>
     </div>;
   }
 

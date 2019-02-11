@@ -1,13 +1,16 @@
 import "core-js/library";
 import * as React from 'react';
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
 import { Background } from './compendium';
+import Button from '@material-ui/core/Button';
 import { State as AppState } from './store';
 import SearchableList from './SearchableList';
 
 export interface Props {
   backgrounds: { [key: string]: Background }
+  dispatch: Dispatch
 }
 
 class BackgroundsTab extends React.Component<Props> {
@@ -16,6 +19,18 @@ class BackgroundsTab extends React.Component<Props> {
     return {
       backgrounds: state.app.compendium.backgrounds,
     };
+  }
+
+  public static mapDispatchToProps(dispatch: Dispatch): Partial<Props> {
+    return { dispatch };
+  }
+
+  private handleAddToCharacter = (event: React.MouseEvent) => {
+    this.props.dispatch({
+      type: 'FIELD_CHANGE',
+      key: 'background',
+      value: event.currentTarget.getAttribute('data-background'),
+    });
   }
 
   private renderBackground = (background: any, index: number): JSX.Element => {
@@ -33,6 +48,7 @@ class BackgroundsTab extends React.Component<Props> {
       <h2>{background.name}</h2>
       <p><span className="term">Proficiency:</span> {background.proficiency}</p>
       {content}
+      <Button color="primary" data-background={background.name} onClick={this.handleAddToCharacter}>Add To Character</Button>
     </div>;
   }
 
