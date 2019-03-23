@@ -13,6 +13,8 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import { State as AppState } from '../store';
 
+import SelectRace from './steps/SelectRace';
+
 export interface Props extends CharacterState {
   compendium: Compendium
   dispatch: Dispatch
@@ -57,6 +59,15 @@ class CharacterSheet extends React.Component<Props, State> {
     });
   }
 
+  public renderStep(step: Number): React.ReactNode {
+    switch (step) {
+      case 0:
+        return <SelectRace />;
+      default:
+        return <div></div>;
+    }
+  }
+
   public render() {
     return <div>
       <Stepper activeStep={this.state.activeStep}>
@@ -86,7 +97,9 @@ class CharacterSheet extends React.Component<Props, State> {
         </Step>
       </Stepper>
       <Card>
-        <CardContent></CardContent>
+        <CardContent>
+          {this.renderStep(this.state.activeStep)}
+        </CardContent>
       </Card>
       <div>
         <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>Back</Button>
