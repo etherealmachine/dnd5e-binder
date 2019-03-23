@@ -4,11 +4,11 @@ import { Column, SortDirection, SortDirectionType, TableCellProps } from 'react-
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
-import { Item } from './compendium';
-import ItemCard from './ItemCard';
+import { Item } from '../compendium';
+import ItemCard from '../cards/ItemCard';
 import Plus from 'mdi-material-ui/Plus';
-import { State as AppState, store } from './store';
-import TableWithCard from './TableWithCard';
+import { State as AppState, store } from '../store';
+import TableWithCard from '../TableWithCard';
 
 export interface Props {
   items: { [key: string]: Item }

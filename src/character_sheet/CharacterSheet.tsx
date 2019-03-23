@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 import Button from '@material-ui/core/Button';
-import Compendium from './compendium';
-import { CharacterState } from './store';
+import Compendium from '../compendium';
+import { CharacterState } from '../store';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import { State as AppState } from './store';
+import { State as AppState } from '../store';
 
 export interface Props extends CharacterState {
   compendium: Compendium

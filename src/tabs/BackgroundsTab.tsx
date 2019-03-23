@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
-import { Background } from './compendium';
+import { Background } from '../compendium';
 import Button from '@material-ui/core/Button';
-import { State as AppState } from './store';
-import SearchableList from './SearchableList';
+import { State as AppState } from '../store';
+import SearchableList from '../SearchableList';
 
 export interface Props {
   backgrounds: { [key: string]: Background }

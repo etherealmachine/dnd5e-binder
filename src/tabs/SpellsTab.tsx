@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
 import Plus from 'mdi-material-ui/Plus';
-import { Spell } from './compendium';
-import SpellCard from './SpellCard';
-import { State as AppState, store } from './store';
-import TableWithCard from './TableWithCard';
+import { Spell } from '../compendium';
+import SpellCard from '../cards/SpellCard';
+import { State as AppState, store } from '../store';
+import TableWithCard from '../TableWithCard';
 
 export interface Props {
   spells: { [key: string]: Spell }

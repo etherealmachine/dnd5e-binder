@@ -9,7 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
 
-import { store } from './store';
+import { store } from '../store';
 
 export interface Props extends WithStyles<typeof styles> {
 }

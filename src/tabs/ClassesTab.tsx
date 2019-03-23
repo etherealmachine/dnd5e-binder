@@ -3,9 +3,9 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
-import { Class } from './compendium';
-import { State as AppState } from './store';
-import SearchableList from './SearchableList';
+import { Class } from '../compendium';
+import { State as AppState } from '../store';
+import SearchableList from '../SearchableList';
 
 export interface Props {
   classes: { [key: string]: Class }

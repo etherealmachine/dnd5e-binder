@@ -18,15 +18,15 @@ import Typography from '@material-ui/core/Typography';
 import './App.css';
 import { State } from './store';
 import Compendium from './compendium';
-import CharactersTab from './CharactersTab';
-import SpellsTab from './SpellsTab';
-import ItemsTab from './ItemsTab';
-import MonstersTab from './MonstersTab';
-import BackgroundsTab from './BackgroundsTab';
-import FeatsTab from './FeatsTab';
-import ClassesTab from './ClassesTab';
-import RacesTab from './RacesTab';
-import EncounterTab from './EncounterTab';
+import CharactersTab from './tabs/CharactersTab';
+import SpellsTab from './tabs/SpellsTab';
+import ItemsTab from './tabs/ItemsTab';
+import MonstersTab from './tabs/MonstersTab';
+import BackgroundsTab from './tabs/BackgroundsTab';
+import FeatsTab from './tabs/FeatsTab';
+import ClassesTab from './tabs/ClassesTab';
+import RacesTab from './tabs/RacesTab';
+import EncounterTab from './tabs/EncounterTab';
 
 export interface Props {
   drawerOpen: boolean

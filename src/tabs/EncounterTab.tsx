@@ -3,10 +3,10 @@ import * as React from 'react';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
-import { State } from './store';
-import { Monster } from './compendium';
-import AddPlayerCard from './AddPlayerCard';
-import MonsterCard from './MonsterCard';
+import { State } from '../store';
+import { Monster } from '../compendium';
+import AddPlayerCard from '../cards/AddPlayerCard';
+import MonsterCard from '../cards/MonsterCard';
 
 export interface Props extends WithStyles<typeof styles> {
   monsters: Monster[],

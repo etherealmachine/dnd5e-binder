@@ -3,11 +3,11 @@ import * as React from 'react';
 import { Column, TableCellProps, SortDirection, SortDirectionType, TableCellDataGetterParams } from 'react-virtualized';
 import { connect } from 'react-redux';
 
-import { Compendium, Monster } from './compendium';
-import { State as AppState, store } from './store';
+import { Compendium, Monster } from '../compendium';
+import { State as AppState, store } from '../store';
 import Button from '@material-ui/core/Button';
-import TableWithCard from './TableWithCard';
-import MonsterCard from './MonsterCard';
+import TableWithCard from '../TableWithCard';
+import MonsterCard from '../cards/MonsterCard';
 
 export interface Props {
   monsters: { [key: string]: Monster }

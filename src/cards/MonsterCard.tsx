@@ -16,8 +16,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
 
-import { Compendium, Monster, NameTextPair } from './compendium';
-import { State, store } from './store';
+import { Compendium, Monster, NameTextPair } from '../compendium';
+import { State, store } from '../store';
 
 export interface Props extends WithStyles<typeof styles> {
   monster: Monster
