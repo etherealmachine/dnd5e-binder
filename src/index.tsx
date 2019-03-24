@@ -12,20 +12,20 @@ import App from './App';
 import './index.css';
 
 const theme = createMuiTheme({
-  palette: {
-    primary: blue,
-  },
-  typography: {
-    useNextVariants: true,
-  },
+    palette: {
+        primary: blue,
+    },
+    typography: {
+        useNextVariants: true,
+    },
 });
 
 ReactDOM.render(
-  <MuiThemeProvider theme={theme}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </MuiThemeProvider>,
-  document.getElementById('root') as HTMLElement
+    <MuiThemeProvider theme={theme}>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </MuiThemeProvider>,
+    document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();

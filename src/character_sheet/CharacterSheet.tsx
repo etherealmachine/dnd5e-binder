@@ -16,97 +16,97 @@ import { State as AppState } from '../store';
 import SelectRace from './steps/SelectRace';
 
 export interface Props extends CharacterState {
-  compendium: Compendium
-  dispatch: Dispatch
+    compendium: Compendium
+    dispatch: Dispatch
 }
 
 interface State extends Partial<CharacterState> {
-  activeStep: number
+    activeStep: number
 }
 
 class CharacterSheet extends React.Component<Props, State> {
 
-  public constructor(props: Props) {
-    super(props);
-    const state = {
-      activeStep: 0
-    };
-    Object.assign(state, props);
-    this.state = state;
-  }
-
-  public static mapStateToProps(state: AppState): Partial<Props> {
-    return {
-      compendium: state.app.compendium,
-    };
-  }
-
-  public static mapDispatchToProps(dispatch: Dispatch): Partial<Props> {
-    return {
-      dispatch: dispatch,
-    };
-  }
-
-  private handleBack = () => {
-    this.setState({
-      activeStep: this.state.activeStep-1,
-    });
-  }
-
-  private handleNext = () => {
-    this.setState({
-      activeStep: this.state.activeStep+1,
-    });
-  }
-
-  public renderStep(step: Number): React.ReactNode {
-    switch (step) {
-      case 0:
-        return <SelectRace />;
-      default:
-        return <div></div>;
+    public constructor(props: Props) {
+        super(props);
+        const state = {
+            activeStep: 0
+        };
+        Object.assign(state, props);
+        this.state = state;
     }
-  }
 
-  public render() {
-    return <div>
-      <Stepper activeStep={this.state.activeStep}>
-        <Step>
-          <StepLabel>Race</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Class</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Name</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Background</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Ability Scores</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Proficiencies</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Equipment</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Spells</StepLabel>
-        </Step>
-      </Stepper>
-      <Card>
-        <CardContent>
-          {this.renderStep(this.state.activeStep)}
-        </CardContent>
-      </Card>
-      <div>
-        <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>Back</Button>
-        <Button color="primary" onClick={this.handleNext}>Next</Button>
-      </div>
-    </div>;
-  }
+    public static mapStateToProps(state: AppState): Partial<Props> {
+        return {
+            compendium: state.app.compendium,
+        };
+    }
+
+    public static mapDispatchToProps(dispatch: Dispatch): Partial<Props> {
+        return {
+            dispatch: dispatch,
+        };
+    }
+
+    private handleBack = () => {
+        this.setState({
+            activeStep: this.state.activeStep - 1,
+        });
+    }
+
+    private handleNext = () => {
+        this.setState({
+            activeStep: this.state.activeStep + 1,
+        });
+    }
+
+    public renderStep(step: Number): React.ReactNode {
+        switch (step) {
+            case 0:
+                return <SelectRace />;
+            default:
+                return <div></div>;
+        }
+    }
+
+    public render() {
+        return <div>
+            <Stepper activeStep={this.state.activeStep}>
+                <Step>
+                    <StepLabel>Race</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Class</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Name</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Background</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Ability Scores</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Proficiencies</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Equipment</StepLabel>
+                </Step>
+                <Step>
+                    <StepLabel>Spells</StepLabel>
+                </Step>
+            </Stepper>
+            <Card>
+                <CardContent>
+                    {this.renderStep(this.state.activeStep)}
+                </CardContent>
+            </Card>
+            <div>
+                <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>Back</Button>
+                <Button color="primary" onClick={this.handleNext}>Next</Button>
+            </div>
+        </div>;
+    }
 }
 
 export default connect(CharacterSheet.mapStateToProps, CharacterSheet.mapDispatchToProps)(CharacterSheet);
