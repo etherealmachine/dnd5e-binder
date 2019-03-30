@@ -19,10 +19,13 @@ import Typography from '@material-ui/core/Typography';
 import { Compendium, Monster, NameTextPair } from '../compendium';
 import { State, store } from '../store';
 
-export interface Props extends WithStyles<typeof styles> {
+export interface Props {
     monster: Monster
-    monsters: { [key: string]: Monster }
     handleCloseClicked?: (event: React.MouseEvent) => void
+}
+
+interface StateProps {
+    monsters: { [key: string]: Monster }
 }
 
 interface LocalState {
@@ -82,11 +85,13 @@ const styles = createStyles({
     },
 });
 
-class MonsterCard extends React.Component<Props, LocalState> {
+interface AllProps extends Props, StateProps, WithStyles<typeof styles> {}
+
+class MonsterCard extends React.Component<AllProps, LocalState> {
 
     inputRef = React.createRef<HTMLInputElement>();
 
-    public constructor(props: Props) {
+    public constructor(props: AllProps) {
         super(props);
         this.state = {
             editableProps: {
@@ -115,7 +120,7 @@ class MonsterCard extends React.Component<Props, LocalState> {
         document.removeEventListener('mousedown', this.handleClick, false);
     }
 
-    public static mapStateToProps(state: State): Partial<Props> {
+    public static mapStateToProps(state: State): StateProps {
         return {
             monsters: state.app.compendium.monsters,
         };
@@ -430,11 +435,4 @@ class MonsterCard extends React.Component<Props, LocalState> {
     }
 }
 
-// connect is not working welll with type inference
-interface PassedProps {
-    monster: Monster
-    handleCloseClicked?: (event: React.MouseEvent) => void
-}
-
-const component: () => React.Component<PassedProps> = (connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard)) as any);
-export default component;
+export default connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard));
