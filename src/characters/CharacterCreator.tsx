@@ -24,7 +24,7 @@ interface State extends Partial<CharacterState> {
     activeStep: number
 }
 
-class CharacterSheet extends React.Component<Props, State> {
+class CharacterCreator extends React.Component<Props, State> {
 
     public constructor(props: Props) {
         super(props);
@@ -109,4 +109,4 @@ class CharacterSheet extends React.Component<Props, State> {
     }
 }
 
-export default connect(CharacterSheet.mapStateToProps, CharacterSheet.mapDispatchToProps)(CharacterSheet);
+export default connect(CharacterCreator.mapStateToProps, CharacterCreator.mapDispatchToProps)(CharacterCreator);

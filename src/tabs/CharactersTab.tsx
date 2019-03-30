@@ -11,7 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import { State, CharacterState } from '../store';
-import CharacterSheet from '../character_sheet/CharacterSheet';
+import CharacterCreator from '../characters/CharacterCreator';
 
 export interface Props {
     selected: number
@@ -103,7 +103,7 @@ class CharactersTab extends React.Component<Props> {
                 <Button onClick={this.handleShare}>Share</Button>
                 <Button color="secondary" onClick={this.handleDelete}>Delete</Button>
             </div>
-            <CharacterSheet {...this.props.characters[this.props.selected]} />
+            <CharacterCreator {...this.props.characters[this.props.selected]} />
         </div>;
     }
 }
