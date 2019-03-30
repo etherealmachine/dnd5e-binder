@@ -3,6 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { Race } from '../compendium';
+import RaceCard from '../cards/RaceCard';
 import { State as AppState } from '../store';
 import SearchableList from '../SearchableList';
 
@@ -18,27 +19,8 @@ class RacesTab extends React.Component<Props> {
         };
     }
 
-    private renderRace = (race: any, index: number): JSX.Element => {
-        const content: JSX.Element[] = [];
-        let traits = race.trait;
-        if (!(traits instanceof Array)) {
-            traits = [traits];
-        }
-        traits.forEach((trait: any) => {
-            let text = trait.text;
-            if (!(trait.text instanceof Array)) {
-                text = [trait.text];
-            }
-            content.push(
-                <p key={content.length}><span className="term">{trait.name}:</span>&nbsp;{(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}</p>)
-        });
-        return <div key={index}>
-            <h2>{race.name}</h2>
-            <p><span className="term">Ability: {race.ability}</span></p>
-            <p><span className="term">Size: {race.size}</span></p>
-            <p><span className="term">Speed: {race.speed}</span></p>
-            {content}
-        </div>;
+    private renderRace = (race: Race, index: number): JSX.Element => {
+        return <RaceCard key={index} race={race} />;
     }
 
     public render() {

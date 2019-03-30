@@ -1,6 +1,7 @@
 import { combineReducers, createStore } from 'redux';
 
 import Compendium from './compendium';
+import { Race, Class, Feat, Spell, Item } from './compendium';
 import { appInstance } from './App';
 
 export interface State {
@@ -25,12 +26,11 @@ export interface CharactersState {
 export interface CharacterState {
     player_name: string
     character_name: string
-    race: string
-    background: string
-    abilities: { [key: string]: number | undefined }
-    feats: string[]
-    items: string[]
-    spells: string[]
+    race?: Race
+    classes: Class[]
+    feats: Feat[]
+    spells: Spell[]
+    items: Item[]
 }
 
 export interface EncounterState {
@@ -75,25 +75,25 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
         return {
             player_name: '',
             character_name: '',
-            abilities: Compendium.abilities.reduce((obj, ability) => { obj[ability] = undefined; return obj }, {}),
-            race: '',
-            background: '',
+            classes: [],
             feats: [],
-            items: [],
             spells: [],
+            items: [],
         };
     }
     switch (action.type) {
         case 'FIELD_CHANGE':
             return { ...state, [action.key]: action.value };
-        case 'ABILITIES_CHANGE':
+        case 'SET_RACE':
             return {
                 ...state,
-                abilities: {
-                    ...state.abilities,
-                    [action.key]: action.value,
-                }
+                race: action.race,
             };
+        case 'ADD_CLASS':
+            return {
+                ...state,
+                classes: [...state.classes, action.class],
+            }
         case 'ADD_FEAT':
             return {
                 ...state,
