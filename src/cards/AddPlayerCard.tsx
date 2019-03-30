@@ -114,9 +114,4 @@ class AddPlayerCard extends React.Component<Props, LocalState> {
     }
 }
 
-// connect is not working welll with type inference
-interface PassedProps {
-}
-
-const component: () => React.Component<PassedProps> = (withStyles(styles)(AddPlayerCard) as any);
-export default component;
+export default withStyles(styles)(AddPlayerCard);

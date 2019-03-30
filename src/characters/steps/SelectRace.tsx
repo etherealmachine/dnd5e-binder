@@ -22,11 +22,9 @@ export interface Props extends CharacterState {
 class SelectRace extends React.Component<Props> {
 
     public static mapStateToProps(state: AppState): Partial<Props> {
-        const selectedCharacter = state.characters.characters[state.characters.selected];
-        const race = selectedCharacter? selectedCharacter.race : undefined;
         return {
             compendium: state.app.compendium,
-            race: race,
+            race: state.characters.characters[state.characters.selected].race,
         };
     }
 
