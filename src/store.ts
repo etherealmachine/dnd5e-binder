@@ -15,12 +15,13 @@ export interface AppState {
     tabSelected: number
     signedIn: boolean
     compendium: Compendium
-    compendiumLoading: boolean
+    compendiumLoading: boolean,
 }
 
 export interface CharactersState {
     selected: number
     characters: CharacterState[]
+    creationStep: number
 }
 
 export interface CharacterState {
@@ -84,10 +85,15 @@ function character(state: CharacterState | undefined, action: any): CharacterSta
     switch (action.type) {
         case 'FIELD_CHANGE':
             return { ...state, [action.key]: action.value };
-        case 'SET_RACE':
+        case 'SELECT_RACE':
             return {
                 ...state,
                 race: action.race,
+            };
+        case 'SELECT_CLASS':
+            return {
+                ...state,
+                classes: [action.class],
             };
         case 'ADD_CLASS':
             return {
@@ -120,6 +126,7 @@ function characters(state: CharactersState | undefined, action: any): Characters
             characters: [
                 character(undefined, undefined),
             ],
+            creationStep: 0,
         };
     }
     switch (action.type) {
@@ -130,6 +137,7 @@ function characters(state: CharactersState | undefined, action: any): Characters
                 return {
                     selected: action.value,
                     characters: newCharacters,
+                    creationStep: 0,
                 };
             }
             return {
@@ -147,18 +155,20 @@ function characters(state: CharactersState | undefined, action: any): Characters
                 newSelection = newCharacters.length - 1;
             }
             return {
-                ...state,
                 selected: newSelection,
                 characters: newCharacters,
+                creationStep: 0,
             };
         case 'IMPORT_CHARACTER':
             newCharacters = state.characters.slice();
             newCharacters.push(action.value);
             return {
-                ...state,
                 selected: newCharacters.length - 1,
                 characters: newCharacters,
+                creationStep: 0,
             };
+        case 'CHARACTER_CREATION_STEP':
+            return { ...state, creationStep: action.step };
     }
     const selectedCharacter = Object.assign({}, state.characters[state.selected]);
     const newCharacters = state.characters.slice();

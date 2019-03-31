@@ -5,7 +5,6 @@ import { Dispatch } from 'redux';
 
 import Compendium from '../../compendium';
 import { Race } from '../../compendium';
-import { CharacterState } from '../../store';
 import { State as AppState } from '../../store';
 
 import RaceCard from '../../cards/RaceCard';
@@ -15,10 +14,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 
-export interface Props extends CharacterState {
+export interface Props {
     compendium: Compendium
     dispatch: Dispatch
-    race?: Race
+    selectedRace?: Race
 }
 
 class SelectRace extends React.Component<Props> {
@@ -26,7 +25,7 @@ class SelectRace extends React.Component<Props> {
     public static mapStateToProps(state: AppState): Partial<Props> {
         return {
             compendium: state.app.compendium,
-            race: state.characters.characters[state.characters.selected].race,
+            selectedRace: state.characters.characters[state.characters.selected].race,
         };
     }
 
@@ -38,7 +37,7 @@ class SelectRace extends React.Component<Props> {
 
     private handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         this.props.dispatch({
-            type: 'SET_RACE',
+            type: 'SELECT_RACE',
             race: this.props.compendium.races[event.target.value],
         });
     }
@@ -50,12 +49,12 @@ class SelectRace extends React.Component<Props> {
           <FormControl style={{maxWidth: '300px'}}>
             <InputLabel htmlFor="race">Race</InputLabel>
             <Select
-                value={this.props.race? this.props.race.name : ''}
+                value={this.props.selectedRace? this.props.selectedRace.name : ''}
                 onChange={this.handleChange}>
                 {sortedRaces.map((race, i) => { return <MenuItem key={i} value={race}>{race}</MenuItem> })}
             </Select>
           </FormControl>
-          {this.props.race? <RaceCard race={this.props.race} /> : null}
+          {this.props.selectedRace? <RaceCard race={this.props.selectedRace} /> : null}
         </div>;
     }
 }

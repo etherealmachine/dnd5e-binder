@@ -5,7 +5,6 @@ import { Dispatch } from 'redux';
 
 import Compendium from '../../compendium';
 import { Class } from '../../compendium';
-import { CharacterState } from '../../store';
 import { State as AppState } from '../../store';
 
 import ClassCard from '../../cards/ClassCard';
@@ -15,25 +14,19 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 
-export interface Props extends CharacterState {
+export interface Props {
     compendium: Compendium
     dispatch: Dispatch
-}
-
-interface State {
     selectedClass?: Class
 }
 
-class SelectClass extends React.Component<Props, State> {
-
-    public constructor(props: Props) {
-        super(props);
-        this.state = {};
-    }
+class SelectClass extends React.Component<Props> {
 
     public static mapStateToProps(state: AppState): Partial<Props> {
+        const classes = state.characters.characters[state.characters.selected].classes;
         return {
             compendium: state.app.compendium,
+            selectedClass: classes? classes[0] : undefined,
         };
     }
 
@@ -44,8 +37,9 @@ class SelectClass extends React.Component<Props, State> {
     }
 
     private handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        this.setState({
-            selectedClass: this.props.compendium.classes[event.target.value],
+        this.props.dispatch({
+            type: 'SELECT_CLASS',
+            class: this.props.compendium.classes[event.target.value],
         });
     }
 
@@ -56,12 +50,12 @@ class SelectClass extends React.Component<Props, State> {
           <FormControl style={{maxWidth: '300px'}}>
             <InputLabel htmlFor="class">Class</InputLabel>
             <Select
-                value={this.state.selectedClass? this.state.selectedClass.name : ''}
+                value={this.props.selectedClass? this.props.selectedClass.name : ''}
                 onChange={this.handleChange}>
                 {sortedClasses.map((clazz, i) => { return <MenuItem key={i} value={clazz}>{clazz}</MenuItem> })}
             </Select>
           </FormControl>
-          {this.state.selectedClass? <ClassCard clazz={this.state.selectedClass} /> : null}
+          {this.props.selectedClass? <ClassCard clazz={this.props.selectedClass} /> : null}
         </div>;
         return <div></div>;
     }

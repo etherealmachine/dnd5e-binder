@@ -28,13 +28,10 @@ export interface Props extends CharacterState {
     compendium: Compendium
     dispatch: Dispatch
     selectedCharacter: CharacterState
-}
-
-interface State extends Partial<CharacterState> {
     activeStep: number
 }
 
-class CharacterCreator extends React.Component<Props, State> {
+class CharacterCreator extends React.Component<Props> {
 
     public constructor(props: Props) {
         super(props);
@@ -49,6 +46,7 @@ class CharacterCreator extends React.Component<Props, State> {
         return {
             compendium: state.app.compendium,
             selectedCharacter: state.characters.characters[state.characters.selected],
+            activeStep: state.characters.creationStep,
         };
     }
 
@@ -59,14 +57,16 @@ class CharacterCreator extends React.Component<Props, State> {
     }
 
     private handleBack = () => {
-        this.setState({
-            activeStep: this.state.activeStep - 1,
+        this.props.dispatch({
+            type: 'CHARACTER_CREATION_STEP',
+            step: this.props.activeStep - 1,
         });
     }
 
     private handleNext = () => {
-        this.setState({
-            activeStep: this.state.activeStep + 1,
+        this.props.dispatch({
+            type: 'CHARACTER_CREATION_STEP',
+            step: this.props.activeStep + 1,
         });
     }
 
@@ -95,7 +95,7 @@ class CharacterCreator extends React.Component<Props, State> {
 
     public render() {
         return <div>
-            <Stepper activeStep={this.state.activeStep}>
+            <Stepper activeStep={this.props.activeStep}>
                 <Step>
                     <StepLabel>Race</StepLabel>
                 </Step>
@@ -128,11 +128,11 @@ class CharacterCreator extends React.Component<Props, State> {
                 <div className="column">
                     <Card>
                         <CardContent>
-                            {this.renderStep(this.state.activeStep)}
+                            {this.renderStep(this.props.activeStep)}
                         </CardContent>
                     </Card>
                     <div>
-                        <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>Back</Button>
+                        <Button disabled={this.props.activeStep === 0} onClick={this.handleBack}>Back</Button>
                         <Button color="primary" onClick={this.handleNext}>Next</Button>
                     </div>
                 </div>
