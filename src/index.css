@@ -76,6 +76,10 @@ body {
   color: #919191;
 }
 
+.term {
+  font-weight: bold;
+}
+
 .wrap: {
   whiteSpace: normal,
 }

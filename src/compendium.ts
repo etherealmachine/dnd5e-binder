@@ -66,8 +66,22 @@ export interface Item {
     text: string[] | string
 }
 
+export interface Feature {
+    name: string
+    text: string[] | string
+}
+
+export interface Autolevel {
+    slots?: string
+    feature?: Feature[] | Feature
+}
+
 export interface Class {
     name: string
+    hd: string
+    proficiency: string
+    spellAbility: string
+    autolevel: Autolevel[]
 }
 
 export interface Feat {

@@ -7,7 +7,9 @@ import Compendium from '../../compendium';
 import { Race } from '../../compendium';
 import { CharacterState } from '../../store';
 import { State as AppState } from '../../store';
+
 import RaceCard from '../../cards/RaceCard';
+
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';

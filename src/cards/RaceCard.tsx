@@ -25,16 +25,16 @@ class RaceCard extends React.Component<Props> {
             }
             content.push(
                 <div key={content.length}>
-                    <Typography variant="subtitle2">{trait.name}</Typography>
-                    <Typography>&nbsp;{(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}</Typography>
+                    <span className="term">{trait.name}</span>
+                    <span>&nbsp;{(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}</span>
                 </div>
             );
         });
         return <div>
             <Typography variant="h5">{race.name}</Typography>
-            <Typography>Ability: {race.ability}</Typography>
-            <Typography>Size: {race.size}</Typography>
-            <Typography>Speed: {race.speed}</Typography>
+            <Typography><span className="term">Ability:</span>&nbsp;{race.ability}</Typography>
+            <Typography><span className="term">Size:</span>&nbsp;{race.size}</Typography>
+            <Typography><span className="term">Speed:</span>&nbsp;{race.speed}</Typography>
             {content}
         </div>;
     }
