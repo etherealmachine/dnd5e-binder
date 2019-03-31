@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import { Race } from '../compendium';
 
+import Typography from '@material-ui/core/Typography';
+
 export interface Props {
     race: Race
 }
@@ -22,13 +24,17 @@ class RaceCard extends React.Component<Props> {
                 text = [trait.text];
             }
             content.push(
-                <p key={content.length}><span className="term">{trait.name}:</span>&nbsp;{(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}</p>)
+                <div key={content.length}>
+                    <Typography variant="subtitle2">{trait.name}</Typography>
+                    <Typography>&nbsp;{(text as string[]).map((t, j) => <span key={j}>{t}<br /></span>)}</Typography>
+                </div>
+            );
         });
         return <div>
-            <h2>{race.name}</h2>
-            <p><span className="term">Ability: {race.ability}</span></p>
-            <p><span className="term">Size: {race.size}</span></p>
-            <p><span className="term">Speed: {race.speed}</span></p>
+            <Typography variant="h5">{race.name}</Typography>
+            <Typography>Ability: {race.ability}</Typography>
+            <Typography>Size: {race.size}</Typography>
+            <Typography>Speed: {race.speed}</Typography>
             {content}
         </div>;
     }

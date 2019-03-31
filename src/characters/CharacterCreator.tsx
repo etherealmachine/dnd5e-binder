@@ -121,19 +121,21 @@ class CharacterCreator extends React.Component<Props, State> {
                     <StepLabel>Spells</StepLabel>
                 </Step>
             </Stepper>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div style={{ display: 'flex', marginRight: '16px' }}>
-                    <CharacterCard character={this.props.selectedCharacter}/>
+            <div className="row">
+                <div className="row" style={{ minWidth: "400px", marginRight: "16px" }}>
+                    <CharacterCard character={this.props.selectedCharacter} />
                 </div>
-                <Card>
-                    <CardContent>
-                        {this.renderStep(this.state.activeStep)}
-                    </CardContent>
-                </Card>
-            </div>
-            <div>
-                <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>Back</Button>
-                <Button color="primary" onClick={this.handleNext}>Next</Button>
+                <div className="column">
+                    <Card>
+                        <CardContent>
+                            {this.renderStep(this.state.activeStep)}
+                        </CardContent>
+                    </Card>
+                    <div>
+                        <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>Back</Button>
+                        <Button color="primary" onClick={this.handleNext}>Next</Button>
+                    </div>
+                </div>
             </div>
         </div>;
     }

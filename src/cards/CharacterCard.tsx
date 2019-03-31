@@ -14,9 +14,16 @@ export interface Props {
 class CharacterCard extends React.Component<Props> {
 
     public render() {
-        return <Card>
+    	const {
+    		character_name,
+    		race
+    	} = this.props.character;
+        return <Card className="card">
             <CardContent>
-            <Typography variant="h2">{this.props.character.character_name}</Typography>
+	            <Typography variant="h5">{character_name? character_name : 'Unnamed Character'}</Typography>
+	            <Typography variant="body2">{race? race.name : ''}</Typography>
+	            <Typography variant="body2">Size: {race? race.size : ''}</Typography>
+	            <Typography variant="body2">Speed: {race? race.speed : ''}</Typography>
             </CardContent>
         </Card>;
     }
