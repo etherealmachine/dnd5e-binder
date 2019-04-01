@@ -7,9 +7,12 @@ import Compendium from '../../compendium';
 import { CharacterState } from '../../store';
 import { State as AppState } from '../../store';
 
-export interface Props extends CharacterState {
+import TextField from '@material-ui/core/TextField';
+
+export interface Props {
     compendium: Compendium
     dispatch: Dispatch
+    character: CharacterState
 }
 
 class SelectName extends React.Component<Props> {
@@ -17,6 +20,7 @@ class SelectName extends React.Component<Props> {
     public static mapStateToProps(state: AppState): Partial<Props> {
         return {
             compendium: state.app.compendium,
+            character: state.characters.characters[state.characters.selected],
         };
     }
 
@@ -26,8 +30,21 @@ class SelectName extends React.Component<Props> {
         };
     }
 
+    private handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        this.props.dispatch({
+            type: 'FIELD_CHANGE',
+            key: 'character_name',
+            value: event.target.value,
+        });
+    }
+
     public render() {
-        return <div></div>;
+        return <TextField
+            label="Character Name"
+            type="text"
+            value={this.props.character.character_name}
+            onChange={this.handleChange}
+        />;
     }
 }
 
