@@ -14,6 +14,7 @@ import Dice6 from 'mdi-material-ui/Dice6';
 import DiceD20 from 'mdi-material-ui/DiceD20';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import { Compendium, Monster, NameTextPair } from '../compendium';
@@ -184,7 +185,21 @@ class MonsterCard extends React.Component<AllProps, LocalState> {
         const content = actions.map(this.renderAction)
         return <div className={this.props.classes.action}>
             {content}
-        </div>
+        </div>;
+    }
+
+    private renderSpellSlots = (slots: string) => {
+        return slots.split(',').map((v, i) => {
+            const count = parseInt(v);
+            if (count > 0) {
+                return <TextField
+                    key={i}
+                    value={count}
+                    type="number"
+                />;
+            }
+            return null;
+        }).filter((c) => c != null);
     }
 
     private renderInitiativeTracker = () => {
@@ -312,6 +327,7 @@ class MonsterCard extends React.Component<AllProps, LocalState> {
         const reactions = this.renderActions(reaction);
         const legendaryActions = this.renderActions(legendary);
         const traits = this.renderActions(trait);
+        const spellSlots = slots? this.renderSpellSlots(slots) : null;
         return <Card className={classes.card}>
             {imageURL && <CardMedia
                 className={classes.media}
@@ -421,7 +437,9 @@ class MonsterCard extends React.Component<AllProps, LocalState> {
                 {immune && <Typography>Immune: {immune}</Typography>}
                 {conditionImmune && <Typography>Condition Immunities: {conditionImmune}</Typography>}
                 {spells && <Typography>Spells: {spells}</Typography>}
-                {slots && <Typography>Slots: {slots}</Typography>}
+                <div>
+                    {spellSlots}
+                </div>
             </CardContent>
             <CardActions>
                 {id === undefined && <Button size="small" color="primary" onClick={this.addToEncounter}>
