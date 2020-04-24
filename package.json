@@ -1,40 +1,63 @@
 {
   "name": "dnd5e-binder",
   "version": "0.1.0",
-  "homepage": "https://etherealmachine.github.io/dnd5e-binder",
   "private": true,
+  "homepage": "https://etherealmachine.github.io/dnd5e-binder",
   "dependencies": {
     "@material-ui/core": "^3.2.2",
     "@material-ui/icons": "^3.0.1",
-    "@types/classnames": "^2.2.6",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/classnames": "^2.2.9",
+    "@types/fast-levenshtein": "^0.0.1",
     "@types/gapi.client.drive": "^3.0.1",
-    "@types/jest": "^24.0.11",
-    "@types/node": "^11.12.2",
-    "@types/react": "^16.4.14",
-    "@types/react-dom": "^16.0.8",
-    "@types/react-redux": "^7.0.6",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
     "@types/react-virtualized": "^9.18.7",
+    "@types/styled-components": "^5.0.1",
     "@types/xml2js": "^0.4.3",
     "classnames": "^2.2.6",
-    "gh-pages": "^2.0.1",
-    "localforage": "^1.7.2",
-    "mdi-material-ui": "^5.9.0",
-    "merge": "1.2.1",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
-    "react-promise": "^2.0.3",
-    "react-redux": "^6.0.1",
-    "react-scripts-ts": "3.1.0",
-    "react-virtualized": "^9.20.1",
-    "typeface-roboto": "0.0.54",
-    "typescript": "^3.1.1",
-    "typescript-formatter": "^7.2.2"
+    "fast-levenshtein": "^2.0.6",
+    "gh-pages": "^2.2.0",
+    "jest-canvas-mock": "^2.2.0",
+    "mdi-material-ui": "^6.13.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.4.0",
+    "react-virtualized": "^9.21.2",
+    "redux": "^4.0.5",
+    "styled-components": "^5.0.1",
+    "typeface-roboto": "^0.0.75",
+    "typescript": "~3.7.2",
+    "xterm": "^4.3.0",
+    "xterm-addon-fit": "^0.3.0"
+  },
+  "devDependencies": {
+    "heroku": "^7.38.2"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

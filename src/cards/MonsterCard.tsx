@@ -1,456 +1,232 @@
-import "core-js/library";
 import * as React from 'react';
 import { createStyles, WithStyles, withStyles } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Close from 'mdi-material-ui/Close';
-import Dice6 from 'mdi-material-ui/Dice6';
-import DiceD20 from 'mdi-material-ui/DiceD20';
 import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Compendium, Monster, NameTextPair } from '../compendium';
-import { State, store } from '../store';
-
-export interface Props {
-    monster: Monster
-    handleCloseClicked?: (event: React.MouseEvent) => void
-}
-
-interface StateProps {
-    monsters: { [key: string]: Monster }
-}
-
-interface LocalState {
-    editableProps: { [key: string]: any }
-    editingName: boolean
-    rolls: { [key: string]: number }
-}
+import { Compendium, Monster, NameTextPair } from '../Compendium';
 
 const styles = createStyles({
-    card: {
-        width: 400,
-        margin: '10px 20px',
-        overflowY: 'auto',
-    },
-    media: {
-        height: 140,
-        backgroundPosition: 'center',
-    },
-    action: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    actionName: {
-        fontWeight: 600,
-    },
-    h5InputParent: {
-        width: '100%',
-        marginBottom: '10px',
-    },
-    h5Input: {
-        width: '100%',
-        color: 'rgba(0, 0, 0, 0.87)',
-        fontSize: '1.5rem',
-        fontWeight: 400,
-        lineHeight: '1.33',
-        letterSpacing: '0em',
-        paddingTop: '3px',
-        marginBottom: '2.4px',
-        padding: '0',
-    },
-    table: {
-        textAlign: 'center',
-    },
-    numberInputParent: {
-        maxWidth: '2em',
-        alignSelf: 'center',
-    },
-    iconButton: {
-        padding: 0,
-    },
-    titleRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '8px',
-    },
+  card: {
+    width: 400,
+    margin: '10px 20px',
+    overflowY: 'auto',
+  },
+  media: {
+    height: 140,
+    backgroundPosition: 'center',
+  },
+  action: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  actionName: {
+    fontWeight: 600,
+  },
+  h5InputParent: {
+    width: '100%',
+    marginBottom: '10px',
+  },
+  h5Input: {
+    width: '100%',
+    color: 'rgba(0, 0, 0, 0.87)',
+    fontSize: '1.5rem',
+    fontWeight: 400,
+    lineHeight: '1.33',
+    letterSpacing: '0em',
+    paddingTop: '3px',
+    marginBottom: '2.4px',
+    padding: '0',
+  },
+  table: {
+    textAlign: 'center',
+  },
+  numberInputParent: {
+    maxWidth: '2em',
+    alignSelf: 'center',
+  },
+  iconButton: {
+    padding: 0,
+  },
+  titleRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+  },
 });
 
-interface AllProps extends Props, StateProps, WithStyles<typeof styles> {}
-
-class MonsterCard extends React.Component<AllProps, LocalState> {
-
-    inputRef = React.createRef<HTMLInputElement>();
-
-    public constructor(props: AllProps) {
-        super(props);
-        this.state = {
-            editableProps: {
-                id: props.monster.id || '',
-                initiative: props.monster.initiative || '',
-                currentHP: props.monster.currentHP || '',
-            },
-            editingName: false,
-            rolls: {},
-        };
-    }
-
-    public componentWillMount() {
-        document.addEventListener('mousedown', this.handleClick, false);
-    }
-
-    public componentWillUnmount() {
-        store.dispatch({
-            type: 'UPDATE_MONSTER',
-            id: this.props.monster.id,
-            newValues: this.state.editableProps,
-        });
-        this.setState({
-            editingName: false,
-        });
-        document.removeEventListener('mousedown', this.handleClick, false);
-    }
-
-    public static mapStateToProps(state: State): StateProps {
-        return {
-            monsters: state.app.compendium.monsters,
-        };
-    }
-
-    private roll = (dice: number, sides: number, modifier: number) => {
-        let total = 0;
-        for (let i = 0; i < dice; i++) {
-            total += Math.floor(Math.random() * sides);
-        }
-        return total + modifier;
-    }
-
-    private cachedHandlers: { [key: string]: (event: React.MouseEvent) => void } = {}
-    private handleRoll = (rollName: string, dice: number, sides: number, modifier: number) => {
-        const name = `${rollName}-${dice}d${sides}+${modifier}`;
-        if (this.cachedHandlers[name]) {
-            return this.cachedHandlers[name];
-        }
-        const handler = (event: React.MouseEvent) => {
-            const roll = this.roll(dice, sides, modifier);
-            this.state.rolls[rollName] = roll;
-            this.setState({ rolls: this.state.rolls });
-        }
-        return handler;
-    }
-
-    private renderAction = (action: NameTextPair, i: number) => {
-        const toHitModifierRe = (action.text && action.text.match) ? action.text.match(/\+(\d+) to hit/) : null;
-        const rollRe = (action.text && action.text.match) ? action.text.match(/(\d+)d(\d+)\s*\+\s*(\d+)/) : null;
-        return <span key={`action-${i}`}>
-            <span>
-                <span className={this.props.classes.actionName}>{action.name}</span>: {action.text}
-            </span>
-            {toHitModifierRe !== null &&
-                <IconButton
-                    className={this.props.classes.iconButton}
-                    onClick={this.handleRoll(action.name + ' Attack', 1, 20, parseInt(toHitModifierRe[1]))}>
-                    <DiceD20 />
-                    {this.state.rolls[action.name + ' Attack'] && <span>{this.state.rolls[action.name + ' Attack']}</span>}
-                </IconButton>
-            }
-            {rollRe !== null &&
-                <IconButton
-                    className={this.props.classes.iconButton}
-                    onClick={this.handleRoll(action.name + ' Roll', parseInt(rollRe[1]), parseInt(rollRe[2]), parseInt(rollRe[3]))}>
-                    <Dice6 />
-                    {this.state.rolls[action.name + ' Roll'] && <span>{this.state.rolls[action.name + ' Roll']}</span>}
-                </IconButton>
-            }
-        </span>;
-    }
-
-    private renderActions = (actions: NameTextPair[] | NameTextPair | undefined) => {
-        if (!actions) {
-            return null;
-        }
-        if (!(actions instanceof Array)) {
-            actions = [actions];
-        }
-        const content = actions.map(this.renderAction)
-        return <div className={this.props.classes.action}>
-            {content}
-        </div>;
-    }
-
-    private renderSpellSlots = (slots: string) => {
-        return slots.split(',').map((v, i) => {
-            const count = parseInt(v);
-            if (count > 0) {
-                return <TextField
-                    key={i}
-                    value={count}
-                    type="number"
-                />;
-            }
-            return null;
-        }).filter((c) => c != null);
-    }
-
-    private renderInitiativeTracker = () => {
-        return <div className="column align-self-flex-end" style={{ minWidth: '110px' }}>
-            <label htmlFor="initiative" className="align-self-center">Initiative</label>
-            <div className="row align-self-center">
-                <Input
-                    name="initiative"
-                    className={this.props.classes.numberInputParent}
-                    onChange={this.handleChange('initiative')}
-                    onKeyPress={this.handleKeyPress('initiative')}
-                    type={'number'}
-                    value={this.state.editableProps.initiative}
-                />
-                <IconButton onClick={this.rollInitiative} className={this.props.classes.iconButton}>
-                    <Dice6 />
-                </IconButton>
-            </div>
-        </div>;
-    }
-
-    private renderCurrentHP = () => {
-        return <div className="column align-self-flex-end" style={{ minWidth: '110px' }}>
-            <label htmlFor="currentHP" className="align-self-center">Current HP</label>
-            <Input
-                name="currentHP"
-                className={this.props.classes.numberInputParent}
-                onChange={this.handleChange('currentHP')}
-                onKeyPress={this.handleKeyPress('currentHP')}
-                type={'number'}
-                value={this.state.editableProps.currentHP}
-            />
-        </div>;
-    }
-
-    private monsterInstance = () => {
-        const monster = Object.assign({}, this.props.monsters[this.props.monster.name]);
-        monster.id = this.props.monster.id;
-        return monster;
-    }
-
-    private handleChange = (prop: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const props = this.state.editableProps;
-        props[prop] = event.currentTarget.value;
-        this.setState({
-            editableProps: props,
-        });
-    }
-
-    private rollInitiative = () => {
-        const initiative = Math.floor(Math.random() * 20) + Compendium.modifier(this.props.monster.dex);
-        this.state.editableProps.initiative = initiative;
-        store.dispatch({
-            type: 'UPDATE_MONSTER',
-            id: this.props.monster.id,
-            newValues: this.state.editableProps,
-        });
-        this.setState({
-            editableProps: this.state.editableProps,
-        });
-    }
-
-    private handleKeyPress = (prop: string) => (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter') {
-            store.dispatch({
-                type: 'UPDATE_MONSTER',
-                id: this.props.monster.id,
-                newValues: this.state.editableProps,
-            });
-            this.setState({
-                editingName: false,
-            });
-        }
-    }
-
-    private handleClick = (e: any) => {
-        if (this.inputRef.current !== e.target) {
-            store.dispatch({
-                type: 'UPDATE_MONSTER',
-                id: this.props.monster.id,
-                newValues: this.state.editableProps,
-            });
-            this.setState({
-                editingName: false,
-            });
-        }
-    }
-
-    private handleIDClick = () => {
-        this.setState({
-            editingName: true,
-        });
-    }
-
-    private addToEncounter = () => {
-        store.dispatch({ type: 'ADD_TO_ENCOUNTER', monster: this.monsterInstance() });
-    }
-
-    private removeFromEncounter = () => {
-        store.dispatch({ type: 'REMOVE_FROM_ENCOUNTER', monster: this.monsterInstance() });
-    }
-
-    public render() {
-        const { classes, monster, handleCloseClicked } = this.props;
-        const {
-            id,
-            name,
-            imageURL,
-            cr, ac, hp, passive,
-            size, speed,
-            str, dex, con, int, wis, cha,
-            skill,
-            senses,
-            alignment,
-            languages,
-            type,
-            description,
-            action, reaction, legendary,
-            trait,
-            save,
-            resist, vulnerable, immune, conditionImmune,
-            spells, slots,
-        } = monster;
-        const actions = this.renderActions(action);
-        const reactions = this.renderActions(reaction);
-        const legendaryActions = this.renderActions(legendary);
-        const traits = this.renderActions(trait);
-        const spellSlots = slots? this.renderSpellSlots(slots) : null;
-        return <Card className={classes.card}>
-            {imageURL && <CardMedia
-                className={classes.media}
-                image={imageURL}
-                title={name}
-            />}
-            <CardContent>
-                <div className={classes.titleRow}>
-                    {id !== undefined && this.state.editingName ?
-                        <Input
-                            autoFocus={true}
-                            inputRef={this.inputRef}
-                            value={this.state.editableProps.id}
-                            onChange={this.handleChange('id')}
-                            onKeyPress={this.handleKeyPress('id')}
-                            className={classes.h5InputParent}
-                            classes={{ input: classes.h5Input }}
-                        /> :
-                        <Typography variant="h5" onClick={this.handleIDClick}>{id ? id : name}</Typography>
-                    }
-                    {handleCloseClicked && <IconButton onClick={handleCloseClicked}><Close /></IconButton>}
-                </div>
-                <div className="row justify-content-space-around">
-                    <table className={classNames("flex-1", classes.table)}>
-                        <thead>
-                            <tr>
-                                <th>CR</th>
-                                <th>XP</th>
-                                <th>AC</th>
-                                <th>HP</th>
-                                <th>Passive</th>
-                                <th>Size</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{cr}</td>
-                                <td>{Compendium.cr_to_xp[cr]}</td>
-                                <td>{(typeof (ac) === 'string') ? ac.split(' ')[0] : ac}</td>
-                                <td>{(typeof (hp) === 'string') ? hp.split(' ')[0] : hp}</td>
-                                <td>{passive}</td>
-                                <td>{size}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    {id !== undefined && this.renderInitiativeTracker()}
-                </div>
-                <div className="row">
-                    <table className={classNames("flex-1", classes.table)}>
-                        <thead>
-                            <tr>
-                                <th>Str</th>
-                                <th>Dex</th>
-                                <th>Con</th>
-                                <th>Int</th>
-                                <th>Wis</th>
-                                <th>Cha</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{Compendium.modifierText(Compendium.modifier(str))}</td>
-                                <td>{Compendium.modifierText(Compendium.modifier(dex))}</td>
-                                <td>{Compendium.modifierText(Compendium.modifier(con))}</td>
-                                <td>{Compendium.modifierText(Compendium.modifier(int))}</td>
-                                <td>{Compendium.modifierText(Compendium.modifier(wis))}</td>
-                                <td>{Compendium.modifierText(Compendium.modifier(cha))}</td>
-                            </tr>
-                            <tr>
-                                <td>{str}</td>
-                                <td>{dex}</td>
-                                <td>{con}</td>
-                                <td>{int}</td>
-                                <td>{wis}</td>
-                                <td>{cha}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    {id !== undefined && this.renderCurrentHP()}
-                </div>
-                <Typography>Speed: {speed}</Typography>
-                <Typography>Skills: {skill}</Typography>
-                <Typography>Senses: {senses}</Typography>
-                <Typography>Languages: {languages}</Typography>
-                <Typography>Alignment: {alignment}</Typography>
-                <Typography>Type: {type}</Typography>
-                {description && <Typography>{description}</Typography>}
-                {actions && <div>
-                    <Typography gutterBottom variant="h6">Actions</Typography>
-                    {actions}
-                </div>}
-                {reactions && <div>
-                    <Typography gutterBottom variant="h6">Reactions</Typography>
-                    {reactions}
-                </div>}
-                {legendaryActions && <div>
-                    <Typography gutterBottom variant="h6">Legendary Actions</Typography>
-                    {legendaryActions}
-                </div>}
-                {traits && <div>
-                    <Typography gutterBottom variant="h6">Traits</Typography>
-                    {traits}
-                </div>}
-                {save && <Typography>Save: {save}</Typography>}
-                {resist && <Typography>Resist: {resist}</Typography>}
-                {vulnerable && <Typography>Vulnerable: {vulnerable}</Typography>}
-                {immune && <Typography>Immune: {immune}</Typography>}
-                {conditionImmune && <Typography>Condition Immunities: {conditionImmune}</Typography>}
-                {spells && <Typography>Spells: {spells}</Typography>}
-                <div>
-                    {spellSlots}
-                </div>
-            </CardContent>
-            <CardActions>
-                {id === undefined && <Button size="small" color="primary" onClick={this.addToEncounter}>
-                    Add to Encounter
-        </Button>}
-                {id !== undefined && <Button size="small" color="secondary" onClick={this.removeFromEncounter}>
-                    Remove from Encounter
-        </Button>}
-            </CardActions>
-        </Card>
-    }
+export interface Props {
+  monster: Monster
+  handleCloseClicked?: (event: React.MouseEvent) => void
 }
 
-export default connect(MonsterCard.mapStateToProps)(withStyles(styles)(MonsterCard));
+interface StyledProps extends Props, WithStyles<typeof styles> { }
+
+class MonsterCard extends React.Component<StyledProps> {
+
+  inputRef = React.createRef<HTMLInputElement>();
+
+  private renderAction = (action: NameTextPair, i: number) => {
+    return <span key={`action-${i}`}>
+      <span className={this.props.classes.actionName}>{action.name}</span>: {action.text}
+    </span>;
+  }
+
+  private renderActions = (actions: NameTextPair[] | NameTextPair | undefined) => {
+    if (!actions) {
+      return null;
+    }
+    if (!(actions instanceof Array)) {
+      actions = [actions];
+    }
+    const content = actions.map(this.renderAction)
+    return <div className={this.props.classes.action}>
+      {content}
+    </div>;
+  }
+
+  private renderSpellSlots = (slots: string) => {
+    return slots.split(',').map((v, i) => {
+      const count = parseInt(v);
+      if (count > 0) {
+        return <TextField
+          key={i}
+          value={count}
+          type="number"
+        />;
+      }
+      return null;
+    }).filter((c) => c != null);
+  }
+
+  public render() {
+    const { classes, monster, handleCloseClicked } = this.props;
+    const {
+      name,
+      cr, ac, hp, passive,
+      size, speed,
+      str, dex, con, int, wis, cha,
+      skill,
+      senses,
+      alignment,
+      languages,
+      type,
+      description,
+      action, reaction, legendary,
+      trait,
+      save,
+      resist, vulnerable, immune, conditionImmune,
+      spells, slots,
+    } = monster;
+    const actions = this.renderActions(action);
+    const reactions = this.renderActions(reaction);
+    const legendaryActions = this.renderActions(legendary);
+    const traits = this.renderActions(trait);
+    const spellSlots = slots ? this.renderSpellSlots(slots) : null;
+    return <Card className={classes.card}>
+      <CardContent>
+        <div className={classes.titleRow}>
+          <Typography variant="h5">{name}</Typography>
+          {handleCloseClicked && <IconButton onClick={handleCloseClicked}><Close /></IconButton>}
+        </div>
+        <div className="row justify-content-space-around">
+          <table className={classNames("flex-1", classes.table)}>
+            <thead>
+              <tr>
+                <th>CR</th>
+                <th>XP</th>
+                <th>AC</th>
+                <th>HP</th>
+                <th>Passive</th>
+                <th>Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{cr}</td>
+                <td>{Compendium.cr_to_xp[cr]}</td>
+                <td>{(typeof (ac) === 'string') ? ac.split(' ')[0] : ac}</td>
+                <td>{(typeof (hp) === 'string') ? hp.split(' ')[0] : hp}</td>
+                <td>{passive}</td>
+                <td>{size}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="row">
+          <table className={classNames("flex-1", classes.table)}>
+            <thead>
+              <tr>
+                <th>Str</th>
+                <th>Dex</th>
+                <th>Con</th>
+                <th>Int</th>
+                <th>Wis</th>
+                <th>Cha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{Compendium.modifierText(Compendium.modifier(str))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(dex))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(con))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(int))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(wis))}</td>
+                <td>{Compendium.modifierText(Compendium.modifier(cha))}</td>
+              </tr>
+              <tr>
+                <td>{str}</td>
+                <td>{dex}</td>
+                <td>{con}</td>
+                <td>{int}</td>
+                <td>{wis}</td>
+                <td>{cha}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <Typography>Speed: {speed}</Typography>
+        <Typography>Skills: {skill}</Typography>
+        <Typography>Senses: {senses}</Typography>
+        <Typography>Languages: {languages}</Typography>
+        <Typography>Alignment: {alignment}</Typography>
+        <Typography>Type: {type}</Typography>
+        {description && <Typography>{description}</Typography>}
+        {actions && <div>
+          <Typography gutterBottom variant="h6">Actions</Typography>
+          {actions}
+        </div>}
+        {reactions && <div>
+          <Typography gutterBottom variant="h6">Reactions</Typography>
+          {reactions}
+        </div>}
+        {legendaryActions && <div>
+          <Typography gutterBottom variant="h6">Legendary Actions</Typography>
+          {legendaryActions}
+        </div>}
+        {traits && <div>
+          <Typography gutterBottom variant="h6">Traits</Typography>
+          {traits}
+        </div>}
+        {save && <Typography>Save: {save}</Typography>}
+        {resist && <Typography>Resist: {resist}</Typography>}
+        {vulnerable && <Typography>Vulnerable: {vulnerable}</Typography>}
+        {immune && <Typography>Immune: {immune}</Typography>}
+        {conditionImmune && <Typography>Condition Immunities: {conditionImmune}</Typography>}
+        {spells && <Typography>Spells: {spells}</Typography>}
+        <div>
+          {spellSlots}
+        </div>
+      </CardContent>
+    </Card>
+  }
+}
+
+export default withStyles(styles)(MonsterCard);
